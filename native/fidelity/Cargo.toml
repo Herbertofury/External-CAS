@@ -1,0 +1,15 @@
+[package]
+name = "external-cas-fidelity"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+
+[dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+external-cas-assets = { path = "../assets" }
+sha2 = "=0.10.9"
+image = { version = "=0.25.10", default-features = false, features = ["dds"] }
+
+[dev-dependencies]
+serde_json = "=1.0.154"

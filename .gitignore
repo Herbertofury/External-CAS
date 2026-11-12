@@ -1,0 +1,8 @@
+/target/
+/.local/
+**/target-check/
+**/target/
+*.pdb
+__pycache__/
+private-*.json
+*.local.json

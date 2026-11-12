@@ -1,0 +1,17 @@
+# Durable private editor context
+
+`external-cas-session` stores local editor context under `%LOCALAPPDATA%\ExternalCAS` by default. `SessionStore::at(absolute_root)` supplies an explicit private root for tests or another authorized app location. The crate never follows stored game, CC, rig or project references; the application must revalidate their current bytes, exact provider identities and project receipts before restoring them.
+
+`SessionState` retains source roots; verified project and recovery-project pointers; full TGI plus provider for appearance/clip selections; observed rig whole-file, resource payload and optional package-index hashes; source tick; camera orbit/target/distance; and the current tab. It preserves unknown fields in supported-schema state and nested models. Missing hashes stay absent; a package index digest is explicitly distinguished from a whole-package digest.
+
+Call `store.load()` at launch and inspect `LoadReport`. A missing, torn, malformed or hash-mismatched latest snapshot falls back to the newest supported valid one, with explicit issues and `recovered_from_previous`. A snapshot needs an exclusive JSON file and a complete matching `.complete` marker. The marker binds the exact serialized file bytes, and the envelope separately binds the exact raw JSON payload. Snapshot writes and marker writes each use `create_new`, `write_all` and `sync_all`; no existing snapshot is overwritten or renamed over. Concurrent writers retain separate versions. A failed or interrupted write leaves its incomplete files for recovery.
+
+Unsupported schema files are preserved. A recognized future schema or future commit-marker schema prevents automatic downgrade saves; the older app can read a previous supported snapshot but cannot replace the future context. A newer schema must be handled by a compatible app or a separately reviewed migration. Hashes detect accidental corruption, not an attacker who can rewrite both local files.
+
+`save()` is intended for meaningful user actions and orderly close, not every rendered frame. The payload budget is 4 MiB, with no source-count cap or truncation. Oversize state is rejected before files are created. Callers should debounce repeated saves and show failures rather than claiming context is durable.
+
+Snapshots are append-only. Automatic retention/cleanup is deliberately pending a configurable policy; this crate performs no deletion, including incomplete files, unknown schemas or old valid snapshots. Private absolute paths and hashes belong in app data or ignored local files, never public build evidence.
+
+On Windows, receipts report `Durability::FileContentsSynced`: both file contents were flushed, but directory-entry/power-loss durability still requires Windows/filesystem qualification. Other supported systems additionally sync the directory and report `FileContentsAndDirectorySynced`. This format provides validated fallback for ordinary process crashes and torn writes; it does not claim an untested power-loss guarantee or atomic filesystem identity against concurrent reparse-point replacement.
+
+Run `cargo test -p external-cas-session --offline`. Tests cover complete context/unknown-field roundtrip, torn snapshots and markers, missing commits, payload corruption, unknown future schemas, failed writes, 24 concurrent writers and more than 10,000 source pointers without a count cap. Test cleanup removes only flat files in exclusively created private test roots; production code never deletes snapshots.

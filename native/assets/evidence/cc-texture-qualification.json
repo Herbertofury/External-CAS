@@ -1,0 +1,299 @@
+{
+  "date": "2026-11-12",
+  "scope": "five explicit real installed CC samples; texture component parity only; original sources unchanged",
+  "recoveredOracle": "cas-public-1972 resource-index JavaScript readers",
+  "independentLrleSource": {
+    "kind": "SimRipper LRLE.cs",
+    "sourceHash": "78eef8ba9939ee139d67138a3e854ac0834a0472d97f95150036450ad4b73a51",
+    "unchangedDecoder": true,
+    "unusedImportsRemoved": true,
+    "comparisons": 18
+  },
+  "samples": [
+    {
+      "category": "hair",
+      "sourceBytes": 27684021,
+      "sourceHash": "bd7baae05ddc02d6d0f6b731afc42cb92a2094d9d246d6db4ee21d2af6e2c994",
+      "indexRows": 33,
+      "texturePixels": [
+        {
+          "key": "2BC04EDF:80000000:665AB8CE4D9A9910",
+          "payloadHash": "9d1ff6bd9c4acddb8d34888edb9b9ce19f19e5553049bedf9498555af5028b29",
+          "format": "lrle-v1",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "74922a116f5f4aa083701a11916adffe19ec4bc8ccc5fba065289ff2a972d65c",
+          "rustDecoded": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:DE5A26978796003C",
+          "payloadHash": "35b3d5d1b08bc0248e82ce86890efa19a99955f1705c894506b3ced4e00405e0",
+          "format": "lrle-v2",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "04460436a63aa5ac37f9a810dfed31bfd9765ebbf9ceb2f10c44fa80a43102e2",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:E90A431E0B28504C",
+          "payloadHash": "27e87991fc926cd09630f7b27a3f102326014784058488ae292f4de4ddef8bf1",
+          "format": "lrle-v2",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "73ee34c38bd38d1278874d4bd1a23e5b0af3f0c1eeb7ca73f9d57c7f20232288",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:BAEC536D415C411D",
+          "payloadHash": "ac3443691c781ff79aa478e1bdfc241d1b849fba1fa59a757acc9142e9a0126a",
+          "format": "lrle-v1",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "2c6b4e39bce92a7185a93253f9867adf8fb467b46c960a5862cf46341b3e42e5",
+          "rustDecoded": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:F1C8E87E9CFC661E",
+          "payloadHash": "d90107c029b38da54bc6976821cbb5a352f7896baf38fa55b5fac177e7a0562d",
+          "format": "lrle-v2",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "d9ad109a0c518c03dd4d39a5451be6c0425ecd84ae42b15b5edbfd7a4f7301c0",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:EB8DDEE95B97B33F",
+          "payloadHash": "32f94d01421e492f404f86946452f1cdd49b978a9745ace21810adda2ffb6412",
+          "format": "lrle-v2",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "d23f3a120f1b64b71d32da8420cdbec474b94a14325425ff6dbef8c308a1d5a2",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:EB3134DC781882D5",
+          "payloadHash": "f74a11bd377ae431992283316805c960f6afc5191789984095e56938494de59a",
+          "format": "lrle-v1",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "6320c0f996592d3f02eee7ba2edb02c4c1e6db15b330c02e86544fab4a248550",
+          "rustDecoded": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:8627234BF9307443",
+          "payloadHash": "1cff67ef161cc28107e8851f853e7c776e1ec1fee471e99ca525dad7615fc96d",
+          "format": "lrle-v1",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "e37d053953550ac43475efa4a11e49c7839347e41303bbfbe6d9a478d061d013",
+          "rustDecoded": true,
+          "originalCSharpPixelsEqual": true
+        }
+      ]
+    },
+    {
+      "category": "clothes",
+      "sourceBytes": 10446530,
+      "sourceHash": "d47c3dc718087915ddad72383860f6405b701881c2db5886c661c1743fbef792",
+      "indexRows": 86,
+      "texturePixels": [
+        {
+          "key": "3453CF95:80000000:36D5EB798712A772",
+          "payloadHash": "ceb2a36590340a19cd87d3b8c32866d884104d3966aff95099669ce7f03dde1d",
+          "format": "RLE2/BC3",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "6f167654e85449fa87c889f51414e1ce229e038f2327a0444909af3acb3acb14",
+          "oracle": "recovered JavaScript decoder; native app comparison pending"
+        },
+        {
+          "key": "BA856C78:80000000:2C02530192A74500",
+          "payloadHash": "bb18d5253b9ed109d5ec5dd7e7a647d9fe289e4f26a10cf17b287072fda7c5e7",
+          "format": "RLES/BC3",
+          "width": 512,
+          "height": 1024,
+          "rgbaHash": "39f9ed9b47d7e18b7214dc58767a22e6c678566256946efe8edf845bb4efd047",
+          "oracle": "recovered JavaScript decoder; native app comparison pending"
+        }
+      ]
+    },
+    {
+      "category": "shoes",
+      "sourceBytes": 2140550,
+      "sourceHash": "07c5e75fe9e3bd3a359436e6a6dd7e839f84bcba52568519540b8d9a252db3ff",
+      "indexRows": 80,
+      "texturePixels": [
+        {
+          "key": "3453CF95:80000000:D3AB1B5E129F127E",
+          "payloadHash": "dde299f74e8e167ef507aac5a9bb9ab22cf4187046e5dca2d36f7fd82c726b96",
+          "format": "RLE2/BC3",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "4354ca545e594d90b8bade8178da33d84d6e98900b37a3e76589c08382fd18a6",
+          "oracle": "recovered JavaScript decoder; native app comparison pending"
+        },
+        {
+          "key": "BA856C78:80000000:FB7270DEEDB04360",
+          "payloadHash": "6b0e7d9cac3388b6c942e6aac595e85741acef50e402eb3c5c940cba9237a9e0",
+          "format": "RLES/BC3",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "5c2fac1f9df8ebca0c34d3ba12696e40ca0a8a697c7dc348b838cb1ad40de102",
+          "oracle": "recovered JavaScript decoder; native app comparison pending"
+        }
+      ]
+    },
+    {
+      "category": "accessory",
+      "sourceBytes": 648189,
+      "sourceHash": "1d9e3e016d3468ab0f5f6852fd155a5dbb7259d88dfbe449b413639a9a6663e7",
+      "indexRows": 42,
+      "texturePixels": [
+        {
+          "key": "2BC04EDF:80000000:7B44C41349C58955",
+          "payloadHash": "450ff44cee12bda78538f1ce7f0d39f0a2fbb88053960130d0b5f59e4909d4b0",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "3dd42956e88690c124716344d14f32283dbf10be893abe8d7cdf6f9827695252",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:A41F0123D85B9EB9",
+          "payloadHash": "2f14293007417947a5a89ebf3a9c52337fafdbc6bdc19c8cd8799bd6cf7e64f2",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "459f427b37b45af0e362630cd074760969bf969159985f0db0e1948c6ac802e0",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:8B97E0B7993AEA2C",
+          "payloadHash": "14bf046cdf9c8014a984be87b7b087929169826bfd228d585c71cd6cb9f1fd27",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "e2bd9c1e135f9813f154a17726dcdee51f76beb1b14d141300ad540c4d82a6ee",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:88DB6ED54AA49B25",
+          "payloadHash": "a5d89b32ffadac01317f7460d043585b3e2db47d28b0d41b3d8d5b3b17710ca5",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "5ec095f7e96135220520934032e1f71557a753330f75104d1a5af9e3e945bfeb",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:B5C9854EC157D19C",
+          "payloadHash": "b86fb22566b8ae040742778f8c53511fead46bf5a922bfb1180ecf65b290aad3",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "f56fc763c946295dd6b43b99f36a691d94b2af5f59b789f301ed0717e6886c84",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:D590A6016FD84161",
+          "payloadHash": "5b77ec2c74e910f293f1815135179d60e352a6afbeede97f0a81c3028d928f43",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "386b89daaca4df71a692d10f90ce6f60c9a884c4397253cbd8c06d9a0ca562c1",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:D2E21A8DF81C5DE8",
+          "payloadHash": "8a0fdec044acd137b82c1f0dd58d436b9414e7e4cec2ac29c1a21fbb2f504f60",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "a3ab4941f8321d935376f51893a30ea9e34981c6cad628e9b8f935a805bc80d9",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:A228D8179F9C035E",
+          "payloadHash": "95313c51e997685ff9f7c8e3e4058e20f6f5e8d0671c598a717ff07d5994a2bd",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "0766ad31c8e12695da6bbd64b60cd03e695b608d6fe829f9ea28e8e38134870d",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "2BC04EDF:80000000:F2A6BD302FA72B14",
+          "payloadHash": "1598996566d70bd755ecbea1ee9e9d08d8fb8e8c330e74667a5e0490b9887b46",
+          "format": "lrle-v2",
+          "width": 1024,
+          "height": 2048,
+          "rgbaHash": "d6448bd79d4ce80ed0f6ba4d0123f5d979933af54fe668d53e993cb64e36fb03",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        },
+        {
+          "key": "BA856C78:80000000:97DF4D4669E5C51C",
+          "payloadHash": "75616be7776445f7f9e86c272142247c9a7cbf4eb37826b99d7908101cecb7ae",
+          "format": "RLES/BC3",
+          "width": 512,
+          "height": 1024,
+          "rgbaHash": "683a86859ea84ba2d6abe95513f66698605ec58784635173f94a39c3da8a8754",
+          "oracle": "recovered JavaScript decoder; native app comparison pending"
+        }
+      ]
+    },
+    {
+      "category": "skin",
+      "sourceBytes": 9281563,
+      "sourceHash": "a049b8b0a1a6b8510fbcdcb9d856b282b7d7ad145e14001da0dd110e5c29343b",
+      "indexRows": 5,
+      "texturePixels": [
+        {
+          "key": "2BC04EDF:80000000:BC6A14E0D8AE0715",
+          "payloadHash": "45a528623bb85c59e5f723abd2ee4f60d985f04c488abd1cdad546deedd218fd",
+          "format": "lrle-v2",
+          "width": 2048,
+          "height": 4096,
+          "rgbaHash": "a9aa41a154b732162283f178c12f5edf28527fb9e011add77288e98f3dcb1cf7",
+          "rustDecoded": true,
+          "recoveredJsPixelsEqual": true,
+          "originalCSharpPixelsEqual": true
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "filename category is a selection aid; skin-named sample is a tattoo/skin overlay, not native TONE",
+    "source selection does not establish game load order",
+    "native material, source alias semantics and complete Sim appearance remain unverified",
+    "not actual application performance or game synchronization evidence"
+  ]
+}

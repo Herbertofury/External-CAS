@@ -1,0 +1,834 @@
+{
+  "date": "2026-11-12",
+  "scope": "five explicit real installed CC samples; component parity only; original sources unchanged",
+  "recoveredOracle": "cas-public-1972 resource-index JavaScript readers",
+  "samples": [
+    {
+      "category": "hair",
+      "sourceBytes": 27684021,
+      "sourceHash": "bd7baae05ddc02d6d0f6b731afc42cb92a2094d9d246d6db4ee21d2af6e2c994",
+      "indexRows": 33,
+      "caspCompared": 8,
+      "geometryCompared": 12,
+      "allDecodedGeometryBytesEqual": true,
+      "geometries": [
+        {
+          "version": 14,
+          "vertices": 8122,
+          "triangles": 15745,
+          "palette": 8
+        },
+        {
+          "version": 14,
+          "vertices": 6373,
+          "triangles": 11698,
+          "palette": 8
+        },
+        {
+          "version": 14,
+          "vertices": 16731,
+          "triangles": 33024,
+          "palette": 8
+        },
+        {
+          "version": 14,
+          "vertices": 6144,
+          "triangles": 11807,
+          "palette": 9
+        },
+        {
+          "version": 14,
+          "vertices": 4854,
+          "triangles": 8773,
+          "palette": 9
+        },
+        {
+          "version": 14,
+          "vertices": 12597,
+          "triangles": 24768,
+          "palette": 9
+        },
+        {
+          "version": 14,
+          "vertices": 2759,
+          "triangles": 5043,
+          "palette": 8
+        },
+        {
+          "version": 14,
+          "vertices": 2320,
+          "triangles": 3747,
+          "palette": 8
+        },
+        {
+          "version": 14,
+          "vertices": 5502,
+          "triangles": 10580,
+          "palette": 9
+        },
+        {
+          "version": 14,
+          "vertices": 338,
+          "triangles": 365,
+          "palette": 9
+        },
+        {
+          "version": 14,
+          "vertices": 313,
+          "triangles": 272,
+          "palette": 9
+        },
+        {
+          "version": 14,
+          "vertices": 582,
+          "triangles": 768,
+          "palette": 9
+        }
+      ],
+      "resourceTypes": {
+        "034AEECB": 8,
+        "AC16FBEC": 1,
+        "015A1849": 12,
+        "3C1AF1F2": 2,
+        "2BC04EDF": 8,
+        "6BF15BBE": 1,
+        "00B2D882": 1
+      },
+      "diffuseBindings": [
+        {
+          "declared": "3453CF95:80000000:665AB8CE4D9A9910",
+          "providers": [
+            "2BC04EDF:80000000:665AB8CE4D9A9910"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DE5A26978796003C",
+          "providers": [
+            "2BC04EDF:80000000:DE5A26978796003C"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:E90A431E0B28504C",
+          "providers": [
+            "2BC04EDF:80000000:E90A431E0B28504C"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:BAEC536D415C411D",
+          "providers": [
+            "2BC04EDF:80000000:BAEC536D415C411D"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:F1C8E87E9CFC661E",
+          "providers": [
+            "2BC04EDF:80000000:F1C8E87E9CFC661E"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:EB8DDEE95B97B33F",
+          "providers": [
+            "2BC04EDF:80000000:EB8DDEE95B97B33F"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:EB3134DC781882D5",
+          "providers": [
+            "2BC04EDF:80000000:EB3134DC781882D5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:8627234BF9307443",
+          "providers": [
+            "2BC04EDF:80000000:8627234BF9307443"
+          ]
+        }
+      ],
+      "thumbnails": [
+        {
+          "key": "3C1AF1F2:00000002:CEA628BCB72C7687",
+          "bytes": 15201,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "3cf9af721b53161e20f7041c90655791caf821711b92f6e200e320452b15f5a4",
+          "caspCandidates": [
+            "034AEECB:80000000:CEA628BCB72C7687"
+          ]
+        },
+        {
+          "key": "3C1AF1F2:00000102:CEA628BCB72C7687",
+          "bytes": 15201,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "3cf9af721b53161e20f7041c90655791caf821711b92f6e200e320452b15f5a4",
+          "caspCandidates": [
+            "034AEECB:80000000:CEA628BCB72C7687"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "clothes",
+      "sourceBytes": 10446530,
+      "sourceHash": "d47c3dc718087915ddad72383860f6405b701881c2db5886c661c1743fbef792",
+      "indexRows": 86,
+      "caspCompared": 26,
+      "geometryCompared": 4,
+      "allDecodedGeometryBytesEqual": true,
+      "geometries": [
+        {
+          "version": 14,
+          "vertices": 33176,
+          "triangles": 59797,
+          "palette": 59
+        },
+        {
+          "version": 14,
+          "vertices": 17568,
+          "triangles": 29897,
+          "palette": 59
+        },
+        {
+          "version": 14,
+          "vertices": 1155,
+          "triangles": 1212,
+          "palette": 59
+        },
+        {
+          "version": 14,
+          "vertices": 33176,
+          "triangles": 59797,
+          "palette": 58
+        }
+      ],
+      "resourceTypes": {
+        "AC16FBEC": 1,
+        "015A1849": 4,
+        "3453CF95": 26,
+        "034AEECB": 26,
+        "BA856C78": 1,
+        "00B2D882": 1,
+        "3C1AF1F2": 26,
+        "6BF15BBE": 1
+      },
+      "diffuseBindings": [
+        {
+          "declared": "3453CF95:80000000:36D5EB798712A772",
+          "providers": [
+            "3453CF95:80000000:36D5EB798712A772"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DFE1BD286B8A94BB",
+          "providers": [
+            "3453CF95:80000000:DFE1BD286B8A94BB"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DAB5933DACB1F874",
+          "providers": [
+            "3453CF95:80000000:DAB5933DACB1F874"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:C326F6ABB99C25C5",
+          "providers": [
+            "3453CF95:80000000:C326F6ABB99C25C5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B5F99F5FA16B73E6",
+          "providers": [
+            "3453CF95:80000000:B5F99F5FA16B73E6"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:9BE29A5ED8239C05",
+          "providers": [
+            "3453CF95:80000000:9BE29A5ED8239C05"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:EA30A2DAEA16791B",
+          "providers": [
+            "3453CF95:80000000:EA30A2DAEA16791B"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:E3ADFE075789C951",
+          "providers": [
+            "3453CF95:80000000:E3ADFE075789C951"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:D4C0EC317D6F148F",
+          "providers": [
+            "3453CF95:80000000:D4C0EC317D6F148F"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:9BDC8FA7629EFF45",
+          "providers": [
+            "3453CF95:80000000:9BDC8FA7629EFF45"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:A6CDD0A04A1C3B6C",
+          "providers": [
+            "3453CF95:80000000:A6CDD0A04A1C3B6C"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:E1387F62A17E8B3A",
+          "providers": [
+            "3453CF95:80000000:E1387F62A17E8B3A"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:C105665A12552C03",
+          "providers": [
+            "3453CF95:80000000:C105665A12552C03"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DAFBC3E810D7CC2F",
+          "providers": [
+            "3453CF95:80000000:DAFBC3E810D7CC2F"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:8A1A281A14EBF945",
+          "providers": [
+            "3453CF95:80000000:8A1A281A14EBF945"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DC64F476962AD9FB",
+          "providers": [
+            "3453CF95:80000000:DC64F476962AD9FB"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:904EB57DFFAEFFB2",
+          "providers": [
+            "3453CF95:80000000:904EB57DFFAEFFB2"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DA2EFE57B829B76C",
+          "providers": [
+            "3453CF95:80000000:DA2EFE57B829B76C"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:D3BB5FC9EE3AF1A5",
+          "providers": [
+            "3453CF95:80000000:D3BB5FC9EE3AF1A5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:939623AFA52197BD",
+          "providers": [
+            "3453CF95:80000000:939623AFA52197BD"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:9CA3071D0F213FFE",
+          "providers": [
+            "3453CF95:80000000:9CA3071D0F213FFE"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:F3A29CAECCDF272A",
+          "providers": [
+            "3453CF95:80000000:F3A29CAECCDF272A"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:893FE8617EFC7185",
+          "providers": [
+            "3453CF95:80000000:893FE8617EFC7185"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:CC4CC7BC8BC8EFD7",
+          "providers": [
+            "3453CF95:80000000:CC4CC7BC8BC8EFD7"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B4989F1669410C87",
+          "providers": [
+            "3453CF95:80000000:B4989F1669410C87"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:FDD239BF1BC62546",
+          "providers": [
+            "3453CF95:80000000:FDD239BF1BC62546"
+          ]
+        }
+      ],
+      "thumbnails": [
+        {
+          "key": "3C1AF1F2:00000002:88160DC597DD1381",
+          "bytes": 13697,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+          "caspCandidates": [
+            "034AEECB:80000000:88160DC597DD1381"
+          ]
+        },
+        {
+          "key": "3C1AF1F2:00000002:F3A40ABA5A4AEFD4",
+          "bytes": 13697,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+          "caspCandidates": [
+            "034AEECB:80000000:F3A40ABA5A4AEFD4"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "shoes",
+      "sourceBytes": 2140550,
+      "sourceHash": "07c5e75fe9e3bd3a359436e6a6dd7e839f84bcba52568519540b8d9a252db3ff",
+      "indexRows": 80,
+      "caspCompared": 35,
+      "geometryCompared": 5,
+      "allDecodedGeometryBytesEqual": true,
+      "geometries": [
+        {
+          "version": 14,
+          "vertices": 11218,
+          "triangles": 18182,
+          "palette": 7
+        },
+        {
+          "version": 14,
+          "vertices": 5291,
+          "triangles": 7304,
+          "palette": 7
+        },
+        {
+          "version": 14,
+          "vertices": 3087,
+          "triangles": 3714,
+          "palette": 7
+        },
+        {
+          "version": 14,
+          "vertices": 1552,
+          "triangles": 1599,
+          "palette": 7
+        },
+        {
+          "version": 14,
+          "vertices": 4,
+          "triangles": 2,
+          "palette": 7
+        }
+      ],
+      "resourceTypes": {
+        "034AEECB": 35,
+        "AC16FBEC": 1,
+        "015A1849": 5,
+        "3453CF95": 35,
+        "BA856C78": 1,
+        "00B2D882": 1,
+        "3C1AF1F2": 1,
+        "6BF15BBE": 1
+      },
+      "diffuseBindings": [
+        {
+          "declared": "3453CF95:80000000:D3AB1B5E129F127E",
+          "providers": [
+            "3453CF95:80000000:D3AB1B5E129F127E"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:87F2B47FA7813B46",
+          "providers": [
+            "3453CF95:80000000:87F2B47FA7813B46"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:AF5329396655CE32",
+          "providers": [
+            "3453CF95:80000000:AF5329396655CE32"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:95E0AF0D38847D39",
+          "providers": [
+            "3453CF95:80000000:95E0AF0D38847D39"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:CE0148F2D8C0E3D1",
+          "providers": [
+            "3453CF95:80000000:CE0148F2D8C0E3D1"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:D565D699C07CD7A8",
+          "providers": [
+            "3453CF95:80000000:D565D699C07CD7A8"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B9BADF90DB951375",
+          "providers": [
+            "3453CF95:80000000:B9BADF90DB951375"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B77C82647229F9E5",
+          "providers": [
+            "3453CF95:80000000:B77C82647229F9E5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B3E4E4AF65C8FEBD",
+          "providers": [
+            "3453CF95:80000000:B3E4E4AF65C8FEBD"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:9C51C9BA4244986D",
+          "providers": [
+            "3453CF95:80000000:9C51C9BA4244986D"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:CAC5BE6AE86BC20C",
+          "providers": [
+            "3453CF95:80000000:CAC5BE6AE86BC20C"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:C57C1C58BD23BC46",
+          "providers": [
+            "3453CF95:80000000:C57C1C58BD23BC46"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:CE844C8B7CD5C93F",
+          "providers": [
+            "3453CF95:80000000:CE844C8B7CD5C93F"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B6969090F0AA5052",
+          "providers": [
+            "3453CF95:80000000:B6969090F0AA5052"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DDD4D9D327A7DF88",
+          "providers": [
+            "3453CF95:80000000:DDD4D9D327A7DF88"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:C8445AE7000E00FC",
+          "providers": [
+            "3453CF95:80000000:C8445AE7000E00FC"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:DF9EA3DA295873C5",
+          "providers": [
+            "3453CF95:80000000:DF9EA3DA295873C5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:C39A79C2E19512B9",
+          "providers": [
+            "3453CF95:80000000:C39A79C2E19512B9"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:AD706FE39366C25A",
+          "providers": [
+            "3453CF95:80000000:AD706FE39366C25A"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:CF86A9502026FF45",
+          "providers": [
+            "3453CF95:80000000:CF86A9502026FF45"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:D4F0AE9B18F8BC9B",
+          "providers": [
+            "3453CF95:80000000:D4F0AE9B18F8BC9B"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B7E6CE5469D2DDF2",
+          "providers": [
+            "3453CF95:80000000:B7E6CE5469D2DDF2"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:D22ED261F1604648",
+          "providers": [
+            "3453CF95:80000000:D22ED261F1604648"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:9F40E935B54477F5",
+          "providers": [
+            "3453CF95:80000000:9F40E935B54477F5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:CBB7F9803317BAED",
+          "providers": [
+            "3453CF95:80000000:CBB7F9803317BAED"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:C1041853C3D48CD5",
+          "providers": [
+            "3453CF95:80000000:C1041853C3D48CD5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:E7D4B070931D82F5",
+          "providers": [
+            "3453CF95:80000000:E7D4B070931D82F5"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:83D266BB07D9C266",
+          "providers": [
+            "3453CF95:80000000:83D266BB07D9C266"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:C6CF70C354B18671",
+          "providers": [
+            "3453CF95:80000000:C6CF70C354B18671"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:BB33CF190A9AA987",
+          "providers": [
+            "3453CF95:80000000:BB33CF190A9AA987"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:F3A3E9D709EBECFF",
+          "providers": [
+            "3453CF95:80000000:F3A3E9D709EBECFF"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:9362A856C4857CDC",
+          "providers": [
+            "3453CF95:80000000:9362A856C4857CDC"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:90BE7E72456F0D85",
+          "providers": [
+            "3453CF95:80000000:90BE7E72456F0D85"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:BCB391F2215F0D80",
+          "providers": [
+            "3453CF95:80000000:BCB391F2215F0D80"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:84D2D438E8DB6517",
+          "providers": [
+            "3453CF95:80000000:84D2D438E8DB6517"
+          ]
+        }
+      ],
+      "thumbnails": [
+        {
+          "key": "3C1AF1F2:00000002:FBD24463515E4455",
+          "bytes": 15596,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "fa0704d2b41db2c48a9159e07187b7a2d0e47db80a810601a2dcc0df08f3e7ae",
+          "caspCandidates": [
+            "034AEECB:80000000:FBD24463515E4455"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "accessory",
+      "sourceBytes": 648189,
+      "sourceHash": "1d9e3e016d3468ab0f5f6852fd155a5dbb7259d88dfbe449b413639a9a6663e7",
+      "indexRows": 42,
+      "caspCompared": 9,
+      "geometryCompared": 4,
+      "allDecodedGeometryBytesEqual": true,
+      "geometries": [
+        {
+          "version": 14,
+          "vertices": 2078,
+          "triangles": 4044,
+          "palette": 1
+        },
+        {
+          "version": 14,
+          "vertices": 1053,
+          "triangles": 2022,
+          "palette": 1
+        },
+        {
+          "version": 14,
+          "vertices": 542,
+          "triangles": 1010,
+          "palette": 1
+        },
+        {
+          "version": 14,
+          "vertices": 286,
+          "triangles": 504,
+          "palette": 1
+        }
+      ],
+      "resourceTypes": {
+        "034AEECB": 9,
+        "AC16FBEC": 1,
+        "015A1849": 4,
+        "BA856C78": 1,
+        "3C1AF1F2": 18,
+        "2BC04EDF": 9
+      },
+      "diffuseBindings": [
+        {
+          "declared": "3453CF95:80000000:7B44C41349C58955",
+          "providers": [
+            "2BC04EDF:80000000:7B44C41349C58955"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:A41F0123D85B9EB9",
+          "providers": [
+            "2BC04EDF:80000000:A41F0123D85B9EB9"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:8B97E0B7993AEA2C",
+          "providers": [
+            "2BC04EDF:80000000:8B97E0B7993AEA2C"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:88DB6ED54AA49B25",
+          "providers": [
+            "2BC04EDF:80000000:88DB6ED54AA49B25"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:B5C9854EC157D19C",
+          "providers": [
+            "2BC04EDF:80000000:B5C9854EC157D19C"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:D590A6016FD84161",
+          "providers": [
+            "2BC04EDF:80000000:D590A6016FD84161"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:D2E21A8DF81C5DE8",
+          "providers": [
+            "2BC04EDF:80000000:D2E21A8DF81C5DE8"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:A228D8179F9C035E",
+          "providers": [
+            "2BC04EDF:80000000:A228D8179F9C035E"
+          ]
+        },
+        {
+          "declared": "3453CF95:80000000:F2A6BD302FA72B14",
+          "providers": [
+            "2BC04EDF:80000000:F2A6BD302FA72B14"
+          ]
+        }
+      ],
+      "thumbnails": [
+        {
+          "key": "3C1AF1F2:00000002:D720B48261EE218C",
+          "bytes": 12089,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+          "caspCandidates": [
+            "034AEECB:80000000:D720B48261EE218C"
+          ]
+        },
+        {
+          "key": "3C1AF1F2:00000102:D720B48261EE218C",
+          "bytes": 12089,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+          "caspCandidates": [
+            "034AEECB:80000000:D720B48261EE218C"
+          ]
+        }
+      ]
+    },
+    {
+      "category": "skin",
+      "sourceBytes": 9281563,
+      "sourceHash": "a049b8b0a1a6b8510fbcdcb9d856b282b7d7ad145e14001da0dd110e5c29343b",
+      "indexRows": 5,
+      "caspCompared": 1,
+      "geometryCompared": 0,
+      "allDecodedGeometryBytesEqual": true,
+      "geometries": [],
+      "resourceTypes": {
+        "3C1AF1F2": 2,
+        "2BC04EDF": 1,
+        "6BF15BBE": 1,
+        "034AEECB": 1
+      },
+      "diffuseBindings": [
+        {
+          "declared": "3453CF95:80000000:BC6A14E0D8AE0715",
+          "providers": [
+            "2BC04EDF:80000000:BC6A14E0D8AE0715"
+          ]
+        }
+      ],
+      "thumbnails": [
+        {
+          "key": "3C1AF1F2:00000102:9630CA648131EF65",
+          "bytes": 20926,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "0e9ca9f6c07ebd5702fe986ae671b4ffbf12d573d04344537afaf1133614d8f2",
+          "caspCandidates": [
+            "034AEECB:80000000:9630CA648131EF65"
+          ]
+        },
+        {
+          "key": "3C1AF1F2:00000002:9630CA648131EF65",
+          "bytes": 19511,
+          "magic": "FFD8FFE000104A46",
+          "payloadHash": "465976f1234fab47198b5e99c50fc225f5d5635ba36abe8ad9d40c3e0a614abd",
+          "caspCandidates": [
+            "034AEECB:80000000:9630CA648131EF65"
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "source selection does not establish game load order",
+    "native material, source alias semantics and complete Sim appearance remain unverified",
+    "not actual application performance or game synchronization evidence"
+  ]
+}
