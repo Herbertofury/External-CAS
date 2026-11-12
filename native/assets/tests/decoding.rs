@@ -109,6 +109,13 @@ fn malformed_resources_stale_sources_and_budget_are_not_loaded() {
     let mut changed = b.clone();
     changed[96] = b'X';
     std::fs::write(&path, &changed).unwrap();
+    // This case proves the metadata-change contract. Immediate same-size writes
+    // can retain the same observable timestamp on Windows filesystems; make the
+    // metadata difference explicit rather than depending on clock granularity.
+    // The retained_payload_pin test separately proves same-stamp rewrites fail.
+    let changed_time=std::fs::metadata(&path).unwrap().modified().unwrap()+std::time::Duration::from_secs(2);
+    std::fs::OpenOptions::new().write(true).open(&path).unwrap()
+        .set_times(std::fs::FileTimes::new().set_modified(changed_time)).unwrap();
     assert!(matches!(
         idx.read_resource(&idx.entries[0], ReadLimits::default()),
         Err(Error::Changed)
