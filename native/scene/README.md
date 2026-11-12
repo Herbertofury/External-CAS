@@ -19,6 +19,14 @@ provenance remain available. A representative selected provider in that state
 does not claim game load precedence. Different full keys or payloads remain
 ambiguous. `rig_payload` contains bytes only after these checks pass.
 
+`resolve_scene_scoped(sim, catalog, options, Some(&policy))` applies the
+observed installed priority rules while loading payloads. Identical tied
+highest-priority payloads resolve as `ByteIdenticalPriorityProviders` even
+when lower-priority historical bytes differ. Hashes for all compared providers
+remain retained. Differing highest-priority payloads stay ambiguous, and a
+highest-priority tombstone never revives a lower historical resource. The
+unscoped wrapper retains its strict all-provider equivalence rule.
+
 Payload reads reuse one `PackageReader` per package, including one initial
 index/source revalidation and per-read change checks. Source-open failures are
 retained during that planning pass rather than repeatedly retried.
@@ -33,7 +41,8 @@ native texture priority. New v12 suffix parameters remain unimplemented.
 
 ## Evidence recorded 12 November 2026
 
-Fifteen tests cover original-source FNV vectors, rig stage/species rules,
+Sixteen tests pass, with one additional opt-in source oracle. They cover
+original-source FNV vectors, rig stage/species rules,
 TONE versions/truncation/non-finite values/opaque suffixes, explicit current
 selection, full-key/source ambiguity, byte-identical provider equivalence,
 native suntan state, changed sources, invalid providers, explicit config
@@ -55,6 +64,15 @@ The native TONE uniquely decoded
 as v12 with three skin sets and native set zero; that set's texture was absent
 from this limited scope. No complete-Sim rendering or game acceptance is
 claimed. No game or Tray files were written.
+
+A later read-only qualification widened the selected-Sim scope to all 18 base
+client build packages plus 3 simulation/preload packages: 1,141,554 resources.
+Actual skin and every current-outfit material dependency resolved. Repeated
+current-priority Client/Simulation copies no longer conflict with different
+historical Full bytes. The same native 17 meshes and 165-bone rig remained;
+original Tray hashes and package index identities were unchanged. This is
+still an explicit base scope, not a claim that all installed packs or native
+appearance have been qualified.
 
 The complete private scope, keys, IDs, hashes and results remain excluded from
 Git under the workspace `.local/real-tray-check`. Full game/CC scope, applicable
@@ -78,7 +96,8 @@ or pack-directory precedence is invented. Unsupported directives disable
 their config's automatic priorities. Unknown conditional PackedFile branches
 block overlapping package patterns instead of being treated as false.
 
-For a selected Sim, use `policy.provider_choices_for_keys(plan.required_keys())`
+For a selected Sim, use `resolve_scene_scoped` with the prepared policy.
+`policy.provider_choices_for_keys(plan.required_keys())`
 and preserve the returned decisions/coverage alongside `choices`. This avoids
 materializing decisions for every catalog duplicate. A three-package catalog
 is still incomplete against 5,112 discovered packages even if every selected

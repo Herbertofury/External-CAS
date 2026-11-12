@@ -1,6 +1,6 @@
 # Native RIG and CLIP pipeline
 
-`external-cas-animation` parses authorized in-memory RIG v3.1 and CLIP v14 / S3CLIP v2 resources and evaluates bone poses in Rust. There is no Node, Blender, Studio, browser or game dependency in the runtime crate.
+`external-cas-animation` parses authorized in-memory RIG v3.1 and CLIP v14 or current v18 / S3CLIP v2 resources and evaluates bone poses in Rust. There is no Node, Blender, Studio, browser or game dependency in the runtime crate.
 
 ```rust
 use external_cas_animation::*;
@@ -25,6 +25,29 @@ For comparison with retained source-tool data, `Rig::bind_pose_from_globals` acc
 
 Run `cargo test -p external-cas-animation --offline`. Tests exercise truncation at every byte boundary, quantization, hierarchy/order/cycles, nonuniform-scale inverse binds, exact binding, unsupported preservation, event/IK policy, source-basis conversion and source-tool root policy. `examples/oracle_bridge.rs` is a private stdin/stdout comparison seam, not an app launcher; its output contains derived asset data and must be consumed privately.
 
+The current v18 envelope retains eight uninterpreted metadata words (including
+nonfinite float bit patterns), three namespace hashes and the explicit 64-bit
+rig instance. `ClipMetadata.current_header` exposes these separately from the
+legacy header byte projection and retains the exact declared codec extent.
+Unsupported versions still preserve their original bytes. Legacy v14 behavior
+and its event size checks are unchanged. Sixteen tests pass, including every
+truncated v18 prefix and opaque-word/rig/extent retention.
+
+An actual installed CAS standing clip matched a separately supplied, unmodified
+current primary reader on the complete wrapper and 29,579 skeletal values.
+Maximum absolute decoded difference was 1.1920928955078125e-7; 15,977 float bit
+patterns differ because the recovered codec uses a different intermediate
+precision. This is tolerance-qualified decoding, not bit-exact game behavior.
+Its event, five IK records and 23 non-bone tracks remain preserved, unevaluated
+preview data. See [the sanitized receipt](evidence/current-v18-qualification.json).
+
 ## Provenance
 
 This is a Rust port of the recovered `rig.mjs`, `clip-metadata.mjs`, `clip-frames.mjs`, `clip-values.mjs`, `clip-sample.mjs`, `studio-bind-keyed-pose.mjs` and `studio-quaternion.mjs` under the retained `cas-public-1972/recovery/external-cas/research/resource-index` tree. Those implementations identify TS4CAS Tools by C. Marinetti, s4pi ClipResource/S3CLIP/IkConfiguration/ClipEvents by Cmar and Peter Jones, and Blender v4.3.2 quaternion/armature conversion as upstream references. They carry GPL-3.0-or-later provenance; the Blender reference carries GPL-2.0-or-later. This port retains GPL-3.0-or-later licensing. Preserve notices and corresponding-source obligations in distribution. No game/creator assets, private manifests or captured palettes are included.
+
+Current envelope field boundaries were independently checked against the
+separately installed `TS4AnimationBrowser.Core` 1.9.1
+`ViewerV2/StudioClipDecoderV2.cs`. No license grant was found for that source;
+it is not copied, linked into the product, or redistributed. The optional
+[current-reader oracle](oracle/current-wrapper/README.md) links only an explicitly
+supplied local source tree during development and pins all three input files.

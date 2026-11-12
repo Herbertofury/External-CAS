@@ -1,0 +1,401 @@
+{
+  "schema": 1,
+  "game_process_contacted": false,
+  "live_permutation_qualified": false,
+  "bindings": [
+    {
+      "game_version": "1.129.39.1030",
+      "precomp_sha256": "62ffab0f85c3af8ace5a375c968216d1ada2b1c9c2d18f32aa4b25d250a0b101",
+      "ps_ref": 3038,
+      "stage": {
+        "ref": 3038,
+        "stage": "ps",
+        "source_record": 547644,
+        "source_record_words": [
+          30003572,
+          140,
+          1114,
+          12780824,
+          5,
+          14474368,
+          0,
+          10453184,
+          5,
+          10158046,
+          1
+        ],
+        "compact_offset": 30551216,
+        "compact_bytes": 1114,
+        "dxbc_bytes": 2352,
+        "dxbc_sha256": "8c0aa019e7db9d94e0f30750f09997bd4ed20389a41d2f0eae8d5ed01357a16e"
+      },
+      "textures": [
+        {
+          "slot": 0,
+          "parameter_index": 278,
+          "hash": "4DC0C8BC",
+          "source_name": "OverlayTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 1,
+          "parameter_index": 288,
+          "hash": "5E2CC5B9",
+          "source_name": "SkinToneAndMakeupTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 2,
+          "parameter_index": 381,
+          "hash": "69EDEC9E",
+          "source_name": "ClothWithAlphaTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 3,
+          "parameter_index": 382,
+          "hash": "3C410F96",
+          "source_name": "SkinDetailHSL",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 4,
+          "parameter_index": 383,
+          "hash": "E02DF0F4",
+          "source_name": "CASAmbientIntensityTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        }
+      ],
+      "constant_buffers": [
+        {
+          "preparation_index": 911,
+          "slot": 0,
+          "source_name": "$Globals",
+          "default_words": 44,
+          "bindings": [
+            {
+              "parameter_index": 279,
+              "hash": "1E04B76D",
+              "source_name": "LightDirections",
+              "byte_offset": 0,
+              "byte_size": 64,
+              "type_word": 1027,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 280,
+              "hash": "30EA53AF",
+              "source_name": "LightColors",
+              "byte_offset": 64,
+              "byte_size": 64,
+              "type_word": 1027,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 384,
+              "hash": "8715A7E8",
+              "source_name": "SkinDetail2ndOverlayOpacity",
+              "byte_offset": 128,
+              "byte_size": 16,
+              "type_word": 259,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 385,
+              "hash": "3785BB0E",
+              "source_name": "CASRimFalloff",
+              "byte_offset": 144,
+              "byte_size": 16,
+              "type_word": 259,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 386,
+              "hash": "96ECC1BF",
+              "source_name": "CASAmbientIntensity",
+              "byte_offset": 160,
+              "byte_size": 16,
+              "type_word": 257,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "shader_family": "DF0863B8",
+      "family_source_name": "SimSkinCAS"
+    },
+    {
+      "game_version": "1.129.39.1030",
+      "precomp_sha256": "62ffab0f85c3af8ace5a375c968216d1ada2b1c9c2d18f32aa4b25d250a0b101",
+      "ps_ref": 3049,
+      "stage": {
+        "ref": 3049,
+        "stage": "ps",
+        "source_record": 548128,
+        "source_record_words": [
+          30017624,
+          176,
+          1408,
+          12781220,
+          6,
+          14473884,
+          0,
+          10453456,
+          6,
+          10157584,
+          1
+        ],
+        "compact_offset": 30565752,
+        "compact_bytes": 1408,
+        "dxbc_bytes": 2972,
+        "dxbc_sha256": "04673da057e7ddcc0ac889e17883d9968cf5ee9ae8560a7e1036bc0fbc011088"
+      },
+      "textures": [
+        {
+          "slot": 0,
+          "parameter_index": 278,
+          "hash": "4DC0C8BC",
+          "source_name": "OverlayTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 1,
+          "parameter_index": 288,
+          "hash": "5E2CC5B9",
+          "source_name": "SkinToneAndMakeupTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 2,
+          "parameter_index": 381,
+          "hash": "69EDEC9E",
+          "source_name": "ClothWithAlphaTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 3,
+          "parameter_index": 382,
+          "hash": "3C410F96",
+          "source_name": "SkinDetailHSL",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 4,
+          "parameter_index": 298,
+          "hash": "6E56548A",
+          "source_name": "NormalMap",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 5,
+          "parameter_index": 383,
+          "hash": "E02DF0F4",
+          "source_name": "CASAmbientIntensityTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        }
+      ],
+      "constant_buffers": [
+        {
+          "preparation_index": 917,
+          "slot": 0,
+          "source_name": "$Globals",
+          "default_words": 48,
+          "bindings": [
+            {
+              "parameter_index": 279,
+              "hash": "1E04B76D",
+              "source_name": "LightDirections",
+              "byte_offset": 0,
+              "byte_size": 64,
+              "type_word": 1027,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 280,
+              "hash": "30EA53AF",
+              "source_name": "LightColors",
+              "byte_offset": 64,
+              "byte_size": 64,
+              "type_word": 1027,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 300,
+              "hash": "3C45E334",
+              "source_name": "NormalMapScale",
+              "byte_offset": 128,
+              "byte_size": 16,
+              "type_word": 256,
+              "default_bits": [
+                1065353216,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 384,
+              "hash": "8715A7E8",
+              "source_name": "SkinDetail2ndOverlayOpacity",
+              "byte_offset": 144,
+              "byte_size": 16,
+              "type_word": 259,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 385,
+              "hash": "3785BB0E",
+              "source_name": "CASRimFalloff",
+              "byte_offset": 160,
+              "byte_size": 16,
+              "type_word": 259,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "parameter_index": 386,
+              "hash": "96ECC1BF",
+              "source_name": "CASAmbientIntensity",
+              "byte_offset": 176,
+              "byte_size": 16,
+              "type_word": 257,
+              "default_bits": [
+                0,
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "shader_family": "DF0863B8",
+      "family_source_name": "SimSkinCAS"
+    }
+  ]
+}

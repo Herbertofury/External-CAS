@@ -8,10 +8,16 @@
 
 use serde::Serialize;
 use std::{fmt, ops::Range};
+pub mod color_ui;
 pub mod dds;
 pub mod font;
 pub mod installed;
+pub mod runtime;
+pub mod runtime_assets;
+pub mod symbol_raster;
+pub mod timeline;
 pub mod truetype;
+pub mod ui_layout;
 
 const MAX_MOVIE_BYTES: usize = 64 * 1024 * 1024;
 
@@ -85,6 +91,15 @@ pub struct SubImage {
 }
 
 #[derive(Debug, Clone, Serialize)]
+pub struct ExporterInfo {
+    pub version: u16,
+    pub flags: Option<u32>,
+    pub bitmap_format: u16,
+    pub prefix: String,
+    pub movie_name: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
 pub struct CompactedFontHeader {
     pub id: u16,
     /// First FontType in this tag only. Remaining FontTypes/outlines are raw.
@@ -116,6 +131,7 @@ pub struct GfxMovie<'a> {
     pub external_images: Vec<ExternalImage>,
     pub sub_images: Vec<SubImage>,
     pub compacted_font_headers: Vec<CompactedFontHeader>,
+    pub exporter_info: Vec<ExporterInfo>,
     pub trailing_bytes: Range<usize>,
     /// Explicitly true even if a particular movie contains no script tags.
     pub metadata_only: bool,
@@ -175,6 +191,7 @@ impl<'a> GfxMovie<'a> {
             external_images: Vec::new(),
             sub_images: Vec::new(),
             compacted_font_headers: Vec::new(),
+            exporter_info: Vec::new(),
             trailing_bytes: raw.len()..raw.len(),
             metadata_only: true,
         };
@@ -269,6 +286,24 @@ impl<'a> GfxMovie<'a> {
                         declared_glyph_count,
                         outline_bytes: start..start + outline_len,
                         tag_index,
+                    });
+                }
+                1000 => {
+                    let version = body.u16()?;
+                    let flags = if version >= 266 {
+                        Some(body.u32()?)
+                    } else {
+                        None
+                    };
+                    let bitmap_format = body.u16()?;
+                    let prefix = body.net_string()?;
+                    let movie_name = body.net_string()?;
+                    movie.exporter_info.push(ExporterInfo {
+                        version,
+                        flags,
+                        bitmap_format,
+                        prefix,
+                        movie_name,
                     });
                 }
                 _ => {}

@@ -1,9 +1,12 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 mod cas_ui;
+mod character_view;
+mod color_controls;
 mod gallery;
 mod library;
 mod persistence;
 mod profiling;
+mod room_view;
 mod texture;
 mod viewport;
 
@@ -27,6 +30,9 @@ use std::{
 struct Startup {
     roots: Vec<PathBuf>,
     ui_assets: Option<PathBuf>,
+    game_root: Option<PathBuf>,
+    sim_view: bool,
+    character_assets: Vec<PathBuf>,
     selection: Option<ResourceKey>,
     hidden: bool,
     report: Option<PathBuf>,
@@ -43,12 +49,15 @@ struct Startup {
     camera: Option<CameraState>,
     tab: Option<String>,
     apply_selected_slot: Option<usize>,
+    apply_color_slot: Option<usize>,
     selection_requested: bool,
     pose_requested: bool,
     query: Option<String>,
     catalog_columns: Option<usize>,
     profile_frames: usize,
     profile_scroll: bool,
+    color_shift: Option<u64>,
+    requested_color: Option<u64>,
 }
 impl Startup {
     fn parse() -> Result<Self, String> {
@@ -66,6 +75,19 @@ impl Startup {
                             .into(),
                     )?)
                 }
+                "--game-root" => {
+                    out.game_root = Some(absolute_path(
+                        args.next()
+                            .ok_or("--game-root requires an installed game directory")?
+                            .into(),
+                    )?)
+                }
+                "--sim-view" => out.sim_view = true,
+                "--character-assets" => out.character_assets.push(absolute_path(
+                    args.next()
+                        .ok_or("--character-assets requires an explicit diagnostic package scope")?
+                        .into(),
+                )?),
                 "--select" => {
                     out.selection_requested = true;
                     out.selection = Some(
@@ -148,10 +170,29 @@ impl Startup {
                     }
                 }
                 "--profile-scroll" => out.profile_scroll = true,
+                "--color-shift" => {
+                    let value = args
+                        .next()
+                        .ok_or("--color-shift requires 16 hexadecimal digits")?;
+                    if value.len() != 16 {
+                        return Err("--color-shift requires 16 hexadecimal digits".into());
+                    }
+                    out.color_shift =
+                        Some(u64::from_str_radix(&value, 16).map_err(|e| e.to_string())?);
+                    out.requested_color = out.color_shift;
+                }
                 "--apply-selected-to-slot" => {
                     out.apply_selected_slot = Some(
                         args.next()
                             .ok_or("--apply-selected-to-slot requires an index")?
+                            .parse()
+                            .map_err(|e| format!("{e}"))?,
+                    )
+                }
+                "--apply-color-to-slot" => {
+                    out.apply_color_slot = Some(
+                        args.next()
+                            .ok_or("--apply-color-to-slot requires an index")?
                             .parse()
                             .map_err(|e| format!("{e}"))?,
                     )
@@ -307,16 +348,27 @@ struct InstalledUiContext {
     provider: PathBuf,
     pins: Vec<external_cas_fidelity::installed::SourcePin>,
 }
+#[derive(serde::Serialize, serde::Deserialize)]
+struct CharacterContext {
+    identity: character_view::Identity,
+    pins: Vec<library::SourcePin>,
+}
 struct Studio {
     viewport: viewport::Viewport,
     ui_assets: cas_ui::InstalledUiState,
     ui_restore_required: bool,
+    room: room_view::RoomState,
+    character: character_view::CharacterState,
+    whole_sim: bool,
+    sim_camera_initialized: bool,
     tx: mpsc::Sender<Event>,
     rx: mpsc::Receiver<Event>,
     library: Option<Arc<library::Library>>,
     rows: Vec<usize>,
     gallery_groups: Vec<library::GalleryGroup>,
     gallery: gallery::Gallery,
+    colors: color_controls::ColorEditor,
+    native_colors: library::ColorCache,
     query: String,
     body: Option<u32>,
     query_changed: Option<Instant>,
@@ -348,6 +400,7 @@ struct Studio {
     vertices: usize,
     triangles: usize,
     preview_elapsed: Duration,
+    preview_fully_transparent: Option<bool>,
     startup: Startup,
     started: Instant,
     ready: bool,
@@ -359,6 +412,8 @@ struct Studio {
     rig: Option<external_cas_animation::Rig>,
     bind: Option<external_cas_animation::BindPose>,
     clip: Option<external_cas_animation::Clip>,
+    native_idle: Option<external_cas_animation::Clip>,
+    clip_is_native_idle: bool,
     rig_loading: bool,
     clip_loading: bool,
     skin_bound: bool,
@@ -411,12 +466,18 @@ impl Studio {
             ),
             ui_assets: cas_ui::InstalledUiState::new(),
             ui_restore_required: false,
+            room: room_view::RoomState::default(),
+            character: character_view::CharacterState::default(),
+            whole_sim: startup.sim_view || !startup.selection_requested,
+            sim_camera_initialized: false,
             tx,
             rx,
             library: None,
             rows: Vec::new(),
             gallery_groups: Vec::new(),
             gallery: gallery::Gallery::new(),
+            colors: color_controls::ColorEditor::default(),
+            native_colors: library::ColorCache::default(),
             query: String::new(),
             body: None,
             query_changed: None,
@@ -448,6 +509,7 @@ impl Studio {
             vertices: 0,
             triangles: 0,
             preview_elapsed: Duration::ZERO,
+            preview_fully_transparent: None,
             startup,
             started: Instant::now(),
             ready: false,
@@ -459,6 +521,8 @@ impl Studio {
             rig: None,
             bind: None,
             clip: None,
+            native_idle: None,
+            clip_is_native_idle: false,
             rig_loading: false,
             clip_loading: false,
             skin_bound: false,
@@ -488,6 +552,7 @@ impl Studio {
         if let Some(query) = out.startup.query.clone() {
             out.query = query;
         }
+        out.colors.expanded_by_default = out.startup.requested_color.is_some();
         if let Some(columns) = out.startup.catalog_columns {
             out.gallery.columns = columns;
         }
@@ -583,6 +648,16 @@ impl Studio {
                                 self.session.restored = true;
                                 self.session.last_saved = Some(state.clone());
                                 self.session.state = state.clone();
+                                if self.startup.game_root.is_none() {
+                                    self.startup.game_root = state
+                                        .extra
+                                        .get("game_root")
+                                        .and_then(|v| v.as_str())
+                                        .map(PathBuf::from);
+                                }
+                                if let Some(value) = state.extra.get("color_previews") {
+                                    match serde_json::from_value(value.clone()){Ok(colors)=>self.colors=colors,Err(error)=>self.errors.push(format!("Saved color previews are invalid; original context preserved: {error}"))}
+                                }
                                 if self.startup.ui_assets.is_none() {
                                     if let Some(value) = state.extra.get("installed_ui") {
                                         match serde_json::from_value::<InstalledUiContext>(value.clone()) {
@@ -676,6 +751,40 @@ impl Studio {
     }
     fn context_snapshot(&self) -> SessionState {
         let mut state = self.session.state.clone();
+        state
+            .extra
+            .insert("whole_sim_view".into(), serde_json::json!(self.whole_sim));
+        if let Some(character) = &self.character.receipt {
+            state.extra.insert(
+                "character_source_context".into(),
+                serde_json::json!(CharacterContext {
+                    identity: character.identity.clone(),
+                    pins: character.source_pins.clone()
+                }),
+            );
+        }
+        if self.room.source.is_some() {
+            if let Some(root) = &self.room.requested_root {
+                state
+                    .extra
+                    .insert("game_root".into(), serde_json::json!(root));
+            }
+        }
+        if let Some(slot) = self
+            .draft
+            .as_ref()
+            .and_then(|d| d.slots().ok())
+            .and_then(|slots| self.slot.and_then(|index| slots.get(index).cloned()))
+        {
+            if let Ok(value) = serde_json::to_value(slot) {
+                state.extra.insert("editing_target".into(), value);
+            }
+        } else {
+            state.extra.remove("editing_target");
+        }
+        if let Ok(value) = serde_json::to_value(self.colors.snapshot()) {
+            state.extra.insert("color_previews".into(), value);
+        }
         if let Some(provider) = &self.ui_assets.provider {
             if let Ok(value) = serde_json::to_value(InstalledUiContext {
                 provider: provider.clone(),
@@ -688,12 +797,30 @@ impl Studio {
         state.camera.pitch = self.viewport.camera.pitch;
         state.camera.distance = self.viewport.camera.distance;
         state.camera.target = self.viewport.camera.target;
+        state.camera.extra.insert(
+            "fov_degrees".into(),
+            serde_json::json!(self.viewport.camera.fov_degrees),
+        );
+        state.extra.insert(
+            "model_yaw".into(),
+            serde_json::json!(self.viewport.model_yaw),
+        );
         if self.clip.is_some() {
             state.tick = self.tick;
             state.extra.insert(
                 "pose_mode".into(),
                 serde_json::json!(if self.pose_reset { "bind" } else { "sample" }),
             );
+            if self.clip_is_native_idle {
+                if let Some(clip) = &self.clip {
+                    state.extra.insert(
+                        "native_idle".into(),
+                        serde_json::json!({"name":clip.name(),"sha256":hash_string(&clip.sha256)}),
+                    );
+                }
+            } else {
+                state.extra.remove("native_idle");
+            }
         }
         state
     }
@@ -756,9 +883,57 @@ impl Studio {
             self.viewport.camera.pitch = camera.pitch;
             self.viewport.camera.distance = camera.distance;
             self.viewport.camera.target = camera.target;
+            if let Some(fov) = camera
+                .extra
+                .get("fov_degrees")
+                .and_then(|v| v.as_f64())
+                .filter(|v| v.is_finite() && (1.0..=120.0).contains(v))
+            {
+                self.viewport.camera.fov_degrees = fov as f32;
+            }
+        }
+        if let Some(yaw) = self
+            .session
+            .state
+            .extra
+            .get("model_yaw")
+            .and_then(|v| v.as_f64())
+            .filter(|v| v.is_finite())
+        {
+            self.viewport.model_yaw = yaw as f32;
         }
         if let Some(tab) = self.session.restore_tab.take() {
             self.tab = tab;
+        }
+        if let Some(value) = self.session.state.extra.get("editing_target") {
+            match serde_json::from_value::<external_cas_tray::OutfitSlot>(value.clone()) {
+                Ok(target) => {
+                    self.slot = self
+                        .draft
+                        .as_ref()
+                        .and_then(|d| d.slots().ok())
+                        .and_then(|slots| slots.iter().position(|slot| slot == &target));
+                    if self.slot.is_none() {
+                        self.warnings.push("The saved outfit target no longer matches the verified project; select the intended Sim and slot explicitly.".into());
+                    }
+                }
+                Err(error) => self.errors.push(format!(
+                    "Saved outfit target is invalid; prior context preserved: {error}"
+                )),
+            }
+        }
+        if self.startup.sim_view {
+            self.whole_sim = true;
+        } else if !self.startup.selection_requested {
+            if let Some(whole) = self
+                .session
+                .state
+                .extra
+                .get("whole_sim_view")
+                .and_then(|v| v.as_bool())
+            {
+                self.whole_sim = whole;
+            }
         }
         self.session.restore_pending = false;
         self.initial_scan = false;
@@ -776,9 +951,65 @@ impl Studio {
         {
             return;
         }
-        let Some(index) = self.startup.apply_selected_slot.take() else {
+        if self.startup.apply_selected_slot.is_none() {
+            if let Some(index) = self.startup.apply_color_slot.take() {
+                let color = self
+                    .startup
+                    .requested_color
+                    .map(external_cas_material::color::PackedColorShift)
+                    .or_else(|| self.colors.value());
+                let slot = self
+                    .draft
+                    .as_ref()
+                    .and_then(|d| d.slots().ok())
+                    .and_then(|slots| slots.get(index).cloned());
+                if let (Some(slot), Some(color)) = (slot, color) {
+                    let item = self
+                        .library
+                        .as_ref()
+                        .and_then(|l| self.selected.and_then(|i| l.items.get(i)));
+                    let key = library::SlotColorKey {
+                        sim_id: slot.sim_id,
+                        form: slot.occult_form_index,
+                        outfit_index: slot.outfit_index,
+                        outfit_id: slot.outfit_id,
+                        part_index: slot.part_index,
+                    };
+                    if let Some(expected) =
+                        self.native_colors.values.get(&key).copied().filter(|_| {
+                            item.is_some_and(|i| {
+                                i.key.instance_id == slot.part_id && i.body_type == slot.body_type
+                            })
+                        })
+                    {
+                        self.slot = Some(index);
+                        self.activate_item_colors(true);
+                        if let Some(draft) = self
+                            .colors
+                            .active
+                            .as_ref()
+                            .and_then(|key| self.colors.contexts.get_mut(key))
+                        {
+                            draft.current = color;
+                        }
+                        if let Err(error) = self.viewport.set_item_color_shift(color) {
+                            self.errors.push(error);
+                            return;
+                        }
+                        self.start_draft_change(library::DraftChange::ColorShift {
+                            slot,
+                            expected,
+                            value: color.0,
+                            materialize: expected.is_none(),
+                        });
+                        return;
+                    }
+                }
+                self.errors.push("Requested color edit has no matching native outfit slot, color data and verified item preview".into());
+            }
             return;
-        };
+        }
+        let index = self.startup.apply_selected_slot.take().unwrap();
         let slot = self
             .draft
             .as_ref()
@@ -786,6 +1017,7 @@ impl Studio {
             .and_then(|slots| slots.get(index).cloned());
         if let (Some(slot), Some(selected)) = (slot, self.selected) {
             if self.scene_generation == self.preview_gen && self.scene_name.is_some() {
+                self.slot = Some(index);
                 self.start_draft_change(library::DraftChange::Apply {
                     index: selected,
                     slot,
@@ -881,6 +1113,8 @@ impl Studio {
         let Some(library) = &self.library else {
             return;
         };
+        self.whole_sim = false;
+        self.character.stop();
         self.selected = Some(index);
         self.preview_cancel.store(true, Ordering::Relaxed);
         self.preview_cancel = Arc::new(AtomicBool::new(false));
@@ -921,6 +1155,7 @@ impl Studio {
         provider: external_cas_assets::scan::Provider,
         expected: Option<ClipSelection>,
     ) {
+        self.clip_is_native_idle = false;
         let Some((package, entry)) = library.catalog.provider(provider) else {
             self.errors.push("Pose provider is absent".into());
             return;
@@ -978,7 +1213,9 @@ impl Studio {
                             self.gallery_groups.clear();
                             self.gallery.reset(self.scan_gen);
                             self.selected = None;
-                            self.clear_scene();
+                            if !self.whole_sim {
+                                self.clear_scene();
+                            }
                             self.clip_gen += 1;
                             self.clip = None;
                             self.pending_clip = None;
@@ -1122,6 +1359,7 @@ impl Studio {
                                 self.vertices = preview.vertices;
                                 self.triangles = preview.triangles;
                                 self.preview_elapsed = preview.elapsed;
+                                self.preview_fully_transparent = Some(preview.fully_transparent);
                                 self.warnings.extend(preview.warnings);
                                 self.geometries = preview.geometries;
                                 self.scene_name = self
@@ -1160,6 +1398,7 @@ impl Studio {
                                     }
                                 }
                                 self.bind_scene();
+                                self.activate_item_colors(true);
                                 self.status = "Original item loaded · bind geometry preview".into();
                                 self.mark_session_dirty();
                             }
@@ -1216,10 +1455,12 @@ impl Studio {
                             self.session.restore_project = None;
                             self.status = "Project reopened and byte-verified".into();
                             self.draft = prepared.draft;
+                            self.native_colors = prepared.colors;
                             if let Some(error) = prepared.draft_error {
                                 self.errors.push(error);
                             }
                             self.project = Some(prepared.project);
+                            self.character.stop();
                             self.slot = None;
                             self.tab = Tab::Project;
                             self.mark_session_dirty();
@@ -1320,11 +1561,26 @@ impl Studio {
                         continue;
                     }
                     match result {
-                        Ok((draft, path)) => {
+                        Ok((draft, path, colors)) => {
+                            let active =
+                                self.draft.as_ref().and_then(|d| d.slots().ok()).and_then(
+                                    |slots| self.slot.and_then(|i| slots.get(i).cloned()),
+                                );
+                            self.slot = active.and_then(|old| {
+                                draft.slots().ok().and_then(|slots| {
+                                    slots.iter().position(|slot| {
+                                        slot.sim_id == old.sim_id
+                                            && slot.occult_form_index == old.occult_form_index
+                                            && slot.outfit_id == old.outfit_id
+                                            && slot.outfit_index == old.outfit_index
+                                            && slot.part_index == old.part_index
+                                    })
+                                })
+                            });
+                            self.native_colors = colors;
                             self.draft = Some(draft);
                             self.session.state.recovery_project_path = Some(path.clone());
                             self.recovery_location = Some(path);
-                            self.slot = None;
                             self.status = "Draft updated and recovery revision verified".into();
                             self.mark_session_dirty();
                         }
@@ -1339,6 +1595,8 @@ impl Studio {
         }
     }
     fn clear_scene(&mut self) {
+        self.preview_fully_transparent = None;
+        self.colors.active = None;
         let _ = self.viewport.set_parts(Vec::new());
         self.scene_name = None;
         self.scene_generation = 0;
@@ -1349,6 +1607,238 @@ impl Studio {
         self.playing = false;
         self.pose_last = None;
         self.pose_palette_sha256 = None;
+    }
+    fn show_sim(&mut self) {
+        self.whole_sim = true;
+        self.preview_cancel.store(true, Ordering::Relaxed);
+        self.preview_gen += 1;
+        self.preparing = false;
+        self.character.stop();
+        self.session.state.extra.remove("character_source_context");
+        self.mark_session_dirty();
+    }
+    fn refresh_character(&mut self, ctx: &egui::Context) {
+        if !self.whole_sim
+            || self.session.loading
+            || self.session.restore_pending
+            || self.working_project
+            || self.scanning
+        {
+            return;
+        }
+        let Some(root) = self.room.requested_root.clone() else {
+            return;
+        };
+        let Some(draft) = self.draft.as_ref() else {
+            return;
+        };
+        let slot = draft
+            .slots()
+            .ok()
+            .and_then(|slots| self.slot.and_then(|i| slots.get(i).cloned()));
+        let sim_id = slot.as_ref().map(|s| s.sim_id);
+        let form = slot.as_ref().and_then(|s| s.occult_form_index);
+        let outfit = slot.as_ref().map(|s| s.outfit_index);
+        let preview_color = slot.as_ref().and_then(|slot| {
+            let item = self
+                .library
+                .as_ref()
+                .and_then(|l| self.selected.and_then(|i| l.items.get(i)))?;
+            if item.key.instance_id != slot.part_id || item.body_type != slot.body_type {
+                return None;
+            }
+            let expected = self
+                .native_colors
+                .values
+                .get(&library::SlotColorKey {
+                    sim_id: slot.sim_id,
+                    form: slot.occult_form_index,
+                    outfit_index: slot.outfit_index,
+                    outfit_id: slot.outfit_id,
+                    part_index: slot.part_index,
+                })
+                .copied()?;
+            let value = self.colors.value()?.0;
+            if value
+                == expected.unwrap_or(external_cas_material::color::PackedColorShift::NEUTRAL.0)
+            {
+                return None;
+            }
+            Some(character_view::ColorPreview {
+                slot: slot.clone(),
+                expected,
+                value,
+            })
+        });
+        if self.character.requested.as_ref().is_some_and(|old| {
+            old.revision == draft.revision()
+                && sim_id.is_none_or(|id| old.sim_id == id)
+                && old.form == form
+                && old.outfit_index == outfit
+                && old.game_root == root
+                && old.roots == self.session.state.roots
+                && old.diagnostic_packages == self.startup.character_assets
+                && old.preview_color == preview_color
+        }) {
+            return;
+        }
+        match character_view::Request::from_draft(
+            draft,
+            sim_id,
+            form,
+            outfit,
+            root,
+            self.session.state.roots.clone(),
+            self.startup.character_assets.clone(),
+            preview_color,
+        ) {
+            Ok(mut request) => {
+                if let Some(value) = self.session.state.extra.get("character_source_context") {
+                    match serde_json::from_value::<CharacterContext>(value.clone()) {
+                        Ok(saved)
+                            if saved.identity.native_sha256 == request.identity.native_sha256
+                                && saved.identity.sim_id == request.identity.sim_id
+                                && saved.identity.form == request.identity.form
+                                && saved.identity.outfit_index == request.identity.outfit_index
+                                && same_provider_path(
+                                    &saved.identity.game_root,
+                                    &request.identity.game_root,
+                                ) =>
+                        {
+                            request.expected_pins = Some(saved.pins)
+                        }
+                        Ok(_) => {}
+                        Err(error) => {
+                            self.errors.push(format!("Saved Sim source context is invalid; original context retained: {error}"));
+                            self.whole_sim = false;
+                            return;
+                        }
+                    }
+                }
+                self.preview_cancel.store(true, Ordering::Relaxed);
+                self.preview_gen += 1;
+                self.preparing = false;
+                self.clear_scene();
+                self.character.load(request, ctx);
+            }
+            Err(error) => {
+                self.errors.push(error);
+                self.whole_sim = false;
+            }
+        }
+    }
+    fn poll_character(&mut self) {
+        if let Some(result) = self.character.poll() {
+            match result {
+                Ok(prepared)
+                    if self.whole_sim
+                        && self.character.requested.as_ref()
+                            == Some(&prepared.receipt.identity)
+                        && self.draft.as_ref().is_some_and(|d| {
+                            d.revision() == prepared.receipt.identity.revision
+                        }) =>
+                {
+                    let camera = self.viewport.camera;
+                    let first_view = !self.sim_camera_initialized
+                        && !self.session.restored
+                        && self.startup.camera.is_none();
+                    match self.viewport.set_parts(prepared.parts) {
+                        Ok(()) => {
+                            self.viewport.camera = if first_view {
+                                viewport::Camera::default()
+                            } else {
+                                camera
+                            };
+                            self.sim_camera_initialized = true;
+                            self.vertices = prepared.receipt.vertices;
+                            self.triangles = prepared.receipt.triangles;
+                            self.preview_elapsed = prepared.elapsed;
+                            self.geometries = prepared.geometries;
+                            match prepared.rig.bind_pose() {
+                                Ok(bind) => {
+                                    self.bind = Some(bind);
+                                    self.rig = Some(prepared.rig);
+                                    self.bind_scene();
+                                    self.native_idle = prepared.idle;
+                                    if (self.clip.is_none() || self.clip_is_native_idle)
+                                        && self.native_idle.is_some()
+                                        && !self.session.restore_bind_pose
+                                    {
+                                        let same_idle = self.clip_is_native_idle
+                                            && self
+                                                .clip
+                                                .as_ref()
+                                                .zip(self.native_idle.as_ref())
+                                                .is_some_and(|(a, b)| a.sha256 == b.sha256);
+                                        let restored_idle = self
+                                            .session
+                                            .state
+                                            .extra
+                                            .get("native_idle")
+                                            .and_then(|v| v.get("sha256"))
+                                            .and_then(|v| v.as_str())
+                                            .is_some_and(|h| {
+                                                self.native_idle
+                                                    .as_ref()
+                                                    .is_some_and(|c| hash_string(&c.sha256) == h)
+                                            });
+                                        self.clip = self.native_idle.clone();
+                                        self.clip_is_native_idle = true;
+                                        self.pose_reset = false;
+                                        self.tick = if self.startup.tick_provided || restored_idle {
+                                            self.startup.tick.min(
+                                                self.clip
+                                                    .as_ref()
+                                                    .and_then(|c| c.max_tick())
+                                                    .unwrap_or(0)
+                                                    as f32,
+                                            )
+                                        } else if same_idle {
+                                            self.tick
+                                        } else {
+                                            0.
+                                        };
+                                        self.startup.tick_provided = false;
+                                        self.pose_last = None;
+                                        self.playing = !self.startup.exit_on_ready;
+                                    }
+                                }
+                                Err(error) => self.errors.push(error.to_string()),
+                            }
+                            self.scene_generation = self.preview_gen;
+                            self.scene_name = Some(format!(
+                                "Native Sim {:016X}",
+                                prepared.receipt.identity.sim_id
+                            ));
+                            self.status = format!(
+                                "Native Sim · {} meshes · skin and outfit layers · appearance qualification in progress",
+                                prepared.receipt.meshes
+                            );
+                            self.character.status = self.status.clone();
+                            self.character.receipt = Some(prepared.receipt);
+                            if let Some(receipt) = &self.character.receipt {
+                                self.session.state.extra.insert(
+                                    "preview_source_pins".into(),
+                                    serde_json::json!(receipt.source_pins),
+                                );
+                            }
+                            self.mark_session_dirty();
+                        }
+                        Err(error) => self.errors.push(error),
+                    }
+                }
+                Ok(_) => {}
+                Err(error) => {
+                    self.status = "Native Sim could not be rendered".into();
+                    self.character.status = error.clone();
+                    self.errors.push(error);
+                }
+            }
+            self.ready = true;
+        }
+        if self.character.loading {
+            self.status = self.character.status.clone();
+        }
     }
     fn start_draft_change(&mut self, change: library::DraftChange) {
         let Some(draft) = self.draft.clone() else {
@@ -1546,6 +2036,101 @@ impl Studio {
             let _ = tx.send(Event::Project { generation, result });
         });
     }
+    fn activate_item_colors(&mut self, force: bool) {
+        if self.preparing || self.scene_name.is_none() {
+            return;
+        }
+        let Some((library, index)) = self.library.as_ref().zip(self.selected) else {
+            return;
+        };
+        let item = &library.items[index];
+        let Some((package, _)) = library.catalog.provider(item.source) else {
+            return;
+        };
+        let slot = self
+            .draft
+            .as_ref()
+            .and_then(|d| d.slots().ok())
+            .and_then(|slots| self.slot.and_then(|i| slots.get(i).cloned()));
+        let (native_target, base) =
+            if let Some(slot) = slot.filter(|s| s.body_type == item.body_type) {
+                let key = library::SlotColorKey {
+                    sim_id: slot.sim_id,
+                    form: slot.occult_form_index,
+                    outfit_index: slot.outfit_index,
+                    outfit_id: slot.outfit_id,
+                    part_index: slot.part_index,
+                };
+                if self.native_colors.issue.is_some() {
+                    self.colors.active = None;
+                    return;
+                }
+                let Some(value) = self.native_colors.values.get(&key) else {
+                    self.colors.active = None;
+                    return;
+                };
+                (
+                    format!(
+                        "sim={}:form={:?}:outfit={}:index={}:part={}",
+                        slot.sim_id,
+                        slot.occult_form_index,
+                        slot.outfit_id,
+                        slot.outfit_index,
+                        slot.part_index
+                    ),
+                    external_cas_material::color::PackedColorShift(
+                        value.unwrap_or(external_cas_material::color::PackedColorShift::NEUTRAL.0),
+                    ),
+                )
+            } else {
+                (
+                    "independent-item-preview".into(),
+                    external_cas_material::color::PackedColorShift::NEUTRAL,
+                )
+            };
+        let project = self
+            .session
+            .state
+            .project_path
+            .as_ref()
+            .or_else(|| self.project.as_ref().map(|p| &p.directory))
+            .map(|p| p.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        let target = format!(
+            "{project}|{native_target}|{}|{}|{}",
+            item.key,
+            package.path.display(),
+            hash_string(&item.payload_sha256)
+        );
+        let previous = self.colors.value();
+        let previous_target = self.colors.active.clone();
+        self.colors.activate(target, base);
+        if let Some(value) = self.startup.color_shift.take() {
+            let shift = external_cas_material::color::PackedColorShift(value);
+            if shift.preview_supported() {
+                if let Some(draft) = self
+                    .colors
+                    .active
+                    .as_ref()
+                    .and_then(|k| self.colors.contexts.get_mut(k))
+                {
+                    draft.current = shift;
+                }
+                self.mark_session_dirty();
+            } else {
+                self.errors.push("Requested color shift has an unqualified preview range; original bits remain preserved".into());
+            }
+        }
+        if !self.whole_sim
+            && (force || previous != self.colors.value() || previous_target != self.colors.active)
+        {
+            if let Some(shift) = self.colors.value() {
+                if let Err(error) = self.viewport.set_item_color_shift(shift) {
+                    self.warnings.push(error);
+                }
+            }
+        }
+    }
     fn library_panel(&mut self, ui: &mut egui::Ui) {
         ui.heading("Your wardrobe");
         ui.label(egui::RichText::new("Installed game and creator content").weak());
@@ -1603,6 +2188,76 @@ impl Studio {
             self.searching = true;
         }
         if let Some(library) = self.library.clone() {
+            self.activate_item_colors(false);
+            let metadata = self
+                .selected
+                .and_then(|i| library.items.get(i))
+                .and_then(|item| item.color_sliders);
+            if self.colors.show(
+                ui,
+                !self.scanning && !self.preparing,
+                metadata,
+                self.preview_fully_transparent,
+            ) {
+                if let Some(shift) = self.colors.value().filter(|_| !self.whole_sim) {
+                    if let Err(error) = self.viewport.set_item_color_shift(shift) {
+                        self.warnings.push(error);
+                    }
+                }
+                self.mark_session_dirty();
+            }
+            if let Some(slot) = self
+                .draft
+                .as_ref()
+                .and_then(|d| d.slots().ok())
+                .and_then(|slots| self.slot.and_then(|i| slots.get(i).cloned()))
+            {
+                let item = self.selected.and_then(|i| library.items.get(i));
+                if item.is_some_and(|i| {
+                    i.key.instance_id == slot.part_id && i.body_type == slot.body_type
+                }) {
+                    let key = library::SlotColorKey {
+                        sim_id: slot.sim_id,
+                        form: slot.occult_form_index,
+                        outfit_index: slot.outfit_index,
+                        outfit_id: slot.outfit_id,
+                        part_index: slot.part_index,
+                    };
+                    let expected = self.native_colors.values.get(&key).copied();
+                    let current = self.colors.value();
+                    let conflict = self
+                        .colors
+                        .active
+                        .as_ref()
+                        .and_then(|k| self.colors.contexts.get(k))
+                        .is_some_and(|d| d.conflict);
+                    let enabled = !self.working_project
+                        && !self.character.loading
+                        && !self.preparing
+                        && !self.scanning
+                        && !conflict
+                        && expected.is_some()
+                        && current.is_some()
+                        && self.scene_generation == self.preview_gen;
+                    if expected == Some(None) {
+                        ui.label(egui::RichText::new("Applying will add native color values; other slots retain neutral colors.").size(10.));
+                    }
+                    if ui
+                        .add_enabled(
+                            enabled,
+                            egui::Button::new("Apply colors to this outfit slot"),
+                        )
+                        .clicked()
+                    {
+                        self.start_draft_change(library::DraftChange::ColorShift {
+                            slot,
+                            expected: expected.flatten(),
+                            value: current.unwrap().0,
+                            materialize: expected == Some(None),
+                        });
+                    }
+                }
+            }
             ui.label(
                 egui::RichText::new(format!(
                     "{} results · {} unsupported",
@@ -1677,6 +2332,17 @@ impl Studio {
     }
     fn project_panel(&mut self, ui: &mut egui::Ui) {
         ui.heading("Your project");
+        if self.draft.is_some()
+            && ui
+                .add_enabled(!self.character.loading, egui::Button::new("View full Sim"))
+                .clicked()
+        {
+            self.show_sim();
+        }
+        if self.character.loading {
+            ui.spinner();
+            ui.label(&self.character.status);
+        }
         if ui
             .add_enabled(!self.working_project, egui::Button::new("Reopen project"))
             .clicked()
@@ -1839,6 +2505,17 @@ impl Studio {
     }
     fn poses_panel(&mut self, ui: &mut egui::Ui) {
         ui.heading("Poses & animation");
+        if self.whole_sim
+            && self.native_idle.is_some()
+            && ui.button("Reset to native CAS idle").clicked()
+        {
+            self.clip = self.native_idle.clone();
+            self.clip_is_native_idle = true;
+            self.tick = 0.;
+            self.pose_reset = false;
+            self.pose_last = None;
+            self.playing = true;
+        }
         if ui.button("Choose source rig").clicked() {
             if let Some(path) = rfd::FileDialog::new()
                 .add_filter("Sims rig", &["grannyrig"])
@@ -1919,6 +2596,8 @@ impl Studio {
     fn capture_and_report(&mut self, ctx: &egui::Context) {
         if self.ready
             && !self.ui_assets.is_loading()
+            && !self.room.loading
+            && !self.character.loading
             && self.profile.finished(self.startup.profile_frames)
             && !self.searching
             && self.query_changed.is_none()
@@ -1974,6 +2653,8 @@ impl Studio {
             report["profile"] = self.profile.report();
             report["query"] = serde_json::json!(self.query);
             report["search_ms"] = serde_json::json!(self.search_elapsed.as_secs_f64() * 1000.);
+            report["cache_scan_stages"] =
+                serde_json::json!(self.library.as_ref().map(|library| &library.cache_stats));
             report["search_indexed"] = serde_json::json!(self.search_cache_used);
             report["initial_ready_ms"] = serde_json::json!(self.initial_ready_ms);
             report["query_to_results_ui_submission_ms"] =
@@ -1984,7 +2665,47 @@ impl Studio {
             report["thumbnail_loads"] = serde_json::json!(self.gallery.loaded);
             report["thumbnail_unavailable"] = serde_json::json!(self.gallery.unavailable);
             report["thumbnail_last_batch_ms"] = serde_json::json!(self.gallery.batch_ms);
+            report["preview_color_shift"] =
+                serde_json::json!(self.colors.value().map(|v| format!("{:016X}", v.0)));
+            let target = self
+                .draft
+                .as_ref()
+                .and_then(|d| d.slots().ok())
+                .and_then(|slots| self.slot.and_then(|i| slots.get(i).cloned()));
+            let native_color = target.as_ref().and_then(|slot| {
+                self.native_colors.values.get(&library::SlotColorKey {
+                    sim_id: slot.sim_id,
+                    form: slot.occult_form_index,
+                    outfit_index: slot.outfit_index,
+                    outfit_id: slot.outfit_id,
+                    part_index: slot.part_index,
+                })
+            });
+            report["native_color_target"] = serde_json::json!(target);
+            report["native_color_slot_present"] = serde_json::json!(native_color.is_some());
+            report["native_color_shift"] =
+                serde_json::json!(native_color.copied().flatten().map(|v| format!("{v:016X}")));
             report["installed_ui_status"] = serde_json::json!(self.ui_assets.status);
+            report["native_room_status"] = serde_json::json!(self.room.status);
+            report["whole_sim_view"] = serde_json::json!(self.whole_sim);
+            report["native_character"] = serde_json::json!(self.character.receipt);
+            report["native_character_status"] = serde_json::json!(self.character.status);
+            report["gpu_material_shifts"] = serde_json::json!(self.viewport.material_shifts());
+            report["installed_cas_camera_contexts"] =
+                serde_json::json!(self.room.tuning.as_ref().map(|t| &t.cameras));
+            report["installed_cas_lighting_profiles"] =
+                serde_json::json!(self.room.tuning.as_ref().map(|t| &t.lighting));
+            report["installed_cas_active_lighting"] = serde_json::json!(self.room.active_lighting);
+            report["native_room_issues"] = serde_json::json!(self.room.issues);
+            report["native_room_meshes"] =
+                serde_json::json!(self.room.source.as_ref().map(|s| s.meshes.len()));
+            report["native_room_texture_pins"] = serde_json::json!(
+                self.room.source.as_ref().map(|s| s
+                    .textures
+                    .iter()
+                    .map(|t| &t.source.pin)
+                    .collect::<Vec<_>>())
+            );
             report["installed_ui_issues"] = serde_json::json!(self.ui_assets.issues);
             report["installed_ui_source_pins"] = serde_json::json!(self.ui_assets.pins);
             if let Some(path) = &self.startup.report {
@@ -2006,6 +2727,8 @@ impl Studio {
             if self.startup.exit_on_ready {
                 self.diagnostic_failed.store(
                     !self.errors.is_empty()
+                        || (self.startup.game_root.is_some() && self.room.source.is_none())
+                        || (self.startup.sim_view && self.character.receipt.is_none())
                         || ((self.startup.ui_assets.is_some() || self.ui_restore_required)
                             && self.ui_assets.provider.is_none())
                         || self.session.error.is_some()
@@ -2032,10 +2755,33 @@ impl eframe::App for Studio {
             self.mark_session_dirty();
         }
         self.drain_session(ui.ctx());
+        {
+            let root = self.startup.game_root.clone().or_else(|| {
+                self.ui_assets
+                    .provider
+                    .as_ref()
+                    .and_then(|path| room_view::installation_from_ui(path))
+            });
+            if let Some(root) = root {
+                if self
+                    .room
+                    .requested_root
+                    .as_ref()
+                    .is_none_or(|old| !same_provider_path(old, &root))
+                {
+                    let _ = self.viewport.set_room(Vec::new());
+                    self.viewport.clear_installed_lighting();
+                    self.room.load(root, ui.ctx());
+                }
+            }
+        }
+        self.room.poll(&mut self.viewport);
         self.drain();
-        self.update_pose();
         self.finish_restore();
         self.startup_edit();
+        self.refresh_character(ui.ctx());
+        self.poll_character();
+        self.update_pose();
         if self
             .query_changed
             .is_some_and(|t| t.elapsed() >= Duration::from_millis(150))
@@ -2060,7 +2806,9 @@ impl eframe::App for Studio {
             && !self.searching
             && !self.working_project
             && !self.session.restore_pending
-            && !self.ui_assets.loading;
+            && !self.ui_assets.loading
+            && !self.room.loading
+            && !self.character.loading;
         if can_profile
             && !self.gallery.pending
             && !self.rig_loading
@@ -2110,6 +2858,8 @@ impl eframe::App for Studio {
             || self.clip_loading
             || self.query_changed.is_some()
             || self.session.loading
+            || self.room.loading
+            || self.character.loading
             || self.session.saving
             || self.session.dirty_at.is_some()
             || self.closing

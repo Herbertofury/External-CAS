@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "tests": 22,
+  "read_only_actual_imported_sim": {
+    "explicit_package_scope": 3,
+    "native_outfit_slots": 15,
+    "actual_geom_resources": 17,
+    "vertices": 5619,
+    "native_head_slot_present": true,
+    "generic_or_genetic_parts_substituted": false,
+    "rmap_resources_compared_with_original_csharp": 9,
+    "rmap_blocks_compared": 20
+  },
+  "actual_combined_xml": {
+    "sources": 1,
+    "modifier_records": 7,
+    "scale_entries_with_exact_original_parser_float_bits": 210,
+    "shared_graph_contexts_and_bindings_match_maintained_s4tk": true,
+    "unknown_native_context_tokens_retained": true,
+    "native_scales_automatically_applied": false
+  },
+  "actual_combined_binary": {
+    "supported_sources": 5,
+    "refused_unknown_declared_schema_sources": 1,
+    "source_specific_modifier_records": 26,
+    "scale_entries_compared": 1539,
+    "ordered_bindings_match_independent_s4tk": true,
+    "contexts_and_scale_bits_match_original_csharp_parser": true
+  },
+  "expanded_read_only_base_scope": {
+    "packages": 21,
+    "indexed_resources": 1141554,
+    "catalog_issues": 0,
+    "native_outfit_slots": 15,
+    "native_meshes": 17,
+    "native_vertices": 5619,
+    "outfit_material_references_resolved": 33,
+    "native_skin_dimensions": [1024, 2048],
+    "strict_morph_source_links_resolved": 92,
+    "strict_linked_morph_resources_decoded": 137,
+    "effective_modifier_records": 9,
+    "effective_scale_entries": 516,
+    "false_historical_provider_conflicts_removed": 109,
+    "full_installed_pack_scope_claimed": false
+  },
+  "controlled_reference_deformation": {
+    "meshes": 17,
+    "mesh_operation_applications": 923,
+    "final_changed_positions": 4390,
+    "final_changed_normals": 4385,
+    "vertex_operations": 382178,
+    "debug_reference_stage_ms": 626,
+    "encoded_geom_bytes_preserved": true,
+    "native_qualified": false
+  },
+  "original_tray_hashes_unchanged": true,
+  "package_index_pins_unchanged": true,
+  "game_or_profile_writes": false,
+  "game_contacted": false,
+  "complete_character_accepted": false,
+  "native_game_visual_fidelity_accepted": false
+}

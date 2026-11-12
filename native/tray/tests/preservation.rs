@@ -82,6 +82,580 @@ fn outfit(packed: bool) -> Vec<u8> {
         blob(701, b"unknown outfit parallel arrays"),
     ])
 }
+fn color_outfit(shifts: Option<&[u8]>) -> Vec<u8> {
+    let mut out = join(&[
+        integer(1, 77),
+        integer(2, 0),
+        blob(
+            5,
+            &join(&[fixed(1, 100), fixed(1, 200), blob(700, b"unknown id list")]),
+        ),
+        blob(7, &blob(1, &[8, 4])),
+        blob(701, b"unknown outfit before color"),
+    ]);
+    if let Some(s) = shifts {
+        out.extend(blob(12, s));
+    }
+    out.extend(blob(702, b"unknown outfit after color"));
+    out
+}
+fn color_sim(chosen_outfit: &[u8]) -> Vec<u8> {
+    join(&[
+        fixed(1, 123),
+        fixed(4, 999),
+        blob(5, b"Mara"),
+        blob(6, b"Moon"),
+        blob(500, b"unknown Sim remains byte exact"),
+        blob(21, &join(&[blob(1, chosen_outfit), blob(1, &outfit(true))])),
+        blob(501, b"unknown tail"),
+    ])
+}
+fn draft_household(
+    fixture: &Fixture,
+    house: Vec<u8>,
+    name: &str,
+) -> (PathBuf, TrayProject, ProjectDraft) {
+    let root = fixture.library();
+    fs::write(root.join(HOUSE), house).unwrap();
+    let group = scan_library(&root).unwrap().groups.remove(0);
+    let project = create_project(&group, &fixture.root.join(name)).unwrap();
+    let draft = ProjectDraft::from_project(&project).unwrap();
+    (root, project, draft)
+}
+fn draft_bytes(draft: &ProjectDraft) -> &[u8] {
+    draft
+        .documents()
+        .iter()
+        .find(|d| d.filename == HOUSE)
+        .unwrap()
+        .bytes()
+}
+#[test]
+fn native_color_shift_varint_growth_shrink_mixed_encodings_and_exact_undo() {
+    for packed in [false, true] {
+        for old in [0, 127, 128, 0x4000000000000000, u64::MAX] {
+            let fixture = Fixture::new();
+            let list = |value| {
+                let items = if packed {
+                    blob(1, &join(&[vint(value), vint(0x9123456789abcdef)]))
+                } else {
+                    join(&[integer(1, value), integer(1, 0x9123456789abcdef)])
+                };
+                join(&[
+                    blob(800, b"unknown before"),
+                    items,
+                    blob(801, b"unknown after"),
+                ])
+            };
+            let initial = household_with(
+                &family_with_sim(&color_sim(&color_outfit(Some(&list(old))))),
+                &image_section(),
+            );
+            let (root, _, mut draft) = draft_household(&fixture, initial.clone(), "color-baseline");
+            let entry = draft.color_shifts().unwrap().remove(0);
+            assert_eq!(entry.value, Some(old));
+            assert_eq!(
+                entry.storage,
+                if packed {
+                    ColorShiftStorage::PackedVarint
+                } else {
+                    ColorShiftStorage::UnpackedVarint
+                }
+            );
+            let new = if old == u64::MAX { 0 } else { u64::MAX };
+            draft
+                .apply_color_shift(
+                    0,
+                    &entry.slot,
+                    Some(old),
+                    new,
+                    MissingColorShiftPolicy::RequireExisting,
+                )
+                .unwrap();
+            let expected = household_with(
+                &family_with_sim(&color_sim(&color_outfit(Some(&list(new))))),
+                &image_section(),
+            );
+            assert_eq!(draft_bytes(&draft), expected, "packed{packed} old{old}");
+            assert_eq!(
+                draft.color_shifts().unwrap()[1].value,
+                Some(0x9123456789abcdef)
+            );
+            draft.undo(1).unwrap();
+            assert_eq!(draft_bytes(&draft), initial);
+            draft.redo(2).unwrap();
+            assert_eq!(draft_bytes(&draft), expected);
+            assert_eq!(fs::read(root.join(HOUSE)).unwrap(), initial);
+        }
+    }
+}
+#[test]
+fn color_missing_array_materialization_is_explicit_and_preserves_unselected_fields() {
+    let fixture = Fixture::new();
+    let original_outfit = color_outfit(None);
+    let original = household_with(
+        &family_with_sim(&color_sim(&original_outfit)),
+        &image_section(),
+    );
+    let (root, project, mut draft) = draft_household(&fixture, original.clone(), "missing-color");
+    let entry = draft.color_shifts().unwrap().remove(0);
+    assert_eq!(entry.value, None);
+    assert_eq!(entry.storage, ColorShiftStorage::Absent);
+    assert!(draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            None,
+            7,
+            MissingColorShiftPolicy::RequireExisting
+        )
+        .is_err());
+    assert_eq!(draft.revision(), 0);
+    assert_eq!(draft_bytes(&draft), original);
+    draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            None,
+            7,
+            MissingColorShiftPolicy::MaterializeNeutralOthers,
+        )
+        .unwrap();
+    let list = join(&[integer(1, 7), integer(1, 0x4000000000000000)]);
+    let expected_outfit = join(&[original_outfit, blob(12, &list)]);
+    let expected = household_with(
+        &family_with_sim(&color_sim(&expected_outfit)),
+        &image_section(),
+    );
+    assert_eq!(draft_bytes(&draft), expected);
+    assert_eq!(
+        draft.color_shifts().unwrap()[1].value,
+        Some(0x4000000000000000)
+    );
+    let saved = draft.save_as(&fixture.root.join("materialized")).unwrap();
+    let reopened = ProjectDraft::from_project(&reopen_project(&saved.directory).unwrap()).unwrap();
+    assert_eq!(draft_bytes(&reopened), expected);
+    assert!(saved
+        .manifest
+        .draft
+        .as_ref()
+        .unwrap()
+        .operation_schema_evidence_ids
+        .iter()
+        .any(|s| s == COLOR_SHIFT_SCHEMA_EVIDENCE_ID));
+    assert_eq!(fs::read(root.join(HOUSE)).unwrap(), original);
+    assert_eq!(
+        project
+            .documents
+            .iter()
+            .find(|d| d.filename == HOUSE)
+            .unwrap()
+            .bytes(),
+        original
+    );
+}
+#[test]
+fn empty_native_color_lists_materialize_on_explicit_request_in_v1_and_v2() {
+    for version in [1, 2] {
+        let fixture = Fixture::new();
+        let empty = join(&[blob(1, &[]), blob(890, b"unknown empty color-list fields")]);
+        let make = |list: &[u8]| {
+            let payload = family_with_sim(&color_sim(&color_outfit(Some(list))));
+            if version == 2 {
+                household_with(&payload, &image_section())
+            } else {
+                let mut b = 1u32.to_le_bytes().to_vec();
+                b.extend((payload.len() as u32 + 4).to_le_bytes());
+                b.extend(payload);
+                b
+            }
+        };
+        let original = make(&empty);
+        let (_, _, mut draft) = draft_household(&fixture, original.clone(), "empty-color");
+        let entry = draft.color_shifts().unwrap().remove(0);
+        assert_eq!(entry.value, None);
+        assert_eq!(entry.storage, ColorShiftStorage::EmptyList);
+        assert!(draft.appearance().unwrap()[0].base.outfits[0].parts[0]
+            .color_shift
+            .is_none());
+        assert!(draft
+            .apply_color_shift(
+                0,
+                &entry.slot,
+                None,
+                u64::MAX,
+                MissingColorShiftPolicy::RequireExisting
+            )
+            .is_err());
+        draft
+            .apply_color_shift(
+                0,
+                &entry.slot,
+                None,
+                u64::MAX,
+                MissingColorShiftPolicy::MaterializeNeutralOthers,
+            )
+            .unwrap();
+        let expected_list = join(&[empty, integer(1, u64::MAX), integer(1, 0x4000000000000000)]);
+        assert_eq!(draft_bytes(&draft), make(&expected_list));
+        draft.undo(1).unwrap();
+        assert_eq!(draft_bytes(&draft), original);
+    }
+}
+#[test]
+fn native_color_length_boundaries_preserve_unknown_padding_byte_exact() {
+    for padding in [
+        0, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
+        127, 128, 129, 130, 16360, 16370, 16380, 16383, 16384,
+    ] {
+        let fixture = Fixture::new();
+        let pad = vec![0x5a; padding];
+        let list = |value| {
+            join(&[
+                blob(850, &pad),
+                blob(1, &join(&[vint(value), vint(55)])),
+                integer(851, 999),
+            ])
+        };
+        let original = household_with(
+            &family_with_sim(&color_sim(&color_outfit(Some(&list(0))))),
+            &image_section(),
+        );
+        let (_, _, mut draft) = draft_household(&fixture, original, "boundary-color");
+        let entry = draft.color_shifts().unwrap().remove(0);
+        draft
+            .apply_color_shift(
+                0,
+                &entry.slot,
+                Some(0),
+                u64::MAX,
+                MissingColorShiftPolicy::RequireExisting,
+            )
+            .unwrap();
+        let expected = household_with(
+            &family_with_sim(&color_sim(&color_outfit(Some(&list(u64::MAX))))),
+            &image_section(),
+        );
+        assert_eq!(draft_bytes(&draft), expected, "padding {padding}");
+    }
+}
+#[test]
+fn color_edits_preserve_noncanonical_tags_lengths_and_refuse_opaque_suffix_moves() {
+    let fixture = Fixture::new();
+    let make_outfit = |value: u64| {
+        let mut list = vec![0x88, 0x00];
+        list.extend(vint(value));
+        list.extend(integer(1, 55));
+        list.extend(blob(840, b"unknown color payload"));
+        assert!(list.len() < 128);
+        let mut shift = vec![0xe2, 0x00, (list.len() as u8) | 0x80, 0x00];
+        shift.extend(list);
+        join(&[
+            integer(1, 77),
+            blob(5, &join(&[fixed(1, 100), fixed(1, 200)])),
+            blob(7, &blob(1, &[8, 4])),
+            shift,
+            blob(841, b"unknown outfit"),
+        ])
+    };
+    let original = household_with(
+        &family_with_sim(&color_sim(&make_outfit(128))),
+        &image_section(),
+    );
+    let (_, _, mut draft) = draft_household(&fixture, original.clone(), "noncanonical-color");
+    let entry = draft.color_shifts().unwrap().remove(0);
+    draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            Some(128),
+            129,
+            MissingColorShiftPolicy::RequireExisting,
+        )
+        .unwrap();
+    let expected = household_with(
+        &family_with_sim(&color_sim(&make_outfit(129))),
+        &image_section(),
+    );
+    assert_eq!(draft_bytes(&draft), expected);
+    assert_eq!(
+        original
+            .iter()
+            .zip(&expected)
+            .filter(|(a, b)| a != b)
+            .count(),
+        1
+    );
+    draft.undo(1).unwrap();
+    assert_eq!(draft_bytes(&draft), original);
+    let fixture = Fixture::new();
+    let original = household_with(
+        &family_with_sim(&color_sim(&color_outfit(Some(&blob(1, &[0, 0]))))),
+        b"opaque unsupported suffix",
+    );
+    let (_, _, mut draft) = draft_household(&fixture, original.clone(), "opaque-color");
+    let entry = draft.color_shifts().unwrap().remove(0);
+    assert!(draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            Some(0),
+            u64::MAX,
+            MissingColorShiftPolicy::RequireExisting
+        )
+        .is_err());
+    assert_eq!(draft_bytes(&draft), original);
+    assert_eq!(draft.revision(), 0);
+}
+#[test]
+fn color_conflicts_noops_and_mixed_history_do_not_touch_other_documents() {
+    let fixture = Fixture::new();
+    let list = join(&[
+        integer(1, 0),
+        blob(1, &vint(55)),
+        blob(800, b"unknown color-list"),
+    ]);
+    let original = household_with(
+        &family_with_sim(&color_sim(&color_outfit(Some(&list)))),
+        &image_section(),
+    );
+    let (root, project, mut draft) = draft_household(&fixture, original.clone(), "mixed-history");
+    let entry = draft.color_shifts().unwrap().remove(0);
+    assert!(draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            Some(1),
+            99,
+            MissingColorShiftPolicy::RequireExisting
+        )
+        .is_err());
+    assert!(draft
+        .apply_color_shift(
+            1,
+            &entry.slot,
+            Some(0),
+            99,
+            MissingColorShiftPolicy::RequireExisting
+        )
+        .is_err());
+    assert_eq!(draft.revision(), 0);
+    draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            Some(0),
+            0,
+            MissingColorShiftPolicy::RequireExisting,
+        )
+        .unwrap();
+    assert_eq!(draft.revision(), 0);
+    assert!(!draft.can_undo());
+    draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            Some(0),
+            0x4000000012345678,
+            MissingColorShiftPolicy::RequireExisting,
+        )
+        .unwrap();
+    let color_bytes = draft_bytes(&draft).to_vec();
+    assert!(draft
+        .apply_color_shift(
+            1,
+            &entry.slot,
+            Some(0x4000000012345678),
+            88,
+            MissingColorShiftPolicy::RequireExisting
+        )
+        .is_err());
+    let slot = draft.slots().unwrap().remove(0);
+    draft.apply_slot(1, &slot, 300, slot.body_type).unwrap();
+    let edited = draft_bytes(&draft).to_vec();
+    draft.undo(2).unwrap();
+    assert_eq!(draft_bytes(&draft), color_bytes);
+    draft.undo(3).unwrap();
+    assert_eq!(draft_bytes(&draft), original);
+    draft.redo(4).unwrap();
+    draft.redo(5).unwrap();
+    assert_eq!(draft_bytes(&draft), edited);
+    let saved = draft.save_as(&fixture.root.join("mixed-saved")).unwrap();
+    let reopened = ProjectDraft::from_project(&saved).unwrap();
+    assert_eq!(
+        reopened.color_shifts().unwrap()[0].value,
+        Some(0x4000000012345678)
+    );
+    assert_eq!(reopened.slots().unwrap()[0].part_id, 300);
+    for doc in &saved.documents {
+        if doc.filename != HOUSE {
+            assert_eq!(
+                doc.bytes(),
+                project
+                    .documents
+                    .iter()
+                    .find(|d| d.filename == doc.filename)
+                    .unwrap()
+                    .bytes()
+            );
+        }
+    }
+    assert_eq!(fs::read(root.join(HOUSE)).unwrap(), original);
+    assert!(draft.save_as(&saved.directory).is_err());
+}
+#[test]
+fn color_failed_write_cancel_and_concurrent_original_change_leave_recovery_marker() {
+    let fixture = Fixture::new();
+    let original = household_with(
+        &family_with_sim(&color_sim(&color_outfit(Some(&blob(1, &[0, 0]))))),
+        &image_section(),
+    );
+    let (root, project, mut draft) = draft_household(&fixture, original.clone(), "color-failures");
+    let entry = draft.color_shifts().unwrap().remove(0);
+    draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            Some(0),
+            u64::MAX,
+            MissingColorShiftPolicy::RequireExisting,
+        )
+        .unwrap();
+    let edited = draft_bytes(&draft).to_vec();
+    let failed = fixture.root.join("failed-color-write");
+    let result = draft.save_as_with_progress(&failed, |p| {
+        if p.stage == SnapshotStage::SnapshotPrepared {
+            fs::write(
+                failed.join("native").join(HOUSE),
+                b"existing collision must remain",
+            )
+            .unwrap();
+        }
+        true
+    });
+    assert!(matches!(result, Err(TrayError::Io(_))));
+    assert_eq!(
+        fs::read(failed.join("native").join(HOUSE)).unwrap(),
+        b"existing collision must remain"
+    );
+    assert!(failed.join("SNAPSHOT_INCOMPLETE").is_file());
+    assert!(reopen_project(&failed).is_err());
+    let cancelled = fixture.root.join("cancelled-color-write");
+    assert!(matches!(
+        draft.save_as_with_progress(&cancelled, |p| !(p.stage == SnapshotStage::CopyWritten
+            && p.files_completed == 1)),
+        Err(TrayError::Cancelled)
+    ));
+    assert!(cancelled.join("SNAPSHOT_INCOMPLETE").is_file());
+    assert!(reopen_project(&cancelled).is_err());
+    let concurrent = fixture.root.join("concurrent-color-write");
+    let result = draft.save_as_with_progress(&concurrent, |p| {
+        if p.stage == SnapshotStage::CopyWritten && p.files_completed == 1 {
+            fs::write(root.join(PORTRAIT), b"newer original state").unwrap();
+        }
+        true
+    });
+    assert!(matches!(result, Err(TrayError::Conflict(_))));
+    assert!(concurrent.join("SNAPSHOT_INCOMPLETE").is_file());
+    assert!(reopen_project(&concurrent).is_err());
+    assert_eq!(
+        fs::read(root.join(PORTRAIT)).unwrap(),
+        b"newer original state"
+    );
+    assert_eq!(draft_bytes(&draft), edited);
+    assert_eq!(fs::read(root.join(HOUSE)).unwrap(), original);
+    assert_eq!(
+        reopen_project(&project.directory)
+            .unwrap()
+            .documents
+            .iter()
+            .find(|d| d.filename == HOUSE)
+            .unwrap()
+            .bytes(),
+        original
+    );
+}
+#[test]
+fn occult_color_identity_cannot_edit_base_outfit_and_v1_wrapper_is_preserved() {
+    let fixture = Fixture::new();
+    let base = outfit(true);
+    let occult_outfit = color_outfit(Some(&join(&[integer(1, 0), integer(1, 99)])));
+    let occult = join(&[
+        integer(1, 4),
+        blob(11, b"opaque physique"),
+        blob(21, &blob(1, &occult_outfit)),
+        blob(990, b"unknown occult field"),
+    ]);
+    let attrs = join(&[
+        blob(
+            17,
+            &join(&[blob(3, &occult), blob(991, b"unknown tracker")]),
+        ),
+        blob(992, b"unknown attrs"),
+    ]);
+    let make = |occult_outfit: &[u8]| {
+        let occult = join(&[
+            integer(1, 4),
+            blob(11, b"opaque physique"),
+            blob(21, &blob(1, occult_outfit)),
+            blob(990, b"unknown occult field"),
+        ]);
+        let attrs = join(&[
+            blob(
+                17,
+                &join(&[blob(3, &occult), blob(991, b"unknown tracker")]),
+            ),
+            blob(992, b"unknown attrs"),
+        ]);
+        let sim = join(&[
+            fixed(1, 123),
+            blob(21, &blob(1, &base)),
+            blob(30, &attrs),
+            blob(993, b"unknown Sim"),
+        ]);
+        let payload = family_with_sim(&sim);
+        let mut wrapper = 1u32.to_le_bytes().to_vec();
+        wrapper.extend((payload.len() as u32 + 4).to_le_bytes());
+        wrapper.extend(payload);
+        wrapper
+    };
+    let _ = attrs;
+    let original = make(&occult_outfit);
+    let (root, _, mut draft) = draft_household(&fixture, original.clone(), "occult-colors");
+    let entries = draft.color_shifts().unwrap();
+    assert_eq!(entries.len(), 4);
+    let target = entries
+        .iter()
+        .find(|e| e.slot.occult_form_index == Some(0) && e.slot.part_index == 0)
+        .unwrap();
+    draft
+        .apply_color_shift(
+            0,
+            &target.slot,
+            Some(0),
+            u64::MAX,
+            MissingColorShiftPolicy::RequireExisting,
+        )
+        .unwrap();
+    let expected = make(&color_outfit(Some(&join(&[
+        integer(1, u64::MAX),
+        integer(1, 99),
+    ]))));
+    assert_eq!(draft_bytes(&draft), expected);
+    assert_eq!(
+        draft
+            .color_shifts()
+            .unwrap()
+            .iter()
+            .find(|e| e.slot.occult_form_index.is_none() && e.slot.part_index == 0)
+            .unwrap()
+            .value,
+        Some(0)
+    );
+    draft.undo(1).unwrap();
+    assert_eq!(draft_bytes(&draft), original);
+    assert_eq!(fs::read(root.join(HOUSE)).unwrap(), original);
+}
 fn family() -> Vec<u8> {
     family_with_sim(&sim())
 }

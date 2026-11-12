@@ -3,6 +3,11 @@
 //! game precedence, portrait regeneration or native acceptance is implied.
 
 use super::*;
+#[path = "color.rs"]
+mod color;
+pub use color::{
+    ColorShiftStorage, MissingColorShiftPolicy, OutfitColorShift, COLOR_SHIFT_SCHEMA_EVIDENCE_ID,
+};
 
 pub const DRAFT_SCHEMA_EVIDENCE_ID: &str = "simripper-862a32949e5156b371e2d2f83de4e37e0bb1afcc:sim21/outfit1/parts5/id1-fixed64/body7/shift12";
 
@@ -10,6 +15,8 @@ pub const DRAFT_SCHEMA_EVIDENCE_ID: &str = "simripper-862a32949e5156b371e2d2f83d
 pub struct OutfitSlot {
     pub sim_index: usize,
     pub sim_id: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub occult_form_index: Option<usize>,
     pub outfit_index: usize,
     pub outfit_id: u64,
     pub category: u64,
@@ -28,8 +35,9 @@ struct LocatedSlot {
 struct Change {
     document_index: usize,
     offset: usize,
-    before: [u8; 8],
-    after: [u8; 8],
+    before: Vec<u8>,
+    after: Vec<u8>,
+    schema_evidence_id: &'static str,
 }
 
 #[derive(Clone, Debug)]
@@ -137,8 +145,9 @@ impl ProjectDraft {
         let change = Change {
             document_index: found.document_index,
             offset: found.offset,
-            before: slot.part_id.to_le_bytes(),
-            after: new_part_id.to_le_bytes(),
+            before: slot.part_id.to_le_bytes().to_vec(),
+            after: new_part_id.to_le_bytes().to_vec(),
+            schema_evidence_id: DRAFT_SCHEMA_EVIDENCE_ID,
         };
         self.replace(&change, false)?;
         self.undo.push(change);
@@ -197,13 +206,17 @@ impl ProjectDraft {
         } else {
             (&change.before, &change.after)
         };
-        if doc.bytes().get(change.offset..change.offset + 8) != Some(expected.as_slice()) {
+        let end = change
+            .offset
+            .checked_add(expected.len())
+            .ok_or_else(|| invalid("Draft patch extent overflow"))?;
+        if doc.bytes().get(change.offset..end) != Some(expected.as_slice()) {
             return Err(TrayError::Conflict(
-                "Selected fixed64 bytes no longer match their expected value".into(),
+                "Selected native bytes no longer match their expected value".into(),
             ));
         }
         let mut bytes = doc.bytes().to_vec();
-        bytes[change.offset..change.offset + 8].copy_from_slice(replacement);
+        bytes.splice(change.offset..end, replacement.iter().copied());
         let updated = TrayDocument::from_bytes(&doc.filename, bytes)?;
         // Check all known parallel arrays still align before accepting mutation.
         let mut candidates = self.documents.clone();
@@ -240,6 +253,23 @@ impl ProjectDraft {
         Ok(())
     }
     pub fn save_as(&self, destination: &Path) -> Result<TrayProject> {
+        self.save_as_with_progress(destination, |_| true)
+    }
+    pub fn save_as_with_progress(
+        &self,
+        destination: &Path,
+        mut progress: impl FnMut(SnapshotProgress) -> bool,
+    ) -> Result<TrayProject> {
+        let total_files = self.documents.len();
+        if !progress(SnapshotProgress {
+            stage: SnapshotStage::ReadingOriginal,
+            files_completed: 0,
+            total_files,
+            bytes_copied: 0,
+            total_bytes: None,
+        }) {
+            return Err(TrayError::Cancelled);
+        }
         self.verify_sources()?;
         let destination = external_destination(destination)?;
         if destination.starts_with(&self.source.directory) {
@@ -259,6 +289,21 @@ impl ProjectDraft {
             revision: self.revision,
             parent_manifest_sha256: self.parent_manifest_sha256.clone(),
             native_game_acceptance_verified: false,
+            operation_schema_evidence_ids: {
+                let mut ids = self
+                    .source
+                    .manifest
+                    .draft
+                    .as_ref()
+                    .map(|d| d.operation_schema_evidence_ids.clone())
+                    .unwrap_or_default();
+                for change in &self.undo {
+                    if !ids.iter().any(|id| id == change.schema_evidence_id) {
+                        ids.push(change.schema_evidence_id.into());
+                    }
+                }
+                ids
+            },
         });
         let mut total = 0;
         for f in &mut manifest.files {
@@ -282,10 +327,48 @@ impl ProjectDraft {
             b"Draft save-as is incomplete. Original and parent files are untouched.\n",
         )?;
         fs::create_dir(destination.join("native"))?;
-        for doc in &self.documents {
+        if !progress(SnapshotProgress {
+            stage: SnapshotStage::SnapshotPrepared,
+            files_completed: 0,
+            total_files,
+            bytes_copied: 0,
+            total_bytes: Some(total),
+        }) {
+            return Err(TrayError::Cancelled);
+        }
+        let mut bytes_copied = 0;
+        for (index, doc) in self.documents.iter().enumerate() {
             write_new(&destination.join("native").join(&doc.filename), doc.bytes())?;
+            bytes_copied += doc.bytes().len() as u64;
+            if !progress(SnapshotProgress {
+                stage: SnapshotStage::CopyWritten,
+                files_completed: index + 1,
+                total_files,
+                bytes_copied,
+                total_bytes: Some(total),
+            }) {
+                return Err(TrayError::Cancelled);
+            }
         }
         self.verify_sources()?;
+        if !progress(SnapshotProgress {
+            stage: SnapshotStage::SourceRevalidated,
+            files_completed: total_files,
+            total_files,
+            bytes_copied,
+            total_bytes: Some(total),
+        }) {
+            return Err(TrayError::Cancelled);
+        }
+        if !progress(SnapshotProgress {
+            stage: SnapshotStage::ReadyToCommit,
+            files_completed: total_files,
+            total_files,
+            bytes_copied,
+            total_bytes: Some(total),
+        }) {
+            return Err(TrayError::Cancelled);
+        }
         write_new(
             &destination.join(PROJECT_MANIFEST),
             &serde_json::to_vec_pretty(&manifest).map_err(|e| invalid(e.to_string()))?,
@@ -329,66 +412,91 @@ fn located_slots(documents: &[TrayDocument]) -> Result<Vec<LocatedSlot>> {
             let sim_fields = fields(sim_raw)?;
             let sim_id =
                 number(&sim_fields, 1, 1)?.ok_or_else(|| invalid("Native Sim ID missing"))?;
-            let Some(outfit_owner) = unique(&sim_fields, 21)? else {
-                continue;
-            };
-            let listing = fields(outfit_owner.bytes()?)?;
-            for (outfit_index, outfit_owner) in listing.iter().filter(|f| f.number == 1).enumerate()
-            {
-                let outfit = fields(outfit_owner.bytes()?)?;
-                let outfit_id =
-                    number(&outfit, 1, 0)?.ok_or_else(|| invalid("Required outfit ID missing"))?;
-                let category = number(&outfit, 2, 0)?.unwrap_or(0);
-                let parts = required_blob(&outfit, 5)?;
-                let body_types = repeated_uint(required_blob(&outfit, 7)?, u32::MAX as u64)?;
-                let mut entries = Vec::new();
-                for f in fields(parts)?.iter().filter(|f| f.number == 1) {
-                    if !(f.wire == 1 || f.wire == 2) || f.value.len() % 8 != 0 {
-                        return Err(invalid("Outfit IdList is not packed/unpacked fixed64"));
-                    }
-                    let base = (f.value.as_ptr() as usize)
-                        .checked_sub(doc.bytes().as_ptr() as usize)
-                        .ok_or_else(|| invalid("Outfit source extent differs"))?;
-                    for (i, chunk) in f.value.chunks_exact(8).enumerate() {
-                        entries.push((u64::from_le_bytes(chunk.try_into().unwrap()), base + i * 8));
-                    }
-                }
-                if entries.len() != body_types.len() {
-                    return Err(invalid("Outfit CASP and body-type arrays are not aligned"));
-                }
-                if let Some(shifts) = unique(&outfit, 12)? {
-                    if repeated_uint(shifts.bytes()?, u64::MAX)?.len() != entries.len() {
-                        return Err(invalid("Outfit color-shift array is not aligned"));
-                    }
-                }
-                for (part_index, ((part_id, offset), body)) in
-                    entries.into_iter().zip(body_types).enumerate()
+            for (occult_form_index, list_raw) in outfit_lists(sim_raw)? {
+                let listing = fields(list_raw)?;
+                for (outfit_index, outfit_owner) in
+                    listing.iter().filter(|f| f.number == 1).enumerate()
                 {
-                    if offset
-                        .checked_add(8)
-                        .filter(|&end| end <= doc.bytes().len())
-                        .is_none()
-                    {
-                        return Err(invalid("Outfit slot is outside native document"));
+                    let outfit = fields(outfit_owner.bytes()?)?;
+                    let outfit_id = number(&outfit, 1, 0)?
+                        .ok_or_else(|| invalid("Required outfit ID missing"))?;
+                    let category = number(&outfit, 2, 0)?.unwrap_or(0);
+                    let parts = required_blob(&outfit, 5)?;
+                    let body_types = repeated_uint(required_blob(&outfit, 7)?, u32::MAX as u64)?;
+                    let mut entries = Vec::new();
+                    for f in fields(parts)?.iter().filter(|f| f.number == 1) {
+                        if !(f.wire == 1 || f.wire == 2) || f.value.len() % 8 != 0 {
+                            return Err(invalid("Outfit IdList is not packed/unpacked fixed64"));
+                        }
+                        let base = (f.value.as_ptr() as usize)
+                            .checked_sub(doc.bytes().as_ptr() as usize)
+                            .ok_or_else(|| invalid("Outfit source extent differs"))?;
+                        for (i, chunk) in f.value.chunks_exact(8).enumerate() {
+                            entries.push((
+                                u64::from_le_bytes(chunk.try_into().unwrap()),
+                                base + i * 8,
+                            ));
+                        }
                     }
-                    result.push(LocatedSlot {
-                        document_index,
-                        offset,
-                        slot: OutfitSlot {
-                            sim_index,
-                            sim_id,
-                            outfit_index,
-                            outfit_id,
-                            category,
-                            part_index,
-                            body_type: body as u32,
-                            part_id,
-                            native_sim_sha256: sha256(sim_raw),
-                        },
-                    });
+                    if entries.len() != body_types.len() {
+                        return Err(invalid("Outfit CASP and body-type arrays are not aligned"));
+                    }
+                    if let Some(shifts) = unique(&outfit, 12)? {
+                        let len = repeated_uint(shifts.bytes()?, u64::MAX)?.len();
+                        if len != 0 && len != entries.len() {
+                            return Err(invalid("Outfit color-shift array is not aligned"));
+                        }
+                    }
+                    for (part_index, ((part_id, offset), body)) in
+                        entries.into_iter().zip(body_types).enumerate()
+                    {
+                        if offset
+                            .checked_add(8)
+                            .filter(|&end| end <= doc.bytes().len())
+                            .is_none()
+                        {
+                            return Err(invalid("Outfit slot is outside native document"));
+                        }
+                        result.push(LocatedSlot {
+                            document_index,
+                            offset,
+                            slot: OutfitSlot {
+                                sim_index,
+                                sim_id,
+                                occult_form_index,
+                                outfit_index,
+                                outfit_id,
+                                category,
+                                part_index,
+                                body_type: body as u32,
+                                part_id,
+                                native_sim_sha256: sha256(sim_raw),
+                            },
+                        });
+                    }
                 }
             }
         }
     }
     Ok(result)
+}
+fn outfit_lists(sim_raw: &[u8]) -> Result<Vec<(Option<usize>, &[u8])>> {
+    let f = fields(sim_raw)?;
+    let mut out = vec![];
+    if let Some(list) = unique(&f, 21)? {
+        out.push((None, list.bytes()?));
+    }
+    if let Some(attrs) = unique(&f, 30)? {
+        let af = fields(attrs.bytes()?)?;
+        if let Some(tracker) = unique(&af, 17)? {
+            let tf = fields(tracker.bytes()?)?;
+            for (index, form) in tf.iter().filter(|f| f.number == 3).enumerate() {
+                let ff = fields(form.bytes()?)?;
+                if let Some(list) = unique(&ff, 21)? {
+                    out.push((Some(index), list.bytes()?));
+                }
+            }
+        }
+    }
+    Ok(out)
 }

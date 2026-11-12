@@ -1,0 +1,200 @@
+{
+  "binary": "Simulation_x64.dll",
+  "sha256": "c7108a5ac17628b72429fae0c09cbf07036f72ba36318591169f59f47ca9a3d0",
+  "module_def_rva": 16193136,
+  "module_name": "_cas",
+  "methods": [
+    {
+      "name": "age_up_sim",
+      "method_rva": 6678400,
+      "flags": 1
+    },
+    {
+      "name": "get_buffs_from_part_ids",
+      "method_rva": 6682416,
+      "flags": 1
+    },
+    {
+      "name": "get_tags_from_outfit",
+      "method_rva": 6695168,
+      "flags": 3
+    },
+    {
+      "name": "generate_offspring",
+      "method_rva": 6678464,
+      "flags": 3
+    },
+    {
+      "name": "relgraph_cull",
+      "method_rva": 6680688,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_set_edge",
+      "method_rva": 6678944,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_get_genealogy",
+      "method_rva": 6680400,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_set_marriage",
+      "method_rva": 6679488,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_set_engagement",
+      "method_rva": 6679664,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_set_steady",
+      "method_rva": 6679840,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_add_child",
+      "method_rva": 6680016,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_get",
+      "method_rva": 6681408,
+      "flags": 1
+    },
+    {
+      "name": "relgraph_set",
+      "method_rva": 6681200,
+      "flags": 8
+    },
+    {
+      "name": "generate_merged_outfit",
+      "method_rva": 6681776,
+      "flags": 1
+    },
+    {
+      "name": "is_duplicate_merged_outfit",
+      "method_rva": 6682128,
+      "flags": 1
+    },
+    {
+      "name": "generate_household",
+      "method_rva": 6691824,
+      "flags": 3
+    },
+    {
+      "name": "generate_random_siminfo",
+      "method_rva": 6693888,
+      "flags": 3
+    },
+    {
+      "name": "generate_occult_siminfo",
+      "method_rva": 6694640,
+      "flags": 3
+    },
+    {
+      "name": "is_online_entitled",
+      "method_rva": 6683088,
+      "flags": 1
+    },
+    {
+      "name": "apply_siminfo_override",
+      "method_rva": 6683168,
+      "flags": 3
+    },
+    {
+      "name": "randomize_part_color",
+      "method_rva": 6684448,
+      "flags": 3
+    },
+    {
+      "name": "set_caspart",
+      "method_rva": 6685152,
+      "flags": 3
+    },
+    {
+      "name": "change_bodytype_level",
+      "method_rva": 6687104,
+      "flags": 3
+    },
+    {
+      "name": "randomize_caspart",
+      "method_rva": 6689984,
+      "flags": 3
+    },
+    {
+      "name": "randomize_caspart_list",
+      "method_rva": 6690992,
+      "flags": 3
+    },
+    {
+      "name": "randomize_skintone_from_tags",
+      "method_rva": 6684752,
+      "flags": 3
+    },
+    {
+      "name": "get_caspart_bodytype",
+      "method_rva": 6695856,
+      "flags": 1
+    },
+    {
+      "name": "get_caspart_gender_compatible",
+      "method_rva": 6696688,
+      "flags": 3
+    },
+    {
+      "name": "remove_caspart",
+      "method_rva": 6686560,
+      "flags": 3
+    },
+    {
+      "name": "get_caspart_hide_occult_flags",
+      "method_rva": 6696080,
+      "flags": 1
+    },
+    {
+      "name": "revert_modifiers_override",
+      "method_rva": 6703184,
+      "flags": 3
+    },
+    {
+      "name": "dump_active_modifiers",
+      "method_rva": 6638416,
+      "flags": 3
+    },
+    {
+      "name": "get_catalog_casparts_by_bodytype",
+      "method_rva": 6697088,
+      "flags": 3
+    },
+    {
+      "name": "remove_caspart_by_bodytype",
+      "method_rva": 6702560,
+      "flags": 3
+    },
+    {
+      "name": "caspart_has_tag",
+      "method_rva": 6696304,
+      "flags": 3
+    }
+  ],
+  "game_version": "1.129.39.1030",
+  "game_code_executed": false,
+  "game_process_contacted": false,
+  "runtime_qualified": false,
+  "qualification_boundary": "Static PE module/method table inventory; function names and flags do not establish a standalone initialization or serialized-state ABI.",
+  "selected_keyword_metadata": {
+    "generate_offspring": [
+      "parent_a",
+      "parent_b",
+      "offspring",
+      "seed"
+    ],
+    "generate_random_siminfo": [
+      "sim_info",
+      "tags"
+    ]
+  }
+}

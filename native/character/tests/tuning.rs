@@ -1,6 +1,4 @@
-use external_cas_character::{
-    assemble_character_with_progress, inspect_combined_xml, CharacterError, CharacterOptions,
-};
+use external_cas_character::{inspect_combined_xml, CharacterError};
 use std::sync::atomic::AtomicBool;
 const XML: &str = r#"<combined><g><L x="1"><E>TEEN</E><E>YOUNGADULT</E><E>ADULT</E></L><E x="2">HUMAN</E><U x="3"><T n="ModifierName">ymHead_Test</T><T n="Scale">0.25</T></U></g><R n="cas_modifier"><I c="Client_CASModifierTuning" s="123"><r n="Ages" x="1"/><r n="Species" x="2"/><L n="Modifiers"><r x="3"/></L></I><I c="OtherClass" s="9"><T>ignored</T></I></R></combined>"#;
 #[test]
@@ -64,4 +62,25 @@ fn tuning_truncated_document_is_never_success() {
             "prefix{n}"
         );
     }
+}
+#[test]
+fn cancellation_and_unknown_context_preservation() {
+    assert!(matches!(
+        inspect_combined_xml(XML.as_bytes(), &AtomicBool::new(true)),
+        Err(CharacterError::Cancelled)
+    ));
+    let input = XML.replace("YOUNGADULT", "UNUSED_FLAG");
+    let r = inspect_combined_xml(input.as_bytes(), &AtomicBool::new(false)).unwrap();
+    assert!(r.records[0]
+        .context
+        .ages
+        .as_ref()
+        .unwrap()
+        .contains(&"UNUSED_FLAG".to_string()));
+    assert!(!r.records[0].issues.is_empty());
+    assert!(
+        std::str::from_utf8(r.records[0].resolved_xml.as_ref().unwrap())
+            .unwrap()
+            .contains("UNUSED_FLAG")
+    );
 }

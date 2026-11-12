@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "scope": "Read-only imported human Sim, selected native outfit, explicit 21-package base client/simulation/preload scope",
+  "parts": 15,
+  "authored_planes": 34,
+  "decoded_planes": 34,
+  "unique_decoded_planes": 34,
+  "decoded_bytes": 208142336,
+  "roles": {"diffuse":15,"shadow":6,"normal":5,"specular":8},
+  "normal_blue_alpha_channels_remapped": false,
+  "rles_auxiliary_originals_retained": true,
+  "mtnf_oracle": {
+    "reader": "Unchanged GPL-3.0-or-later SimRipper GEOM.MTNF",
+    "commit": "862a32949e5156b371e2d2f83de4e37e0bb1afcc",
+    "source_sha256": {
+      "GEOM.cs":"9e332175017405284ca0744025ae8cc3269f7e6ccd9caa28306711e451d99693",
+      "Enums.cs":"fa48d0ec2a7418ee30d8167682ca212d879494d94f8e9a906701fa7ffb0b006b"
+    },
+    "meshes":17,
+    "parameters":341,
+    "value_words":784,
+    "headers_words_roundtrip_exact":true,
+    "normal_emission_getters_exact":true,
+    "nonempty_geom_normal_references":11,
+    "geom_casp_normal_disagreements":0
+  },
+  "unresolved_native_global_bindings":["SkinDetailHSL","CASAmbientIntensityTexture"],
+  "source_conflicts":0,
+  "originals_written":false,
+  "game_contacted":false,
+  "native_qualified":false
+}

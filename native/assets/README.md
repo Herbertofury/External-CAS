@@ -12,7 +12,10 @@ payloads. Payload reads support uncompressed, zlib (`0x5A42`) and RefPack
 (`0xFFFF`), verify declared expanded lengths, check ordinary source changes and
 accept cancellation. A caller-configurable `ReadLimits` defaults to 512 MiB per
 resource; a budget failure is explicit, never truncation. Unknown compression,
-storage markers, layouts and versions return a typed unsupported error.
+storage markers, layouts and versions return a typed unsupported error. The
+trailing index word retains its legacy API name `committed`, but s4pi calls it
+`Unknown2`: both zero and one occur in real packages and are accepted for the
+already supported codecs. It does not bypass source, bounds, size or hash checks.
 `reader_cancellable` also cancels index revalidation. Retain a payload SHA256
 when accepting an asset selection and use `read_pinned_resource` on subsequent
 operations to detect same-size rewrites even when source timestamps and index
@@ -43,6 +46,18 @@ and fallback instance IDs, and LOD descriptor count. Older cached metadata is
 explicitly unknown and produces a cache miss; it never becomes zero flags.
 Restriction helpers follow the source's flag bits. `has_mesh()` follows
 SimRipper's LOD-descriptor test, independently of usable LOD0 references.
+`color_sliders` retains the exact v44+ 44-byte opacity/hue/saturation/brightness
+block as typed settings. Each float is serialized by IEEE754 bits, preserving
+NaN payloads, infinity and signed zero without turning them into JSON null or
+invented defaults. `ranges_hosv()` projects H/O/S/V numeric ranges with opacity's
+implicit maximum1; `validation_issues()` reports malformed numeric metadata
+without rejecting or rewriting the CASP. Color-transform/UI domain qualification
+remains the caller's responsibility. Pre-v44 resources have no stored block.
+Older cached v44+ metadata without the block reparses; pre-v44 cache hits remain
+valid. `evidence/casp-color-slider-qualification.json` records 71 actual v44+
+blocks whose eleven float bit patterns agree with the original licensed C#
+constructors compiled unchanged in memory, plus eight correctly absent v43
+blocks. It contains hashes, not creator resource bytes.
 
 `Geometry::parse` decodes RCOL/GEOM versions 12–15, positions, normals, all UV
 sets, triangle indices, raw joint/weight bytes, palette hashes and material

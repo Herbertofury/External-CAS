@@ -26,6 +26,25 @@ Public entry points:
   current-file pins; the earlier project is retained.
 - `create_project_with_progress`: report actual file progress and cancel before
   commit; an interrupted copy retains an incomplete recovery marker.
+- `ProjectDraft::color_shifts` / `apply_color_shift`: exact native uint64
+  per-part color-shift reads and reversible in-memory edits, with old-value,
+  revision and full native slot/form identity checks. Packed/unpacked varints
+  and necessary enclosing lengths are handled surgically. Other values,
+  unknown fields, encodings, metadata and portraits stay intact.
+- `MissingColorShiftPolicy::MaterializeNeutralOthers` is explicit: absent or
+  empty arrays can be created for the known existing part count with the
+  schema/reference neutral `0x4000000000000000` for unselected parts. An
+  explicit zero stays zero. Partial nonempty arrays remain unsupported.
+- `save_as_with_progress`: supports cancellable edited-project writes and
+  leaves an incomplete recovery marker on cancellation, collision or a
+  concurrent source conflict. The original and parent project remain intact.
+
+`OutfitSlot.occult_form_index` distinguishes base and stored occult outfits;
+`None` preserves the earlier base-slot identity. The raw 64-bit write boundary
+does not clamp or quantize shader lanes. Slider conversion belongs to the
+material/UI pipeline. A changed varint can resize native messages; v1/v2 wrapper
+lengths update while known embedded image bytes remain exact. Variable-length
+edits refuse relocation of an unsupported opaque suffix.
 
 Interrupted writes retain `SNAPSHOT_INCOMPLETE`; reopen refuses to treat such
 a snapshot as committed. These are local project snapshots, not newly created
@@ -35,7 +54,7 @@ remain unqualified.
 
 ## Validation recorded 12 November 2026
 
-`cargo test -p external-cas-tray --offline --jobs 2` passed sixteen tests covering
+`cargo test -p external-cas-tray --offline --jobs 2` passed 26 tests covering
 exact preservation, unknown protobuf fields/groups, opaque suffix retention,
 embedded-image bytes, required-payload truncation, integer overflow, changed
 wire types, duplicate owners, exact family association, cancellation,
@@ -44,6 +63,29 @@ incomplete recovery markers, actual write collision failure, cancellation
 during copying, packed/unpacked outfit slot edits, byte-exact undo/redo,
 malformed array refusal, schema/revision/old-ID/type conflicts, and edited
 save-as/reopen with distinct original/current hashes.
+
+Color-specific checks additionally cover 1–10 byte varints, 127/16383 enclosing
+length boundaries, packed/unpacked/mixed lists, noncanonical tag/length
+preservation, exact whole-file expectations, base/occult identity, v1/v2 empty
+array materialization, mixed CASP/color history, real write collisions,
+cancellation, late source changes and incomplete recovery.
+
+A real disposable household color check read all 114 native part shifts with
+the independent original generated schemas and protobuf-net 3.2.30. Four
+independent schema readbacks agreed. A zero-shift test shrank the household
+from 6,868 to 6,859 bytes, exercising nested length changes; undo restored every
+byte. A subsequent hue-lane edit changed exactly one native byte, retained the
+other 48 bits, saved/reopened identically and could be reversed after reopen
+to the original household bytes. All five original files and non-household
+copies remained unchanged. This qualifies the project writer boundary, not
+native Tray import or in-game appearance acceptance.
+
+The opt-in `qualify_color` example requires explicit existing/new project,
+private report and independent schema-oracle paths. Its oracle links 55
+separately supplied original schema files; verify their aggregate pin with
+`oracle/color/verify.ps1`. Generated fixtures, source-dependent oracle binaries
+and private receipts stay ignored. Sanitized results are in
+[evidence/color-qualification.json](evidence/color-qualification.json).
 
 A separate real read-only check inspected one existing native household:
 five files totaling 91,714 bytes, one Sim and a version-2 household wrapper.

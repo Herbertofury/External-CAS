@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "analysis_section_sha256": "829377024c3e7970214cd1af1765994364402a28ed96761a7afb568f8e3c98fa",
+  "game_version": "1.129.39.1030",
+  "dispatcher_rva": 19525456,
+  "static_consumer_qualified": true,
+  "runtime_game_contacted": false,
+  "state_inheritance_qualified": false,
+  "helpers": [
+    {
+      "name": "comparison",
+      "table_rva": 19511664,
+      "mapping": {
+        "1": 1,
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7
+      },
+      "fallback": 8
+    },
+    {
+      "name": "stencil_operation",
+      "table_rva": 19511776,
+      "mapping": {
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8
+      },
+      "fallback": 1
+    },
+    {
+      "name": "blend_factor",
+      "table_rva": 19511516,
+      "mapping": {
+        "2": 2,
+        "3": 3,
+        "4": 4,
+        "5": 5,
+        "6": 6,
+        "7": 7,
+        "8": 8,
+        "9": 9,
+        "10": 10,
+        "11": 11,
+        "12": 1,
+        "13": 1,
+        "14": 14,
+        "15": 15
+      },
+      "fallback": 1
+    }
+  ]
+}

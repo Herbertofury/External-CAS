@@ -3,6 +3,7 @@
 use std::fmt;
 #[derive(Clone, Debug, PartialEq)]
 pub enum MorphError {
+    Cancelled,
     Truncated,
     Invalid(String),
     Unsupported(String),
@@ -29,8 +30,9 @@ pub use bond_mesh::apply_bond_mesh;
 pub use dmap::{apply_dmap, Dmap};
 pub use links::{Bond, BoneAdjustment, Sculpt, SimModifier};
 pub use plan::{
-    build_morph_plan, physique_prefix, ModifierScales, MorphData, MorphIssue, MorphOperation,
-    MorphOptions, MorphPlan, MorphResource, PhysiqueWeight,
+    build_morph_plan, build_morph_plan_cancellable, native_frame_gender, physique_prefix,
+    ModifierScales, MorphData, MorphIssue, MorphOperation, MorphOptions, MorphPlan, MorphResource,
+    PhysiqueWeight,
 };
 #[derive(Clone, Debug, Default)]
 pub struct ApplyStats {

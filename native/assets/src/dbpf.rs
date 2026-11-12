@@ -83,6 +83,8 @@ pub struct ResourceEntry {
     pub stored_size: u32,
     pub memory_size: u32,
     pub compression: u16,
+    /// Trailing DBPF index word (s4pi calls this Unknown2). The legacy public
+    /// name is retained; zero is used by real packages as well as one.
     pub committed: u16,
     pub extended: bool,
 }
@@ -375,7 +377,7 @@ impl PackageReader<'_> {
         if entry.deleted() {
             return Err(Error::unsupported("deleted resource"));
         }
-        if entry.committed != 1 {
+        if ![0, 1].contains(&entry.committed) {
             return Err(Error::unsupported(format!(
                 "storage marker {:#06X}",
                 entry.committed

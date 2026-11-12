@@ -3,13 +3,17 @@
 //! separate from decoding: unscanned tuning is not evidence for scale 1.
 use super::*;
 use external_cas_assets::{scan::Provider, Catalog, PackageReader, ReadLimits, ResourceKey};
-use external_cas_scene::{FormSelection, ScenePlan, ScopePolicy};
+use external_cas_scene::{EffectiveState, FormSelection, ScenePlan, ScopePolicy};
 use external_cas_tray::{AppearanceForm, SimAppearance};
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
+use std::sync::atomic::{AtomicBool, Ordering};
 const BGEO: u32 = 0x067caa11;
 const DMAP: u32 = 0xdb43e069;
 const BOND: u32 = 0x0355e0a6;
+#[cfg(test)]
+#[path = "provider_tests.rs"]
+mod provider_tests;
 const PHYSIQUE: [&str; 9] = [
     "Body_Heavy",
     "Body_Fit",
@@ -67,6 +71,10 @@ pub enum MorphData {
 #[derive(Clone, Debug)]
 pub struct MorphOperation {
     pub source: String,
+    /// Serialized amount before tuning, retained per occurrence (duplicates
+    /// with different native amounts are never collapsed into an ID map).
+    pub native_amount: Option<f32>,
+    pub modifier_key: Option<u64>,
     pub weight: Option<f32>,
     pub region: u32,
     pub resource: MorphResource,
@@ -97,21 +105,26 @@ struct Resolver<'a, 'b> {
     catalog: &'a Catalog,
     policy: Option<&'b ScopePolicy<'a>>,
     options: &'b MorphOptions,
+    cancel: &'b AtomicBool,
     readers: BTreeMap<usize, std::result::Result<PackageReader<'a>, String>>,
 }
 impl<'a, 'b> Resolver<'a, 'b> {
     fn read(&mut self, p: Provider, key: ResourceKey) -> std::result::Result<Vec<u8>, String> {
+        if self.cancel.load(Ordering::Relaxed) {
+            return Err("Cancelled".into());
+        }
         let (index, entry) = self.catalog.provider(p).ok_or("Provider missing")?;
         if entry.key != key || entry.deleted() {
             return Err("Provider key changed or deleted".into());
         }
-        let r = self
-            .readers
-            .entry(p.package_index)
-            .or_insert_with(|| index.reader().map_err(|e| e.to_string()));
+        let r = self.readers.entry(p.package_index).or_insert_with(|| {
+            index
+                .reader_cancellable(self.cancel)
+                .map_err(|e| e.to_string())
+        });
         r.as_mut()
             .map_err(|e| e.clone())?
-            .read_resource(entry, self.options.read_limits)
+            .read_resource_cancellable(entry, self.options.read_limits, self.cancel)
             .map_err(|e| e.to_string())
     }
     fn resolve(&mut self, key: ResourceKey) -> MorphResource {
@@ -125,7 +138,8 @@ impl<'a, 'b> Resolver<'a, 'b> {
         };
         let providers = self.catalog.providers(key).to_vec();
         let explicit = self.options.provider_choices.get(&key).copied();
-        let selected = explicit.or_else(|| self.policy.and_then(|p| p.resolve_key(key).selected));
+        let effective = self.policy.map(|p| p.resolve_key(key));
+        let selected = explicit.or_else(|| effective.as_ref().and_then(|p| p.selected));
         if let Some(p) = selected {
             result.selection = if explicit.is_some() {
                 "explicit-provider"
@@ -151,12 +165,33 @@ impl<'a, 'b> Resolver<'a, 'b> {
             result.error = Some("Missing full TGI in configured catalog".into());
             return result;
         }
+        if effective
+            .as_ref()
+            .is_some_and(|p| p.state == EffectiveState::DeletedHighestPriority)
+        {
+            result.error=Some("Highest-priority provider is a deletion; lower historical resources are not revived".into());
+            return result;
+        }
+        let eligible = effective
+            .as_ref()
+            .filter(|p| p.state == EffectiveState::TiedHighestPriority)
+            .map(|p| {
+                let maximum = p.candidates.iter().filter_map(|c| c.priority).max();
+                p.candidates
+                    .iter()
+                    .filter(|c| c.priority == maximum)
+                    .map(|c| c.provider)
+                    .collect::<Vec<_>>()
+            });
         let mut first = None;
         let mut same = true;
         for p in providers {
             match self.read(p, key) {
                 Ok(raw) => {
                     result.provider_sha256.push((p, hash(&raw)));
+                    if eligible.as_ref().is_some_and(|active| !active.contains(&p)) {
+                        continue;
+                    }
                     if let Some((_, old)) = &first {
                         if old != &raw {
                             same = false;
@@ -175,7 +210,12 @@ impl<'a, 'b> Resolver<'a, 'b> {
             let (p, raw) = first.unwrap();
             result.selected = Some(p);
             result.raw = Some(raw);
-            result.selection = "byte-identical-full-TGI-providers".into();
+            result.selection = if eligible.is_some() {
+                "byte-identical-highest-priority-full-TGI-providers"
+            } else {
+                "byte-identical-full-TGI-providers"
+            }
+            .into();
         } else {
             result.error = Some(
                 "Differing full-TGI providers require a qualified priority or explicit choice"
@@ -336,6 +376,17 @@ fn native_frame(s: &SimAppearance, species: u32, age: u32, sex: u32) -> Result<u
     }
     Ok(sex)
 }
+/// Native frame-trait rule without loading any resource or inventing sex/age.
+pub fn native_frame_gender(s: &SimAppearance) -> Result<u32> {
+    let species = s.extended_species.filter(|v| *v != 0).unwrap_or(1);
+    let age = s
+        .age
+        .ok_or_else(|| MorphError::Unresolved("Native age absent".into()))?;
+    let gender = s
+        .gender
+        .ok_or_else(|| MorphError::Unresolved("Native gender absent".into()))?;
+    native_frame(s, species, age, gender)
+}
 fn push_resource(
     r: &mut Resolver<'_, '_>,
     p: &mut MorphPlan,
@@ -379,6 +430,8 @@ fn push_resource(
     }
     p.operations.push(MorphOperation {
         source: source.into(),
+        native_amount: weight,
+        modifier_key: None,
         weight,
         region,
         resource,
@@ -412,6 +465,19 @@ pub fn build_morph_plan<'a>(
     policy: Option<&ScopePolicy<'a>>,
     options: &MorphOptions,
 ) -> Result<MorphPlan> {
+    build_morph_plan_cancellable(s, scene, catalog, policy, options, &AtomicBool::new(false))
+}
+pub fn build_morph_plan_cancellable<'a>(
+    s: &SimAppearance,
+    scene: &ScenePlan,
+    catalog: &'a Catalog,
+    policy: Option<&ScopePolicy<'a>>,
+    options: &MorphOptions,
+    cancel: &AtomicBool,
+) -> Result<MorphPlan> {
+    if cancel.load(Ordering::Relaxed) {
+        return Err(MorphError::Cancelled);
+    }
     if let ModifierScales::Qualified { scales, .. } = &options.modifier_scales {
         if scales.values().any(|v| !v.is_finite()) {
             return Err(MorphError::Invalid(
@@ -450,6 +516,7 @@ pub fn build_morph_plan<'a>(
         catalog,
         policy,
         options,
+        cancel,
         readers: BTreeMap::new(),
     };
     let prefix = physique_prefix(species, age, frame)?;
@@ -627,6 +694,7 @@ pub fn build_morph_plan<'a>(
                                 detail: "SMOD suffix retained, application unqualified".into(),
                             });
                         }
+                        let start = p.operations.len();
                         add_links(
                             &mut r,
                             &mut p,
@@ -638,6 +706,10 @@ pub fn build_morph_plan<'a>(
                             weight,
                             smod.region,
                         );
+                        for operation in &mut p.operations[start..] {
+                            operation.native_amount = Some(amount);
+                            operation.modifier_key = Some(id);
+                        }
                     }
                     Ok(None) => p.issues.push(MorphIssue {
                         source: source.clone(),
@@ -664,6 +736,9 @@ pub fn build_morph_plan<'a>(
         });
     }
     p.issues.push(MorphIssue{source:"complete morphology gate".into(),detail:"Native tuning, frame/clothing conversion, pregnancy, mesh eligibility and combined morph ordering require qualification; plan is dependency evidence, not complete native Sim acceptance".into()});
+    if cancel.load(Ordering::Relaxed) {
+        return Err(MorphError::Cancelled);
+    }
     Ok(p)
 }
 

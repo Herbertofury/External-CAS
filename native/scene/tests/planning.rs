@@ -150,7 +150,7 @@ fn rig_hash_vectors_match_compiled_original_fnv_source() {
 }
 #[test]
 fn tone_versions_truncation_and_unknown_suffix_are_preserved() {
-    for v in [6, 7, 8, 9, 10, 11, 12] {
+    for v in [6, 7, 8, 10, 11, 12] {
         let raw = tone(v);
         let parsed = Tone::parse(&raw).unwrap();
         assert_eq!(parsed.skin_sets[0].texture_instance, 200);
@@ -171,6 +171,9 @@ fn tone_versions_truncation_and_unknown_suffix_are_preserved() {
         Tone::parse(&99u32.to_le_bytes()),
         Err(ToneError::UnsupportedVersion(99))
     ));
+    // This fabricated legacy-shaped v9 previously mirrored an incorrect
+    // reference assumption. Native v9 uses different skin-set framing.
+    assert!(matches!(Tone::parse(&tone(9)),Err(ToneError::UnsupportedVersion(9))));
     let mut bad = tone(11);
     bad[21..25].copy_from_slice(&f32::NAN.to_le_bytes());
     assert!(Tone::parse(&bad).is_err());
@@ -240,7 +243,8 @@ fn absent_current_selection_does_not_render_an_arbitrary_outfit() {
 #[test]
 #[ignore = "requires explicit original source oracle; not a fixture-only check"]
 fn source_tone_reader_oracle() {
-    let source = std::env::var_os("CAS_SCENE_TONE_SOURCE").expect("CAS_SCENE_TONE_SOURCE is required for explicit source-oracle comparison");
+    let source = std::env::var_os("CAS_SCENE_TONE_SOURCE")
+        .expect("CAS_SCENE_TONE_SOURCE is required for explicit source-oracle comparison");
     let fixture = Fixture::new();
     let path = fixture.root.join("tone11.bin");
     fs::write(&path, tone(11)).unwrap();
@@ -338,9 +342,14 @@ fn changed_or_invalid_providers_never_yield_a_rig_payload() {
     // Exercise an observable metadata change deterministically. Same-stamp
     // payload rewrites require a retained payload pin, separately tested by
     // assets; filesystem timestamp resolution is not a content guarantee.
-    let changed_time=fs::metadata(&path).unwrap().modified().unwrap()+std::time::Duration::from_secs(2);
-    fs::OpenOptions::new().write(true).open(&path).unwrap()
-        .set_times(fs::FileTimes::new().set_modified(changed_time)).unwrap();
+    let changed_time =
+        fs::metadata(&path).unwrap().modified().unwrap() + std::time::Duration::from_secs(2);
+    fs::OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .unwrap()
+        .set_times(fs::FileTimes::new().set_modified(changed_time))
+        .unwrap();
     let plan = resolve_scene(&sim(), &catalog, &SceneOptions::default());
     assert!(plan.rig_payload.is_none());
     assert!(plan.failures.iter().any(|f| f.role == "native rig payload"));
@@ -378,6 +387,77 @@ fn install_fixture(fixture: &Fixture) -> PathBuf {
     )
     .unwrap();
     root
+}
+#[test]
+fn scoped_identical_highest_ties_ignore_different_history_but_hash_every_provider() {
+    let key = native_rig_key(Some(1), Some(32), 1).unwrap().0;
+    for different in [false, true] {
+        let fixture = Fixture::new();
+        let root = install_fixture(&fixture);
+        fixture.package(
+            "install/Data/Client/ClientFullBuild0.package",
+            &[(key, b"old".to_vec())],
+        );
+        fixture.package(
+            "install/Data/Client/ClientDeltaBuild0.package",
+            &[(key, b"new".to_vec())],
+        );
+        fixture.package(
+            "install/Data/Client/ClientDeltaBuild1.package",
+            &[(
+                key,
+                if different {
+                    b"bad".to_vec()
+                } else {
+                    b"new".to_vec()
+                },
+            )],
+        );
+        let catalog =
+            Catalog::scan_roots(&[root.clone()], &AtomicBool::new(false), |_| {}).unwrap();
+        let scope = GameInstallScope::discover(&root).unwrap();
+        let policy = scope.prepare(&catalog).unwrap();
+        let plan = resolve_scene_scoped(&sim(), &catalog, &SceneOptions::default(), Some(&policy));
+        let dependency = plan.rig.as_ref().unwrap();
+        assert_eq!(dependency.provider_payload_hashes.len(), 3);
+        if different {
+            assert!(plan.rig_payload.is_none());
+            assert_eq!(dependency.state, DependencyState::Ambiguous);
+        } else {
+            assert_eq!(plan.rig_payload.as_deref(), Some(b"new".as_slice()));
+            assert_eq!(
+                dependency.state,
+                DependencyState::ByteIdenticalPriorityProviders
+            );
+        }
+        assert!(resolve_scene(&sim(), &catalog, &SceneOptions::default())
+            .rig_payload
+            .is_none());
+    }
+}
+#[test]
+fn scoped_reader_never_revives_lower_history_after_highest_deletion() {
+    let fixture = Fixture::new();
+    let root = install_fixture(&fixture);
+    let key = native_rig_key(Some(1), Some(32), 1).unwrap().0;
+    fixture.package(
+        "install/Data/Client/ClientFullBuild0.package",
+        &[(key, b"old".to_vec())],
+    );
+    let patch = fixture.package(
+        "install/Data/Client/ClientDeltaBuild0.package",
+        &[(key, b"new".to_vec())],
+    );
+    let mut bytes = fs::read(&patch).unwrap();
+    let index = u32::from_le_bytes(bytes[64..68].try_into().unwrap()) as usize;
+    bytes[index + 32..index + 34].copy_from_slice(&0xffe0u16.to_le_bytes());
+    fs::write(patch, bytes).unwrap();
+    let catalog = Catalog::scan_roots(&[root.clone()], &AtomicBool::new(false), |_| {}).unwrap();
+    let scope = GameInstallScope::discover(&root).unwrap();
+    let policy = scope.prepare(&catalog).unwrap();
+    let plan = resolve_scene_scoped(&sim(), &catalog, &SceneOptions::default(), Some(&policy));
+    assert!(plan.rig_payload.is_none());
+    assert_eq!(plan.rig.unwrap().state, DependencyState::Deleted);
 }
 #[test]
 fn explicit_numeric_game_priorities_choose_delta_and_retain_lower_providers() {

@@ -10,6 +10,8 @@ serde = { version = "=1.0.229", features = ["derive"] }
 external-cas-assets = { path = "../assets" }
 sha2 = "=0.10.9"
 image = { version = "=0.25.10", default-features = false, features = ["dds"] }
+quick-xml = "=0.42.0"
 
 [dev-dependencies]
 serde_json = "=1.0.154"
+image = { version = "=0.25.10", default-features = false, features = ["png"] }

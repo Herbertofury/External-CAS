@@ -32,6 +32,16 @@ provider or select it in the installed UI source picker.
   horizontal kerning pair, converts the Y basis explicitly, and rejects unknown
   extra FontTypes, missing kerning targets, duplicate codes and unsupported
   metrics. It does not infer redistribution or embedding permissions.
+- `timeline::SymbolLibrary` selects an actual exported symbol/state frame and
+  evaluates source placement, move/remove, affine and color transforms. Its
+  initial visible geometry subset is bitmap-filled rectangles; masks, filters,
+  strokes, nonrectangular paths and unsupported bindings fail explicitly.
+  `symbol_raster::rasterize` resolves actual sub-images and requires an explicit
+  channel presentation for BC5 UI artwork. No source ActionScript executes.
+- `color_ui` projects selected-swatch CASP ranges and reference control bindings,
+  flags unavailable/unknown/fallback states, retains unsupported modifier bits,
+  and distinguishes diffuse and specular modes. See the
+  [color boundary](../../docs/fidelity/COLOR_SLIDERS_SOURCE_20261112.md).
 
 `cas_ui::InstalledUiState` owns asynchronous app loading, generation cancellation,
 font/texture publication, accepted pins and visible compatibility messages. Named
@@ -48,13 +58,18 @@ current resources. All file reads, decoding and validation stay on the worker.
 ## Current supported boundary
 
 Nine installed font faces are consumed by the actual app, including its body and
-Sim headline text. Two actual high-resolution CAS/Component atlases decode and
-upload. Atlas R/G channels are literal BC5 UNORM data; assigning luminance, color
-and alpha is a separate, explicitly selected presentation operation. Uploading
-these pixels does **not** reproduce the source UI display list.
+Sim headline text. Three original CAS/Component/Navigation atlases decode and
+upload. Atlas R/G channels are retained as literal BC5 UNORM data. Navigation
+symbol rendering explicitly selects red luminance plus green alpha and has been
+compared against independent static rendering.
 
-Source sprite timelines, bitmap fill matrices, color transforms, nine-slice
-scaling, symbol/state selection, dynamic image assignment, masks, clipping,
+Six source navigation symbols replace temporary artwork in the actual native
+controls: rotation left/right, undo/redo, cancel/close, and household-save artwork
+used for the project action. Their up/over/down/disabled states are selected from
+the original movie. Existing native handlers remain attached. Source hover
+animation, exact global layout and the other UI components are still open.
+
+Source nine-slice scaling, full animation/state semantics, dynamic image assignment, masks, clipping,
 filters, imported components and engine service behavior still require native
 adapters and golden comparisons. The current authored control marks and room
 gradient are temporary scaffolding. Their existence is not a fidelity or
@@ -77,12 +92,20 @@ Private installed-asset validation currently confirms:
   resulting faces independently open with FreeType.
 - 104 real glyphs across those faces, including all 72 symbol glyphs and 4,777
   edges, exactly match the independent installed FFDec reader.
-- Both complete atlas R/G pixel buffers exactly match the independent MIT
+- Both original CAS/Component atlas R/G pixel buffers exactly match the independent MIT
   `texture2ddecoder` BC5 decoder.
-- An actual hidden native-app launch loads nine original fonts and two atlases
+- 28 source navigation states were compared with the independent FFDec static
+  renderer, using its own sub-image parser and an independently decoded atlas
+  bound in memory because its DDS reader does not support ATI2. The six adopted
+  controls have maximum premultiplied RGB error below 2/255 and alpha error at
+  most 2/255; most states' alpha matches exactly. Reset artwork remains unused
+  because its source semantics and higher pixel discrepancy need investigation.
+- An actual hidden native-app launch loads nine original fonts and three atlases
+  plus 24 cached original navigation states
   and renders real catalog content without UI resource errors.
 
-The generic example `inspect_installed` requires an explicit provider. It prints
+The generic examples `inspect_installed`, `enumerate_installed` and `render_symbol`
+require explicit providers. They print
 private source pins to stdout. Its optional `--private-output-dir` is an explicit
 diagnostic extraction boundary; direct such output to an ignored local directory
 and never publish it with the application. No private evidence or assets belong
@@ -97,3 +120,11 @@ Native BC5 decoding implements the published block representation independently.
 The independent validation tools are development oracles, not runtime
 dependencies. Exact local tool hashes and asset/provider pins are in ignored
 private evidence referenced by [the fidelity checklist](../../docs/fidelity/CAS_FIDELITY_20261112.md).
+
+The additive `runtime`, `runtime_assets` and `ui_layout` modules support the
+[original source UI runtime qualification track](../../docs/fidelity/SOURCE_UI_RUNTIME_20261112.md).
+They retain original movie/manifest bytes and pins, provide source layout and
+font/bitmap data, and separate declared AS3/GFx requirements from demonstrated
+support. No Ruffle fork, original ActionScript or proprietary movie/artwork is
+bundled. The current interpreter experiment remains private and unqualified for
+an application framework switch.

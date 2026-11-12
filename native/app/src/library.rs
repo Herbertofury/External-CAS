@@ -3,6 +3,9 @@ use external_cas_assets::{
     CasPart, Catalog, Geometry, PackageReader, ReadLimits, ResourceKey, scan::Provider,
 };
 use external_cas_catalog_cache::{CachedPackage, CachedPart, CachedUnsupported, CatalogCache};
+#[path = "library_scan_cache.rs"]
+mod scan_cache;
+pub use scan_cache::CacheScanStats;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::{
@@ -30,6 +33,7 @@ pub struct Item {
     pub payload_sha256: [u8; 32],
     pub design: usize,
     pub swatch_order: u16,
+    pub color_sliders: Option<external_cas_assets::casp::CaspColorSliders>,
 }
 #[derive(Clone, Debug)]
 pub struct GalleryGroup {
@@ -58,6 +62,7 @@ pub struct Library {
     pub cache_issues: Vec<String>,
     pub cache_path: Option<PathBuf>,
     pub cache_scope: Option<String>,
+    pub cache_stats: CacheScanStats,
     pub thumbnails: external_cas_assets::thumbnail::ThumbnailDesignIndex,
     package_lookup: HashMap<PathBuf, usize>,
     item_lookup: HashMap<(usize, usize), usize>,
@@ -103,13 +108,61 @@ pub enum Event {
         scan_generation: u64,
         selection_generation: u64,
         base_revision: u64,
-        result: Result<(external_cas_tray::ProjectDraft, PathBuf), String>,
+        result: Result<(external_cas_tray::ProjectDraft, PathBuf, ColorCache), String>,
     },
 }
 pub struct PreparedProject {
     pub project: external_cas_tray::TrayProject,
     pub draft: Option<external_cas_tray::ProjectDraft>,
     pub draft_error: Option<String>,
+    pub colors: ColorCache,
+}
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+pub struct SlotColorKey {
+    pub sim_id: u64,
+    pub form: Option<usize>,
+    pub outfit_index: usize,
+    pub outfit_id: u64,
+    pub part_index: usize,
+}
+#[derive(Default)]
+pub struct ColorCache {
+    pub values: HashMap<SlotColorKey, Option<u64>>,
+    pub issue: Option<String>,
+}
+pub fn draft_color_cache(draft: &external_cas_tray::ProjectDraft) -> ColorCache {
+    let result = (|| {
+        let mut values = HashMap::new();
+        for sim in draft.appearance().map_err(|e| e.to_string())? {
+            for form in std::iter::once(&sim.base).chain(sim.occult_forms.iter()) {
+                for outfit in &form.outfits {
+                    for part in &outfit.parts {
+                        values.insert(
+                            SlotColorKey {
+                                sim_id: sim.sim_id,
+                                form: form.occult_form_index,
+                                outfit_index: outfit.outfit_index,
+                                outfit_id: outfit.outfit_id,
+                                part_index: part.part_index,
+                            },
+                            part.color_shift,
+                        );
+                    }
+                }
+            }
+        }
+        Ok::<_, String>(values)
+    })();
+    match result {
+        Ok(values) => ColorCache {
+            values,
+            issue: None,
+        },
+        Err(issue) => ColorCache {
+            values: HashMap::new(),
+            issue: Some(issue),
+        },
+    }
 }
 pub fn project_ready(
     project: Result<external_cas_tray::TrayProject, external_cas_tray::TrayError>,
@@ -120,12 +173,14 @@ pub fn project_ready(
         Err(error) => (None, Some(error.to_string())),
     };
     Ok(PreparedProject {
+        colors: draft.as_ref().map(draft_color_cache).unwrap_or_default(),
         project,
         draft,
         draft_error,
     })
 }
 pub struct PreparedPreview {
+    pub fully_transparent: bool,
     pub parts: Vec<viewport::MeshPart>,
     pub warnings: Vec<String>,
     pub vertices: usize,
@@ -199,27 +254,36 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
             }
         })
         .map_err(|e| e.to_string())?;
+        let mut publisher = scan_cache::Publisher::new();
+        publisher.stats.index_discovery_ms = start.elapsed().as_secs_f64() * 1000.;
         let mut items = Vec::new();
         let mut thumbnails = external_cas_assets::thumbnail::ThumbnailDesignIndex::new();
         let mut designs = HashMap::<DesignKey, usize>::new();
         let mut unsupported = Vec::new();
         let mut poses = Vec::new();
         let mut cache_issues = Vec::new();
-        let mut cache =
-            std::env::var_os("LOCALAPPDATA").and_then(|base| {
-                match CatalogCache::open(
+        let cache_path = std::env::var_os("EXTERNAL_CAS_CATALOG_PATH")
+            .map(PathBuf::from)
+            .or_else(|| {
+                std::env::var_os("LOCALAPPDATA").map(|base| {
                     PathBuf::from(base)
                         .join("ExternalCAS")
                         .join("Catalog")
-                        .join("metadata-v1.sqlite"),
-                ) {
-                    Ok(cache) => Some(cache),
-                    Err(e) => {
-                        cache_issues.push(e.to_string());
-                        None
-                    }
-                }
+                        .join("metadata-v1.sqlite")
+                })
             });
+        let mut cache = cache_path.and_then(|path| match CatalogCache::open(path) {
+                Ok(cache) => {
+                    if let Ok(value)=std::env::var("EXTERNAL_CAS_CATALOG_CACHE_KIB") {
+                        match value.parse::<u32>(){Ok(kib)=>match cache.set_page_cache_budget_kib(kib){Ok(())=>publisher.stats.page_cache_target_kib=Some(kib),Err(error)=>cache_issues.push(format!("Catalog page-cache configuration: {error}"))},Err(error)=>cache_issues.push(format!("Catalog page-cache configuration: {error}"))}
+                    }
+                    Some(cache)
+                },
+            Err(e) => {
+                cache_issues.push(e.to_string());
+                None
+            }
+        });
         let (mut cache_hits, mut cache_misses) = (0, 0);
         for (package_index, package) in catalog.packages.iter().enumerate() {
             if cancel.load(Ordering::Relaxed) {
@@ -242,8 +306,9 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
                     ));
                 }
             }
-            let cached = match cache.as_ref().map(|c| c.load_package(package, &cancel)) {
-                Some(Ok(cached)) => cached,
+            let load_started = Instant::now();
+            let cached = match cache.as_ref().map(|c| c.load_package_profiled(package, &cancel)) {
+                Some(Ok((cached,timing))) => {publisher.add_load(timing);cached},
                 Some(Err(e)) => {
                     if cancel.load(Ordering::Relaxed) {
                         return Err("Discovery cancelled".into());
@@ -253,15 +318,18 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
                 }
                 None => None,
             };
+            publisher.stats.cache_load_ms += load_started.elapsed().as_secs_f64() * 1000.;
             let metadata = if let Some(cached) = cached {
                 cache_hits += 1;
                 cached
             } else {
                 cache_misses += 1;
+                let decode_started = Instant::now();
                 let mut metadata = CachedPackage::default();
                 let mut reader = match package.reader_cancellable(&cancel) {
                     Ok(r) => r,
                     Err(e) => {
+                        publisher.stats.source_packages_failed += 1;
                         unsupported.push(format!("{}: {e}", package.path.display()));
                         continue;
                     }
@@ -301,32 +369,24 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
                         last = Instant::now();
                     }
                 }
+                publisher.stats.metadata_decode_ms +=
+                    decode_started.elapsed().as_secs_f64() * 1000.;
                 if let Some(cache) = &mut cache {
-                    if let Err(e) = cache.store_package_with_progress(
-                        package,
-                        &metadata.rows,
-                        &metadata.unsupported,
+                    publisher.enqueue(
+                        cache,
+                        &catalog,
+                        package_index,
+                        &metadata,
                         &cancel,
-                        |done| {
-                            if last.elapsed().as_millis() >= 100 {
-                                let _ = tx.send(Event::Progress {
-                                    generation,
-                                    message: format!(
-                                        "Caching appearance metadata · {done} records"
-                                    ),
-                                });
-                                last = Instant::now();
-                            }
-                        },
-                    ) {
-                        if cancel.load(Ordering::Relaxed) {
-                            return Err("Discovery cancelled".into());
-                        }
-                        cache_issues.push(e.to_string());
-                    }
+                        generation,
+                        &tx,
+                        &mut last,
+                        &mut cache_issues,
+                    )?;
                 }
                 metadata
             };
+            let assemble_started = Instant::now();
             for row in metadata.rows {
                 let casp = row.casp;
                 let entry = &package.entries[row.entry_index];
@@ -376,6 +436,7 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
                     payload_sha256: row.payload_sha256,
                     design,
                     swatch_order: casp.swatch_order,
+                    color_sliders: casp.color_sliders,
                 });
             }
             for row in metadata.unsupported {
@@ -386,10 +447,27 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
                     row.message
                 ));
             }
+            publisher.stats.item_assembly_ms += assemble_started.elapsed().as_secs_f64() * 1000.;
+        }
+        if let Some(cache) = &mut cache {
+            publisher.flush(
+                cache,
+                &catalog,
+                &cancel,
+                generation,
+                &tx,
+                &mut last,
+                &mut cache_issues,
+            )?;
         }
         items.sort_by(|a, b| a.name.cmp(&b.name).then(a.key.cmp(&b.key)));
         let mut cache_scope = None;
-        if catalog.issues.is_empty() && catalog.progress.skipped_links == 0 {
+        let scope_started = Instant::now();
+        if catalog.issues.is_empty()
+            && catalog.progress.skipped_links == 0
+            && publisher.stats.publication_failures == 0
+            && publisher.stats.source_packages_failed == 0
+        {
             if let Some(cache) = &mut cache {
                 let stamp = std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)
@@ -420,7 +498,28 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
                 }
             }
         } else {
-            cache_issues.push("Indexed-search scope is unqualified because discovery reported unreadable sources or skipped links".into());
+            cache_issues.push("Indexed-search scope is unqualified because source discovery or complete cache publication failed".into());
+        }
+        publisher.stats.scope_bind_ms = scope_started.elapsed().as_secs_f64() * 1000.;
+        if let Some(path) = std::env::var_os("EXTERNAL_CAS_SCAN_PROFILE").map(PathBuf::from) {
+            let written = (|| -> Result<(), String> {
+                use std::io::Write;
+                if !path.is_absolute() {
+                    return Err("Scan profile path must be absolute".into());
+                }
+                let mut output = std::fs::OpenOptions::new()
+                    .create_new(true)
+                    .write(true)
+                    .open(&path)
+                    .map_err(|e| e.to_string())?;
+                let bytes =
+                    serde_json::to_vec_pretty(&publisher.stats).map_err(|e| e.to_string())?;
+                output.write_all(&bytes).map_err(|e| e.to_string())?;
+                Ok(())
+            })();
+            if let Err(error) = written {
+                cache_issues.push(format!("Scan profiling receipt: {error}"));
+            }
         }
         let package_lookup = catalog
             .packages
@@ -445,6 +544,7 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
             cache_issues,
             cache_path,
             cache_scope,
+            cache_stats: publisher.stats,
             thumbnails,
             package_lookup,
             item_lookup,
@@ -684,6 +784,7 @@ pub fn prepare(
         warnings.push("Item preview uses original GEOM bind geometry and diffuse cutout material. Complete Sim, shader family, morphs and game appearance are not yet qualified.".into());
         let mut parts = Vec::new();
         let mut geometries = Vec::new();
+        let shared_rgba: Arc<[u8]> = texture.rgba.into();
         let (mut vertices, mut triangles) = (0, 0);
         for key in &item.meshes {
             if cancel.load(Ordering::Relaxed) {
@@ -707,12 +808,15 @@ pub fn prepare(
                     })
                     .collect(),
                 indices: geometry.indices.clone(),
-                rgba: texture.rgba.clone(),
+                rgba: shared_rgba.clone(),
                 texture_size: [texture.width, texture.height],
             });
             geometries.push(geometry);
         }
         Ok(PreparedPreview {
+            fully_transparent: parts
+                .iter()
+                .all(|part| part.rgba.chunks_exact(4).all(|pixel| pixel[3] == 0)),
             parts,
             warnings,
             vertices,
@@ -755,6 +859,12 @@ pub enum DraftChange {
     Apply {
         index: usize,
         slot: external_cas_tray::OutfitSlot,
+    },
+    ColorShift {
+        slot: external_cas_tray::OutfitSlot,
+        expected: Option<u64>,
+        value: u64,
+        materialize: bool,
     },
     Undo,
     Redo,
@@ -805,6 +915,30 @@ pub fn change_draft(
                     )
                     .map_err(|e| e.to_string())?;
             }
+            DraftChange::ColorShift {
+                slot,
+                expected,
+                value,
+                materialize,
+            } => {
+                if source_pins.is_empty() {
+                    return Err("The visible color preview has no verified source receipt".into());
+                }
+                verify_source_pins(&source_pins, &AtomicBool::new(false))?;
+                draft
+                    .apply_color_shift(
+                        base_revision,
+                        &slot,
+                        expected,
+                        value,
+                        if materialize {
+                            external_cas_tray::MissingColorShiftPolicy::MaterializeNeutralOthers
+                        } else {
+                            external_cas_tray::MissingColorShiftPolicy::RequireExisting
+                        },
+                    )
+                    .map_err(|e| e.to_string())?;
+            }
             DraftChange::Undo => draft.undo(base_revision).map_err(|e| e.to_string())?,
             DraftChange::Redo => draft.redo(base_revision).map_err(|e| e.to_string())?,
         }
@@ -825,7 +959,8 @@ pub fn change_draft(
         draft.save_as(&destination).map_err(|e| {
             format!("Recovery revision could not be verified; edit remains unapplied: {e}")
         })?;
-        Ok((draft, destination))
+        let colors = draft_color_cache(&draft);
+        Ok((draft, destination, colors))
     })();
     let _ = tx.send(Event::Draft {
         generation,

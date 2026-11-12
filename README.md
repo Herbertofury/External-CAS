@@ -10,8 +10,9 @@ or qualified release. No accepted installer is available yet.**
 The target is the actual installed CAS interface, assets, room, appearance and
 behavior, with responsive large-library editing. Game fonts and resources are
 read locally from an authorized installation; proprietary assets and creator
-content are never bundled here. Temporary control marks/backgrounds do not
-establish fidelity. Improvements require actual application measurements.
+content are never bundled here. Source UI execution, complete material construction
+and native behavior have separate acceptance gates. Improvements require actual
+application measurements.
 
 See the [wiki](https://github.com/Herbertofury/External-CAS/wiki),
 [milestone](https://github.com/Herbertofury/External-CAS/milestone/1) and
@@ -28,12 +29,27 @@ See the [wiki](https://github.com/Herbertofury/External-CAS/wiki),
 - Lossless native Tray project copies, revision-checked existing outfit-slot
   edits, undo/redo, verified recovery and pinned session restoration.
 - Actual Sim appearance, installed resource priority, native outfit/rig/TONE
-  and morphology planning, with missing/ambiguous/unsupported dependencies exposed.
+  assembly with source-reference deformation and explicit compatibility gates.
+- Actual installed CAS room geometry/textures and decoded camera/light tuning.
+  Source render-state, projection and appearance qualification remains open.
+- Whole imported-Sim viewing, actual current CLIP18 CAS idle, native packed color
+  editing, verified save/reopen and retained source receipts. Original files stay
+  untouched. Reference materials are still an incomplete renderer boundary.
+- Original shader loading in Rust and a native D3D11On12/wgpu sharing boundary;
+  controlled original CAS shader execution independently checks the recovered math.
+- Actual source UI manifest/runtime adapters and a documented original-movie
+  interpreter investigation. The full source UI runtime is not integrated yet.
 
-The current viewport is an item preview. Full imported-Sim material/morph
-composition, the native room/control behavior, complete creation/editing,
-Tray/game acceptance, synchronization and release packaging remain open.
-Component comparisons do not imply a complete CAS workflow.
+Wardrobe selection still has a separate item inspection. Project → View full
+Sim displays the assembled imported draft when an installed game source is
+configured. Complete shader planes, direct manipulation, creation/genetics,
+all CAS controls, room mirrors/transparency/shadows, Tray/game acceptance,
+qualified synchronization and release packaging remain open. No end-to-end
+or indistinguishable-appearance acceptance is claimed.
+
+The source-linked [engine implementation map](docs/engine/ENGINE_CAS_IMPLEMENTATION_MAP.md)
+and [shader contract](docs/engine/SIMSKIN_DX11_20261112.md) identify the concrete
+remaining work and distinguish actual source evidence from unresolved behavior.
 
 ## Build and run
 

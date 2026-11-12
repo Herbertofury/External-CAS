@@ -1,0 +1,198 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "scope": "Actual imported human Sim; installed CAS ASM Idle and v18 CLIP",
+  "asm_key": "02D5DF13:00000000:D8D5C1186BA97FDC",
+  "asm_payload_sha256": "e2a9b532e034439f636e0fa2dda44cf545d7741a30068407e1bed7831d3592e4",
+  "clip_key": "6B20C4F3:00000000:1944642AB66842C3",
+  "clip_payload_sha256": "b19df6220ae28335fd733043c98f4f501820956d04140339a09a271d79e3fabf",
+  "selector_trace": [
+    "ASM CAS / public Idle / requested standing CAS preview",
+    "x:posture=stand--FullBody [327]",
+    "x:age=youngadult [326]",
+    "Reference 275",
+    "Camera=Far [275]",
+    "x:sex=male [274]",
+    "isMermaid=false [229]",
+    "isWerewolf=false [221]",
+    "RandomSelector 204: ordered alternatives retained",
+    "Controller 189: a_CAS_idle_male_weightShift_x"
+  ],
+  "primary_reader_comparison": {
+    "different_float_bits": 15977,
+    "maximum_float_difference": 1.1920928955078125E-07,
+    "skeletal_values_compared": 29579,
+    "source_reader": "unmodified separately supplied TS4AnimationBrowser.Core1.9.1 StudioClipDecoderV2",
+    "wrapper_fields_exact": true
+  },
+  "declared_rig_comparison": {
+    "bone_count": 165,
+    "different_local_transforms": 4,
+    "key": "8EAF13DE:00000000:0D29F41E52C10D17",
+    "payload_identical": false,
+    "same_hash_parent_order": true,
+    "sha256": "aaccdc5fecaa6b46d06ad4350e00f1f273c2746e60cd19343944870650cd9bc4",
+    "transform_differences": [
+      {
+        "declared_orientation": [
+          -0.007980749011039734,
+          0.38177546858787537,
+          -0.023924926295876503,
+          0.9239108562469482
+        ],
+        "declared_position": [
+          0.14000099897384644,
+          0.0,
+          0.0
+        ],
+        "declared_scale": [
+          0.9999997615814209,
+          1.0000001192092896,
+          0.9999995827674866
+        ],
+        "hash": "A92B596E",
+        "index": 57,
+        "name": "b__R_UpperArm__",
+        "scene_orientation": [
+          -0.007981558330357075,
+          0.3817753791809082,
+          -0.02392735704779625,
+          0.923910915851593
+        ],
+        "scene_position": [
+          0.14000099897384644,
+          0.0,
+          0.0
+        ],
+        "scene_scale": [
+          1.0,
+          1.0000003576278687,
+          1.0000003576278687
+        ]
+      },
+      {
+        "declared_orientation": [
+          -7.510769819418783E-07,
+          2.002871951845009E-06,
+          0.053537268191576004,
+          0.9985658526420593
+        ],
+        "declared_position": [
+          0.32100000977516174,
+          0.0,
+          0.0
+        ],
+        "declared_scale": [
+          1.0000004768371582,
+          1.0000004768371582,
+          1.0
+        ],
+        "hash": "F0143B40",
+        "index": 58,
+        "name": "b__R_Forearm__",
+        "scene_orientation": [
+          -7.510771524721349E-07,
+          2.0028721792186843E-06,
+          0.05354228615760803,
+          0.9985655546188354
+        ],
+        "scene_position": [
+          0.32100000977516174,
+          0.0,
+          0.0
+        ],
+        "scene_scale": [
+          1.0000004768371582,
+          1.0000004768371582,
+          1.0
+        ]
+      },
+      {
+        "declared_orientation": [
+          -0.7067903876304626,
+          -2.5444456696277484E-05,
+          -1.3429016689769924E-05,
+          0.7074229717254639
+        ],
+        "declared_position": [
+          0.287227988243103,
+          0.0,
+          3.999999989900971E-06
+        ],
+        "declared_scale": [
+          1.0,
+          1.0000003576278687,
+          1.0000003576278687
+        ],
+        "hash": "CEB0355B",
+        "index": 61,
+        "name": "b__R_Hand__",
+        "scene_orientation": [
+          -0.7067907452583313,
+          -2.367749038967304E-05,
+          -1.5196001186268404E-05,
+          0.7074226140975952
+        ],
+        "scene_position": [
+          0.287227988243103,
+          0.0,
+          3.999999989900971E-06
+        ],
+        "scene_scale": [
+          1.0,
+          1.0000003576278687,
+          1.0000003576278687
+        ]
+      },
+      {
+        "declared_orientation": [
+          0.006870659999549389,
+          0.0,
+          0.0,
+          0.999976396560669
+        ],
+        "declared_position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "declared_scale": [
+          1.0,
+          1.0000003576278687,
+          1.0000003576278687
+        ],
+        "hash": "C619C029",
+        "index": 81,
+        "name": "b__R_ShoulderTwist__",
+        "scene_orientation": [
+          0.006871660705655813,
+          0.0,
+          0.0,
+          0.999976396560669
+        ],
+        "scene_position": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scene_scale": [
+          1.0,
+          1.0000003576278687,
+          1.0000003576278687
+        ]
+      }
+    ]
+  },
+  "sample_ticks": [
+    0,
+    68,
+    136
+  ],
+  "bone_count": 165,
+  "source_conflicts": 0,
+  "original_bytes_retained": true,
+  "native_engine_default_selection_qualified": false,
+  "originals_written": false,
+  "game_contacted": false,
+  "rust_tests_passed": 24
+}
