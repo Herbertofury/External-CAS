@@ -138,6 +138,25 @@ fn clip_bytes(channels: &[TestChannel], ancillary: bool) -> Vec<u8> {
     out.extend(codec);
     out
 }
+fn current_clip_bytes(ancillary:bool)->Vec<u8>{
+    let mut bytes=clip_bytes(&[translation(100,&[(0,0,0),(30,0,1023)])],ancillary);
+    let codec=bytes.windows(8).position(|w|w==b"_pilC3S_").unwrap();
+    bytes[..4].copy_from_slice(&18u32.to_le_bytes());
+    bytes.splice(codec-4..codec-4,0xd057fcc534c1bcbb_u64.to_le_bytes());bytes
+}
+#[test]
+fn current_v18_retains_new_rig_reference_opaque_words_events_and_exact_codec_extent(){
+    for ancillary in [false,true]{let mut raw=current_clip_bytes(ancillary);raw[12..16].copy_from_slice(&0x7fc0_1234u32.to_le_bytes());raw[40..44].copy_from_slice(&0xdead_beefu32.to_le_bytes());
+        let parsed=Clip::parse(&raw,FrameLayout::Conservative).unwrap();let metadata=parsed.metadata.as_ref().unwrap();let current=metadata.current_header.as_ref().unwrap();
+        assert_eq!(current.metadata_words[0],0x7fc0_1234);assert_eq!(current.metadata_words[7],0xdead_beef);assert_eq!(current.rig_instance,0xd057fcc534c1bcbb);assert_eq!(&raw[current.codec_range.start..current.codec_range.start+8],b"_pilC3S_");assert_eq!(current.codec_range.end,raw.len());assert_eq!(parsed.original,raw);assert!(parsed.codec.is_some());assert_eq!(metadata.events.len(),usize::from(ancillary));
+        assert!(Clip::parse(&clip_bytes(&[],false),FrameLayout::Conservative).unwrap().metadata.unwrap().current_header.is_none());
+    }
+}
+#[test]
+fn every_current_v18_prefix_rejects_and_unknown_versions_remain_opaque(){
+    let raw=current_clip_bytes(true);for n in 0..raw.len(){assert!(Clip::parse(&raw[..n],FrameLayout::Conservative).is_err(),"prefix {n}");}
+    for version in [15u32,16,17,19]{let mut raw=raw.clone();raw[..4].copy_from_slice(&version.to_le_bytes());let parsed=Clip::parse(&raw,FrameLayout::Conservative).unwrap();assert_eq!(parsed.original,raw);assert!(parsed.metadata.is_none());assert!(parsed.codec.is_none());}
+}
 fn close(a: f64, b: f64) {
     assert!((a - b).abs() < 2e-6, "{a} != {b}");
 }

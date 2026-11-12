@@ -1,8 +1,31 @@
 struct Camera { view_projection: mat4x4<f32> }
 @group(0) @binding(0) var<uniform> camera: Camera;
 @group(0) @binding(1) var<storage, read> palette: array<mat4x4<f32>>;
+struct AppearanceTransform { matrix:mat4x4<f32> }
+@group(0) @binding(2) var<uniform> appearance:AppearanceTransform;
+struct InstalledLighting {ambient:vec4<f32>,key_direction:array<vec4<f32>,2>,key_color:array<vec4<f32>,2>,rim_color:array<vec4<f32>,2>,reserved:array<vec4<f32>,2>}
+@group(0) @binding(3) var<uniform> lighting:InstalledLighting;
 @group(1) @binding(0) var diffuse: texture_2d<f32>;
 @group(1) @binding(1) var material_sampler: sampler;
+struct ColorModifiers { hsv_opacity:vec4<f32> }
+@group(1) @binding(2) var<uniform> modifiers:ColorModifiers;
+fn srgb_from_linear(c:vec3<f32>)->vec3<f32>{return select(1.055*pow(max(c,vec3<f32>(0.0)),vec3<f32>(1.0/2.4))-0.055,c*12.92,c<=vec3<f32>(0.0031308));}
+fn linear_from_srgb(c:vec3<f32>)->vec3<f32>{return select(pow((c+0.055)/1.055,vec3<f32>(2.4)),c/12.92,c<=vec3<f32>(0.04045));}
+fn shifted_color(encoded:vec3<f32>,shift:vec3<f32>)->vec3<f32>{
+    let hi=max(max(encoded.r,encoded.g),encoded.b);let lo=min(min(encoded.r,encoded.g),encoded.b);let delta=hi-lo;
+    var h=0.0;
+    if delta>0.0 {
+        if hi==encoded.r {h=(encoded.g-encoded.b)/delta;}
+        else if hi==encoded.g {h=(encoded.b-encoded.r)/delta+2.0;}
+        else {h=(encoded.r-encoded.g)/delta+4.0;}
+        h=fract(h/6.0+1.0);
+    }
+    h=fract(h+shift.x+2.0);
+    var saturation=0.0;if hi>0.0{saturation=delta/hi;}
+    saturation=clamp(saturation+shift.y,0.0,1.0);let v=clamp(hi+shift.z,0.0,1.0);
+    let sector=h*6.0;let f=fract(sector);let low=v*(1.0-saturation);let falling=v*(1.0-saturation*f);let rising=v*(1.0-saturation*(1.0-f));
+    switch u32(floor(sector)) {case 0u:{return vec3<f32>(v,rising,low);}case 1u:{return vec3<f32>(falling,v,low);}case 2u:{return vec3<f32>(low,v,rising);}case 3u:{return vec3<f32>(low,falling,v);}case 4u:{return vec3<f32>(rising,low,v);}default:{return vec3<f32>(v,low,falling);}}
+}
 struct VertexInput {
     @location(0) position: vec3<f32>,
     @location(1) normal: vec3<f32>,
@@ -19,29 +42,47 @@ struct VertexOutput {
     let weights = input.weights / dot(input.weights,vec4<f32>(1.0));
     let skin = palette[input.joints.x]*weights.x + palette[input.joints.y]*weights.y + palette[input.joints.z]*weights.z + palette[input.joints.w]*weights.w;
     var output: VertexOutput;
-    output.clip = camera.view_projection * skin * vec4<f32>(input.position,1.0);
+    output.clip = camera.view_projection * appearance.matrix * skin * vec4<f32>(input.position,1.0);
     let a = skin[0].xyz;
     let b = skin[1].xyz;
     let c = skin[2].xyz;
     let cofactor = mat3x3<f32>(cross(b,c),cross(c,a),cross(a,b));
     let det = dot(a,cross(b,c));
     output.normal = cofactor * input.normal / select(-max(abs(det),0.00000001),max(abs(det),0.00000001),det >= 0.0);
+    output.normal=(appearance.matrix*vec4<f32>(output.normal,0.0)).xyz;
     output.uv = input.uv;
     return output;
 }
 @fragment fn fs_main(input: VertexOutput, @builtin(front_facing) front: bool) -> @location(0) vec4<f32> {
-    let color = textureSample(diffuse, material_sampler, input.uv);
+    var color = textureSample(diffuse, material_sampler, input.uv);
     // This first native material implements opaque/cutout diffuse only.
     // Translucency, Sims shader families and layer compositing require qualification.
     if color.a < 0.5 { discard; }
+    if modifiers.hsv_opacity.w<=0.0 {discard;}
+    if any(modifiers.hsv_opacity.xyz!=vec3<f32>(0.0)){
+        color=vec4<f32>(linear_from_srgb(shifted_color(srgb_from_linear(color.rgb),modifiers.hsv_opacity.xyz)),color.a);
+    }
     var normal = input.normal / max(length(input.normal),0.00000001);
     if !front { normal = -normal; }
     let key = max(dot(normal,normalize(vec3<f32>(-0.6,1.0,0.75))),0.0);
     let fill = max(dot(normal,normalize(vec3<f32>(0.9,0.5,0.2))),0.0);
     let rim = max(dot(normal,normalize(vec3<f32>(0.1,0.8,-0.9))),0.0);
-    let light = vec3<f32>(0.28) + vec3<f32>(0.72,0.68,0.61)*key + vec3<f32>(0.24,0.29,0.34)*fill + vec3<f32>(0.18,0.21,0.22)*rim;
-    return vec4<f32>(color.rgb*light,1.0);
+    var light = vec3<f32>(0.28) + vec3<f32>(0.72,0.68,0.61)*key + vec3<f32>(0.24,0.29,0.34)*fill + vec3<f32>(0.18,0.21,0.22)*rim;
+    if lighting.ambient.z>0.0 {
+        light=vec3<f32>(mix(lighting.ambient.x,lighting.ambient.y,normal.y*0.5+0.5));
+        for(var i=0u;i<2u;i+=1u){light+=lighting.key_color[i].rgb*max(dot(normal,lighting.key_direction[i].xyz),0.0);}
+        // Exact source colors/strengths; rim direction and transfer function
+        // remain explicitly unqualified pending original shader comparison.
+        light+=lighting.rim_color[0].rgb*pow(max(-normal.x,0.0),lighting.rim_color[0].w);
+        light+=lighting.rim_color[1].rgb*pow(max(normal.x,0.0),lighting.rim_color[1].w);
+    }
+    return vec4<f32>(color.rgb*light,modifiers.hsv_opacity.w);
 }
+
+struct RoomMeshInput{@location(0) position:vec3<f32>,@location(1) normal:vec3<f32>,@location(2) uv:vec2<f32>,@location(3) color:vec4<f32>}
+struct RoomMeshOutput{@builtin(position) clip:vec4<f32>,@location(0) uv:vec2<f32>,@location(1) color:vec4<f32>}
+@vertex fn vs_room_mesh(input:RoomMeshInput)->RoomMeshOutput{var output:RoomMeshOutput;output.clip=camera.view_projection*vec4<f32>(input.position,1.0);output.uv=input.uv;output.color=input.color;return output;}
+@fragment fn fs_room_mesh(input:RoomMeshOutput)->@location(0)vec4<f32>{let texel=textureSample(diffuse,material_sampler,input.uv);return texel*input.color*modifiers.hsv_opacity;}
 
 // Native backdrop fitted to the unmodified game-CAS reference. This owns no
 // captured image/asset. Room models, lights and contact shadows have separate

@@ -2,22 +2,42 @@
 //! Qualification is explicit; no authoring body or neutral appearance fallback.
 mod region;
 mod resource;
+mod selection;
+pub use selection::{excluded_by_reference_mask, PartSelection, PartSubstitution};
+mod packed;
 mod tuning;
+pub use packed::{inspect_combined_data, inspect_combined_tuning,inspect_packed_xml_document};
+mod reference_tuning;
+pub use reference_tuning::{
+    reference_context_matches, select_reference_tuning, ReferenceTuningSelection,
+};
+mod deformation;
+pub use deformation::{
+    build_reference_deformation, reference_region_allows, ReferenceDeformOptions,
+    ReferenceDeformation, ReferenceMeshDeformation, ReferenceOperationResult,
+    ReferenceOperationState,
+};
+mod cas_pose;
+pub use cas_pose::{resolve_cas_stand_idle,inspect_cas_idle_controllers,CasStandIdle,CasIdleController};
 use external_cas_assets::{CasPart, Catalog, Geometry, ReadLimits, ResourceKey, Rig};
-use external_cas_morph::{build_morph_plan, MorphOptions, MorphPlan};
+use external_cas_morph::{build_morph_plan_cancellable, MorphOptions, MorphPlan};
 use external_cas_scene::{
-    resolve_scene, FormSelection, SceneOptions, ScenePlan, ScopeCoverage, ScopePolicy,
+    resolve_scene, resolve_scene_scoped, FormSelection, SceneOptions, ScenePlan, ScopeCoverage,
+    ScopePolicy,
 };
 use external_cas_tray::{AppearanceForm, GeneticPart, OutfitPartAppearance, SimAppearance};
 pub use region::{RegionBlock, RegionMap, RegionMembership};
 use resource::Resolver;
-pub use resource::{ProviderObservation, ResourceObservation};
+pub use resource::{ProviderObservation, ResourceObservation, Resolver as ResourceResolver};
 use std::{
     fmt,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
     },
+};
+pub use tuning::{
+    inspect_combined_classes, inspect_tuning_classes, CombinedClassInspection, ResolvedTuningNode, ResolvedTuningRecord,
 };
 pub use tuning::{inspect_combined_xml, CombinedXmlInspection, TuningContext, TuningRecord};
 #[derive(Clone, Debug)]
@@ -60,6 +80,7 @@ pub enum Stage {
     Parts,
     Meshes,
     Materials,
+    Tuning,
     Morphs,
     Finalize,
 }
@@ -126,6 +147,11 @@ pub struct CharacterPart {
     pub native_slot: OutfitPartAppearance,
     pub casp_candidates: Vec<ResourceKey>,
     pub source: Option<Arc<ResourceObservation>>,
+    pub original_source: Option<Arc<ResourceObservation>>,
+    pub substitution: Option<PartSubstitution>,
+    pub substitution_unresolved: bool,
+    pub reference_selection: PartSelection,
+    pub selected_lod: Option<u8>,
     pub casp: Option<Arc<CasPart>>,
     pub meshes: Vec<CharacterMesh>,
     pub materials: Vec<MaterialDependency>,
@@ -147,6 +173,14 @@ pub struct CharacterStep {
     pub detail: String,
 }
 #[derive(Clone, Debug)]
+pub struct TuningSource {
+    /// Effective full-TGI source plus all provider/index/payload observations.
+    pub source: Arc<ResourceObservation>,
+    pub binary: Option<bool>,
+    pub inspection: Option<Arc<CombinedXmlInspection>>,
+    pub issues: Vec<String>,
+}
+#[derive(Clone, Debug)]
 pub struct CharacterPlan {
     pub native: SimAppearance,
     pub scene: ScenePlan,
@@ -155,6 +189,7 @@ pub struct CharacterPlan {
     pub parts: Vec<CharacterPart>,
     pub genetic_parts: Vec<GeneticPartObservation>,
     pub skin_materials: Vec<MaterialDependency>,
+    pub tuning: Vec<TuningSource>,
     pub gates: Vec<CharacterGate>,
     pub steps: Vec<CharacterStep>,
     pub scope_coverage: Option<ScopeCoverage>,
@@ -270,7 +305,7 @@ pub fn assemble_character_with_progress<'a>(
         version = choices.observed_game_version;
     }
     let scene = if policy.is_some() {
-        resolve_scene(native, catalog, &scene_options)
+        resolve_scene_scoped(native, catalog, &scene_options, policy)
     } else {
         first
     };
@@ -283,6 +318,7 @@ pub fn assemble_character_with_progress<'a>(
         parts: vec![],
         genetic_parts: vec![],
         skin_materials: vec![],
+        tuning: vec![],
         gates: vec![],
         steps: vec![CharacterStep {
             stage: Stage::Scene,
@@ -377,6 +413,11 @@ pub fn assemble_character_with_progress<'a>(
                     .map(|p| p.resource.requested_keys.clone())
                     .unwrap_or_default(),
                 source: None,
+                original_source: None,
+                substitution: None,
+                substitution_unresolved: false,
+                reference_selection: PartSelection::Unqualified,
+                selected_lod: None,
                 casp: None,
                 meshes: vec![],
                 materials: vec![],
@@ -412,6 +453,42 @@ pub fn assemble_character_with_progress<'a>(
                 part.issues
                     .push("No unique full-TGI CASP selection for native outfit slot".into());
             }
+            part.original_source = part.source.clone();
+            if let Some(casp) = &part.casp {
+                let frame = external_cas_morph::native_frame_gender(native).ok();
+                match selection::substitution_target(casp, native.gender, frame) {
+                    Ok(Some((key, reason))) => {
+                        let source = resolver.get(key);
+                        match source.bytes.as_ref().map(|b| CasPart::parse(b)).transpose() {
+                            Ok(Some(casp)) => {
+                                part.substitution = Some(PartSubstitution {
+                                    original: part.source.as_ref().unwrap().key,
+                                    replacement: key,
+                                    reason,
+                                });
+                                part.source = Some(source);
+                                part.casp = Some(Arc::new(casp));
+                            }
+                            Ok(None) => {
+                                part.substitution_unresolved = true;
+                                part.issues.push(format!(
+                                    "Declared CASP replacement {key} unresolved: {:?}",
+                                    source.error
+                                ));
+                            }
+                            Err(e) => {
+                                part.substitution_unresolved = true;
+                                part.issues.push(e.to_string());
+                            }
+                        }
+                    }
+                    Ok(None) => {}
+                    Err(e) => {
+                        part.substitution_unresolved = true;
+                        part.issues.push(e);
+                    }
+                }
+            }
             if let Some(casp) = &part.casp {
                 if let Some(r) = casp
                     .roles
@@ -438,7 +515,7 @@ pub fn assemble_character_with_progress<'a>(
                     }
                     part.region_source = Some(source);
                 }
-                let lod_keys = casp
+                let mut lod_keys = casp
                     .roles
                     .iter()
                     .filter(|r| {
@@ -446,6 +523,23 @@ pub fn assemble_character_with_progress<'a>(
                     })
                     .map(|r| r.key)
                     .collect::<Vec<_>>();
+                if lod_keys.is_empty() && options.lod == 0 && casp.has_mesh() == Some(true) {
+                    lod_keys = casp
+                        .roles
+                        .iter()
+                        .filter(|r| r.role == "mesh" && r.lod == Some(1) && r.key.instance_id != 0)
+                        .map(|r| r.key)
+                        .collect();
+                    if !lod_keys.is_empty() {
+                        part.selected_lod = Some(1);
+                    }
+                }
+                if !lod_keys.is_empty() && part.selected_lod.is_none() {
+                    part.selected_lod = Some(options.lod);
+                }
+                if lod_keys.is_empty() && casp.has_mesh() == Some(true) {
+                    part.issues.push("Native CASP declares mesh descriptors but requested/source fallback LOD has no geometry".into());
+                }
                 for (key_index, key) in lod_keys.iter().enumerate() {
                     check(cancel)?;
                     progress(CharacterProgress {
@@ -586,6 +680,61 @@ pub fn assemble_character_with_progress<'a>(
             }
         }
     }
+    let tuning_keys = catalog
+        .by_key
+        .keys()
+        .filter(|k| k.type_id == 0x62e94d38)
+        .copied()
+        .collect::<std::collections::BTreeSet<_>>();
+    if tuning_keys.len() > 4096 {
+        plan.gates.push(gate(
+            GateCode::ResourceBudget,
+            "combined tuning",
+            "Combined source count exceeds4096; no arbitrary subset accepted",
+        ));
+    } else {
+        let total = tuning_keys.len();
+        for (index, key) in tuning_keys.into_iter().enumerate() {
+            check(cancel)?;
+            progress(CharacterProgress {
+                stage: Stage::Tuning,
+                completed: index,
+                total,
+                detail: key.to_string(),
+            });
+            let source = resolver.get(key);
+            let mut observation = TuningSource {
+                source: source.clone(),
+                binary: None,
+                inspection: None,
+                issues: vec![],
+            };
+            if let Some(raw) = &source.bytes {
+                observation.binary = Some(raw.starts_with(b"DATA"));
+                match inspect_combined_tuning(raw, cancel) {
+                    Ok(inspection) => {
+                        observation.issues.extend(inspection.issues.iter().cloned());
+                        observation.inspection = Some(Arc::new(inspection));
+                    }
+                    Err(e) => observation.issues.push(e.to_string()),
+                }
+            } else {
+                observation.issues.push(
+                    source
+                        .error
+                        .clone()
+                        .unwrap_or("Combined tuning source unavailable".into()),
+                );
+            }
+            check(cancel)?;
+            for issue in &observation.issues {
+                plan.gates
+                    .push(gate(GateCode::Morphology, key.to_string(), issue));
+            }
+            plan.tuning.push(observation);
+        }
+        plan.steps.push(CharacterStep{stage:Stage::Tuning,completed:total,total,detail:"Effective combined sources inspected; native context and embedded-record precedence remain explicit gates".into()});
+    }
     plan.resource_bytes = resolver.bytes;
     check(cancel)?;
     progress(CharacterProgress {
@@ -596,7 +745,7 @@ pub fn assemble_character_with_progress<'a>(
     });
     let mut mo = options.morph.clone();
     mo.read_limits = options.read_limits;
-    match build_morph_plan(native, &plan.scene, catalog, policy, &mo) {
+    match build_morph_plan_cancellable(native, &plan.scene, catalog, policy, &mo, cancel) {
         Ok(m) => {
             for issue in &m.issues {
                 plan.gates.push(gate(
@@ -614,6 +763,7 @@ pub fn assemble_character_with_progress<'a>(
         )),
     }
     check(cancel)?;
+    selection::apply_reference_visibility(&mut plan.parts);
     plan.gates.push(gate(GateCode::NativePartSelection,"native visibility","CASP exclusions, opposite-frame substitutions, shoes and region-layer selection need full qualification; inspection meshes remain explicitly labeled"));
     plan.gates.push(gate(GateCode::MaterialComposition,"native materials","Texture dependency selection does not qualify skin/sculpt/outfit layer composition, color shifts, MTNF shader bindings or game lighting"));
     plan.gates.push(gate(GateCode::NativeEligibility,"complete character gate","Combined deformation ordering, required tuning and every native material/visibility gate must qualify before complete character rendering"));

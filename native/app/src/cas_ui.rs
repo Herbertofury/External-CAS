@@ -1,15 +1,16 @@
 //! CAS-oriented native layout, grounded in the preserved EA-control captures.
 //! Vector navigation marks are authored here. Game artwork/fonts are not bundled.
 //! This layout does not claim room, full-Sim or native-game appearance parity.
-use crate::{library, Studio, Tab};
-use eframe::egui::{self, pos2, vec2, Color32, FontId, Id, Order, Pos2, Rect, Sense, Stroke};
+use crate::{Studio, Tab, library};
+use eframe::egui::{self, Color32, FontId, Id, Order, Pos2, Rect, Sense, Stroke, pos2, vec2};
 use std::{
+    collections::BTreeMap,
     path::PathBuf,
     sync::atomic::Ordering,
     sync::{
+        Arc,
         atomic::AtomicBool,
         mpsc::{self, Receiver},
-        Arc,
     },
     time::{Duration, Instant},
 };
@@ -25,6 +26,18 @@ pub struct InstalledUiState {
     receiver: Option<Receiver<Result<PreparedUi, String>>>,
     cancel: Arc<AtomicBool>,
     textures: Vec<egui::TextureHandle>,
+    symbols: Arc<BTreeMap<(String, String), SourceSymbolTexture>>,
+}
+#[derive(Clone)]
+struct SourceSymbolTexture {
+    texture: egui::TextureHandle,
+    dimensions: [u32; 2],
+}
+struct PreparedSymbol {
+    symbol: String,
+    state: String,
+    dimensions: [u32; 2],
+    rgba: Vec<u8>,
 }
 struct PreparedUi {
     provider: PathBuf,
@@ -32,6 +45,7 @@ struct PreparedUi {
     atlases: Vec<external_cas_fidelity::installed::InstalledAtlas>,
     pins: Vec<external_cas_fidelity::installed::SourcePin>,
     issues: Vec<String>,
+    symbols: Vec<PreparedSymbol>,
 }
 impl InstalledUiState {
     pub fn new() -> Self {
@@ -44,6 +58,7 @@ impl InstalledUiState {
             receiver: None,
             cancel: Arc::new(AtomicBool::new(false)),
             textures: Vec::new(),
+            symbols: Arc::new(BTreeMap::new()),
         }
     }
     pub fn is_loading(&self) -> bool {
@@ -76,6 +91,12 @@ impl InstalledUiState {
         self.pins.clear();
         self.issues.clear();
         self.textures.clear();
+        self.symbols = Arc::new(BTreeMap::new());
+        ctx.data_mut(|data| {
+            data.remove::<Arc<BTreeMap<(String, String), SourceSymbolTexture>>>(Id::new(
+                "installed-source-symbols",
+            ))
+        });
         self.status = "Reading installed CAS UI resources…".into();
         ctx.set_fonts(ui_font_definitions());
         let wake = ctx.clone();
@@ -138,9 +159,39 @@ impl InstalledUiState {
                         )
                     })
                     .collect();
+                self.symbols = Arc::new(
+                    prepared
+                        .symbols
+                        .into_iter()
+                        .map(|symbol| {
+                            let texture = ctx.load_texture(
+                                format!("source-{}-{}", symbol.symbol, symbol.state),
+                                egui::ColorImage::from_rgba_unmultiplied(
+                                    [symbol.dimensions[0] as usize, symbol.dimensions[1] as usize],
+                                    &symbol.rgba,
+                                ),
+                                egui::TextureOptions::LINEAR,
+                            );
+                            (
+                                (symbol.symbol, symbol.state),
+                                SourceSymbolTexture {
+                                    texture,
+                                    dimensions: symbol.dimensions,
+                                },
+                            )
+                        })
+                        .collect(),
+                );
+                ctx.data_mut(|data| {
+                    data.insert_temp(
+                        Id::new("installed-source-symbols"),
+                        Arc::clone(&self.symbols),
+                    )
+                });
                 self.status = format!(
-                    "Installed UI: {font_count} original fonts, {} decoded atlases",
-                    self.textures.len()
+                    "Installed UI: {font_count} original fonts, {} atlases, {} source states",
+                    self.textures.len(),
+                    self.symbols.len()
                 );
                 self.provider = Some(prepared.provider);
                 self.pins = prepared.pins;
@@ -211,8 +262,14 @@ fn prepare_installed_ui(provider: PathBuf, cancel: &AtomicBool) -> Result<Prepar
         atlases: Vec::new(),
         pins: Vec::new(),
         issues: Vec::new(),
+        symbols: Vec::new(),
     };
-    for name in ["gfxfontlib", "CASLibrary", "ComponentLibrary"] {
+    for name in [
+        "gfxfontlib",
+        "CASLibrary",
+        "ComponentLibrary",
+        "CASNavigation",
+    ] {
         if cancel.load(Ordering::Relaxed) {
             return Err("Superseded installed UI load".into());
         }
@@ -232,21 +289,74 @@ fn prepare_installed_ui(provider: PathBuf, cancel: &AtomicBool) -> Result<Prepar
             let converted = truetype::convert(&font)?;
             prepared.fonts.push((alias, converted.bytes));
         }
+        let mut local_atlases = Vec::new();
         for image in &movie.external_images {
             match load_atlas(&index, image) {
                 Ok(atlas) => {
-                    prepared.pins.push(atlas.pin.clone());
-                    prepared.atlases.push(atlas);
+                    local_atlases.push((image.id, atlas));
                 }
                 Err(error) => prepared.issues.push(format!("{name}: {error}")),
             }
+        }
+        if name == "CASNavigation" {
+            use external_cas_fidelity::{
+                symbol_raster::{AtlasBinding, AtlasPresentation, rasterize},
+                timeline::SymbolLibrary,
+            };
+            let symbols = SymbolLibrary::new(&movie)?;
+            let bindings: Vec<_> = local_atlases
+                .iter()
+                .map(|(image_id, atlas)| AtlasBinding {
+                    image_id: *image_id,
+                    atlas,
+                })
+                .collect();
+            for symbol in [
+                "SimRotationLeftButton",
+                "SimRotationRightButton",
+                "widgets.CAS.Navigation.CasUndoButton",
+                "widgets.CAS.Navigation.CasRedoButton",
+                "CancelButton",
+                "HouseholdSaveButton",
+            ] {
+                for state in ["up", "over", "down", "disabled"] {
+                    if cancel.load(Ordering::Relaxed) {
+                        return Err("Superseded installed UI load".into());
+                    }
+                    let rendered = symbols.frame(symbol, Some(state), 0).and_then(|frame| {
+                        rasterize(
+                            &frame,
+                            &movie,
+                            &bindings,
+                            1.,
+                            None,
+                            AtlasPresentation::RedLuminanceGreenAlpha,
+                        )
+                    });
+                    match rendered {
+                        Ok(image) => prepared.symbols.push(PreparedSymbol {
+                            symbol: symbol.into(),
+                            state: state.into(),
+                            dimensions: image.dimensions,
+                            rgba: image.rgba,
+                        }),
+                        Err(error) => prepared
+                            .issues
+                            .push(format!("Source control {symbol}/{state}: {error}")),
+                    }
+                }
+            }
+        }
+        for (_, atlas) in local_atlases {
+            prepared.pins.push(atlas.pin.clone());
+            prepared.atlases.push(atlas);
         }
         prepared.pins.push(loaded.pin);
     }
     index
         .revalidate(cancel)
         .map_err(|error| error.to_string())?;
-    prepared.issues.push("Installed font outlines are reused; display-list behavior, atlas symbol mapping and full CAS visual parity remain under validation.".into());
+    prepared.issues.push("Installed fonts and six navigation control symbols are reused. Source hover animation, category/engine-assigned icons, other display-list features and full CAS parity remain under validation.".into());
     Ok(prepared)
 }
 
@@ -299,9 +409,11 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
             );
             if response.dragged() {
                 let delta = response.drag_delta();
-                studio.viewport.camera.yaw += delta.x * 0.007;
-                studio.viewport.camera.pitch =
-                    (studio.viewport.camera.pitch + delta.y * 0.005).clamp(-1.3, 1.3);
+                studio.viewport.model_yaw += delta.x * 0.007;
+                if response.dragged_by(egui::PointerButton::Secondary) {
+                    studio.viewport.camera.target[1] =
+                        (studio.viewport.camera.target[1] + delta.y * 0.002).clamp(-1., 3.);
+                }
                 ctx.request_repaint();
             }
             if response.drag_stopped() {
@@ -524,6 +636,7 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
                         .clicked()
                     {
                         studio.slot = sim.first_slot;
+                        studio.show_sim();
                         change_tab(studio, Tab::Project);
                     }
                 }
@@ -552,7 +665,7 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
         |ui| {
             skin(ui);
             if round_button(ui, Mark::Left, false, true, 49. * scale, "Rotate left").clicked() {
-                studio.viewport.camera.yaw -= std::f32::consts::FRAC_PI_8;
+                studio.viewport.model_yaw -= std::f32::consts::FRAC_PI_8;
                 studio.mark_session_dirty();
             }
         },
@@ -565,7 +678,7 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
         |ui| {
             skin(ui);
             if round_button(ui, Mark::Right, false, true, 49. * scale, "Rotate right").clicked() {
-                studio.viewport.camera.yaw += std::f32::consts::FRAC_PI_8;
+                studio.viewport.model_yaw += std::f32::consts::FRAC_PI_8;
                 studio.mark_session_dirty();
             }
         },
@@ -614,8 +727,7 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
                         if round_button(ui, Mark::Front, false, true, 35. * scale, "Front view")
                             .clicked()
                         {
-                            studio.viewport.camera.yaw = 0.;
-                            studio.viewport.camera.pitch = 0.08;
+                            studio.viewport.model_yaw = 0.;
                             studio.mark_session_dirty();
                         }
                         if round_button(
@@ -691,6 +803,8 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
                     || studio.session.loading
                     || studio.session.saving
                     || studio.ui_assets.loading
+                    || studio.character.loading
+                    || studio.room.loading
                 {
                     ui.spinner();
                 }
@@ -708,7 +822,9 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
         |ui| {
             ui.set_max_width(245. * scale);
             ui.label(
-                egui::RichText::new(if studio.vertices > 0 {
+                egui::RichText::new(if studio.whole_sim && studio.character.receipt.is_some() {
+                    "Native Sim · appearance qualification in progress"
+                } else if studio.vertices > 0 {
                     "Original appearance item preview"
                 } else {
                     "No Sim appearance has been rendered"
@@ -922,6 +1038,51 @@ fn round_button(
             Sense::hover()
         },
     );
+    let source_symbol = match mark {
+        Mark::Left => Some("SimRotationLeftButton"),
+        Mark::Right => Some("SimRotationRightButton"),
+        Mark::Undo => Some("widgets.CAS.Navigation.CasUndoButton"),
+        Mark::Redo => Some("widgets.CAS.Navigation.CasRedoButton"),
+        Mark::Close => Some("CancelButton"),
+        Mark::Folder => Some("HouseholdSaveButton"),
+        _ => None,
+    };
+    if let Some(symbol) = source_symbol {
+        let state = if !enabled {
+            "disabled"
+        } else if response.is_pointer_button_down_on() {
+            "down"
+        } else if response.hovered() {
+            "over"
+        } else {
+            "up"
+        };
+        let sources = ui.ctx().data(|data| {
+            data.get_temp::<Arc<BTreeMap<(String, String), SourceSymbolTexture>>>(Id::new(
+                "installed-source-symbols",
+            ))
+        });
+        if let Some(source) = sources
+            .as_ref()
+            .and_then(|sources| sources.get(&(symbol.into(), state.into())))
+        {
+            let available = rect.shrink(size * 0.02);
+            let source_size = vec2(source.dimensions[0] as f32, source.dimensions[1] as f32);
+            let factor =
+                (available.width() / source_size.x).min(available.height() / source_size.y);
+            let target = Rect::from_center_size(available.center(), source_size * factor);
+            ui.painter().image(
+                source.texture.id(),
+                target,
+                Rect::from_min_max(pos2(0., 0.), pos2(1., 1.)),
+                Color32::WHITE,
+            );
+            response.widget_info(|| {
+                egui::WidgetInfo::labeled(egui::WidgetType::Button, enabled, label)
+            });
+            return response.on_hover_text(label);
+        }
+    }
     let fill = if selected {
         GREEN
     } else if enabled && response.hovered() {
@@ -1202,6 +1363,7 @@ mod installed_ui_tests {
             atlases: Vec::new(),
             pins: Vec::new(),
             issues: Vec::new(),
+            symbols: Vec::new(),
         }))
         .unwrap();
         state.poll(&ctx);

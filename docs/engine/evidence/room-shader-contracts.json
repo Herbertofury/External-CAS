@@ -1,0 +1,583 @@
+{
+  "schema": 1,
+  "precomp_sha256": "62ffab0f85c3af8ace5a375c968216d1ada2b1c9c2d18f32aa4b25d250a0b101",
+  "runtime_selection_qualified": false,
+  "field_names_hash_validated": true,
+  "families": [
+    {
+      "source_name": "FullBright",
+      "hash": "14FA335E",
+      "source_record": 14,
+      "source_offset": 79088768,
+      "fields": [
+        {
+          "name": "OPT_VERTEXCOLOR",
+          "hash": "78EA8D8E",
+          "multiplier": 1,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_SKINNING",
+          "hash": "96DE15F6",
+          "multiplier": 2,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_ALPHATESTENABLED",
+          "hash": "136B6D20",
+          "multiplier": 4,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_FADE_ENABLED",
+          "hash": "F8EF773B",
+          "multiplier": 8,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_ALPHA_BLEND_ENABLED",
+          "hash": "E350A4DF",
+          "multiplier": 16,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_TRANSLUCENT",
+          "hash": "A23A1230",
+          "multiplier": 32,
+          "start": 0,
+          "range": 2
+        }
+      ],
+      "feature_dependency_names": [
+        "VertexColorScale",
+        "AlphaMaskThreshold",
+        "FadeEnabled",
+        "AlphaBlendEnabled",
+        "Translucent"
+      ],
+      "selected_candidates": [
+        {
+          "effect_ordinal": 28139,
+          "mask": 0,
+          "source_words": [
+            351941470,
+            0,
+            0,
+            4294967295,
+            1023,
+            2464492,
+            1
+          ],
+          "vs_ref": 2404,
+          "ps_ref": 8522
+        },
+        {
+          "effect_ordinal": 28141,
+          "mask": 2,
+          "source_words": [
+            351941470,
+            2,
+            0,
+            4294967295,
+            1023,
+            2464460,
+            1
+          ],
+          "vs_ref": 2406,
+          "ps_ref": 8522
+        }
+      ]
+    },
+    {
+      "source_name": "GlassForObjectsTranslucent",
+      "hash": "849CF021",
+      "source_record": 92,
+      "source_offset": 79131056,
+      "fields": [
+        {
+          "name": "MAP_DIFFUSE",
+          "hash": "A860371A",
+          "multiplier": 1,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_EDGEDARKEN",
+          "hash": "195DEE05",
+          "multiplier": 2,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "MAP_DIRTOVERLAY",
+          "hash": "6148BCD5",
+          "multiplier": 4,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_SKINNING",
+          "hash": "96DE15F6",
+          "multiplier": 8,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "MAP_NORMAL",
+          "hash": "E09BAB91",
+          "multiplier": 16,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_VERTEXCOLOR_LAMP",
+          "hash": "B8C8AF2F",
+          "multiplier": 32,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_INTERIOR",
+          "hash": "7118869B",
+          "multiplier": 64,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_SWITCH_SHADOWMAP_TYPE",
+          "hash": "F2477C6F",
+          "multiplier": 128,
+          "start": 0,
+          "range": 4
+        }
+      ],
+      "feature_dependency_names": [
+        "DiffuseMap",
+        "EdgeDarkening",
+        "DirtOverlay",
+        "NormalMap",
+        "SpecMap",
+        "CubeEnvMap",
+        "UseVertSelfIllumination",
+        "Interior",
+        "ShadowmapTypeDepthNV",
+        "ShadowMapTypeDepthATI",
+        "ShadowMapTypeDepthCascade"
+      ],
+      "selected_candidates": [
+        {
+          "effect_ordinal": 24572,
+          "mask": 0,
+          "source_words": [
+            2224877601,
+            0,
+            2,
+            4294967295,
+            767,
+            2458276,
+            1
+          ],
+          "vs_ref": 7622,
+          "ps_ref": 29383
+        },
+        {
+          "effect_ordinal": 59595,
+          "mask": 0,
+          "source_words": [
+            2224877601,
+            0,
+            2,
+            4294967295,
+            255,
+            2495076,
+            1
+          ],
+          "vs_ref": 2413,
+          "ps_ref": 8535
+        },
+        {
+          "effect_ordinal": 24578,
+          "mask": 8,
+          "source_words": [
+            2224877601,
+            8,
+            2,
+            4294967295,
+            767,
+            2458180,
+            1
+          ],
+          "vs_ref": 7624,
+          "ps_ref": 29389
+        },
+        {
+          "effect_ordinal": 59601,
+          "mask": 8,
+          "source_words": [
+            2224877601,
+            8,
+            2,
+            4294967295,
+            255,
+            2494980,
+            1
+          ],
+          "vs_ref": 2415,
+          "ps_ref": 8541
+        }
+      ]
+    },
+    {
+      "source_name": "FlatMirror",
+      "hash": "A68D9E29",
+      "source_record": 119,
+      "source_offset": 79147712,
+      "fields": [
+        {
+          "name": "OPT_INTERIOR",
+          "hash": "7118869B",
+          "multiplier": 1,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_REFLECTIONMAP",
+          "hash": "377732A2",
+          "multiplier": 2,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_FADE_ENABLED",
+          "hash": "F8EF773B",
+          "multiplier": 4,
+          "start": 0,
+          "range": 2
+        }
+      ],
+      "feature_dependency_names": [
+        "Interior",
+        "ReflectionTexture",
+        "FadeEnabled"
+      ],
+      "selected_candidates": [
+        {
+          "effect_ordinal": 25300,
+          "mask": 0,
+          "source_words": [
+            2794298921,
+            0,
+            4096,
+            4294967295,
+            767,
+            2457188,
+            2
+          ],
+          "vs_ref": 28,
+          "ps_ref": 64
+        },
+        {
+          "effect_ordinal": 25300,
+          "mask": 0,
+          "source_words": [
+            2794298921,
+            0,
+            4096,
+            4294967295,
+            767,
+            2457188,
+            2
+          ],
+          "vs_ref": 28,
+          "ps_ref": 65
+        },
+        {
+          "effect_ordinal": 66926,
+          "mask": 0,
+          "source_words": [
+            2794298921,
+            0,
+            4096,
+            4294967295,
+            255,
+            2473852,
+            2
+          ],
+          "vs_ref": 28,
+          "ps_ref": 1724
+        },
+        {
+          "effect_ordinal": 66926,
+          "mask": 0,
+          "source_words": [
+            2794298921,
+            0,
+            4096,
+            4294967295,
+            255,
+            2473852,
+            2
+          ],
+          "vs_ref": 28,
+          "ps_ref": 65
+        }
+      ]
+    },
+    {
+      "source_name": "dropshadow",
+      "hash": "C09C7582",
+      "source_record": 138,
+      "source_offset": 79158416,
+      "fields": [
+        {
+          "name": "OPT_FADE_ENABLED",
+          "hash": "F8EF773B",
+          "multiplier": 1,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "OPT_INTERIOR",
+          "hash": "7118869B",
+          "multiplier": 2,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "name": "SUPPORT_SSAO",
+          "hash": "FE0792D3",
+          "multiplier": 4,
+          "start": 0,
+          "range": 2
+        }
+      ],
+      "feature_dependency_names": [
+        "FadeEnabled",
+        "ShadowmapTypeDepthNV",
+        "ShadowMapTypeDepthATI",
+        "ShadowMapTypeDepthCascade",
+        "Interior"
+      ],
+      "selected_candidates": [
+        {
+          "effect_ordinal": 67627,
+          "mask": 0,
+          "source_words": [
+            3231479170,
+            0,
+            0,
+            4294967295,
+            1023,
+            2475692,
+            1
+          ],
+          "vs_ref": 2291,
+          "ps_ref": 8266
+        }
+      ]
+    }
+  ],
+  "additional_candidates": [
+    {
+      "family": "849CF021",
+      "mask": 1,
+      "effect_ordinal": 24573,
+      "source_words": [
+        2224877601,
+        1,
+        2,
+        4294967295,
+        767,
+        2458260,
+        1
+      ],
+      "techniques": [
+        {
+          "raw00": 1227803260,
+          "passes": [
+            {
+              "vs": 7623,
+              "ps": 29384,
+              "state_start": 118534,
+              "state_count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "family": "849CF021",
+      "mask": 1,
+      "effect_ordinal": 59596,
+      "source_words": [
+        2224877601,
+        1,
+        2,
+        4294967295,
+        255,
+        2495060,
+        1
+      ],
+      "techniques": [
+        {
+          "raw00": 1227803260,
+          "passes": [
+            {
+              "vs": 2414,
+              "ps": 8536,
+              "state_start": 31015,
+              "state_count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "family": "849CF021",
+      "mask": 9,
+      "effect_ordinal": 24579,
+      "source_words": [
+        2224877601,
+        9,
+        2,
+        4294967295,
+        767,
+        2458164,
+        1
+      ],
+      "techniques": [
+        {
+          "raw00": 1227803260,
+          "passes": [
+            {
+              "vs": 7625,
+              "ps": 29390,
+              "state_start": 118546,
+              "state_count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "family": "849CF021",
+      "mask": 9,
+      "effect_ordinal": 59602,
+      "source_words": [
+        2224877601,
+        9,
+        2,
+        4294967295,
+        255,
+        2494964,
+        1
+      ],
+      "techniques": [
+        {
+          "raw00": 1227803260,
+          "passes": [
+            {
+              "vs": 2416,
+              "ps": 8542,
+              "state_start": 31027,
+              "state_count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "family": "A68D9E29",
+      "mask": 2,
+      "effect_ordinal": 25302,
+      "source_words": [
+        2794298921,
+        2,
+        4096,
+        4294967295,
+        767,
+        2457180,
+        2
+      ],
+      "techniques": [
+        {
+          "raw00": 1026971097,
+          "passes": [
+            {
+              "vs": 29,
+              "ps": 67,
+              "state_start": 0,
+              "state_count": 0
+            }
+          ]
+        },
+        {
+          "raw00": 2929728080,
+          "passes": [
+            {
+              "vs": 29,
+              "ps": 68,
+              "state_start": 2170,
+              "state_count": 3
+            },
+            {
+              "vs": 29,
+              "ps": 67,
+              "state_start": 2173,
+              "state_count": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "family": "A68D9E29",
+      "mask": 2,
+      "effect_ordinal": 66928,
+      "source_words": [
+        2794298921,
+        2,
+        4096,
+        4294967295,
+        255,
+        2473844,
+        2
+      ],
+      "techniques": [
+        {
+          "raw00": 1026971097,
+          "passes": [
+            {
+              "vs": 29,
+              "ps": 1726,
+              "state_start": 0,
+              "state_count": 0
+            }
+          ]
+        },
+        {
+          "raw00": 2929728080,
+          "passes": [
+            {
+              "vs": 29,
+              "ps": 68,
+              "state_start": 9887,
+              "state_count": 3
+            },
+            {
+              "vs": 29,
+              "ps": 1726,
+              "state_start": 9890,
+              "state_count": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

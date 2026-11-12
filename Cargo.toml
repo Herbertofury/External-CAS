@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["native/app", "native/assets", "native/tray", "native/animation", "native/scene", "native/session", "native/catalog", "native/morph", "native/fidelity", "native/character"]
+members = ["native/app", "native/assets", "native/tray", "native/animation", "native/scene", "native/session", "native/catalog", "native/morph", "native/fidelity", "native/character", "native/link", "native/material", "native/room", "native/shader", "native/render"]
 default-members = ["native/app"]
 
 [profile.dev]

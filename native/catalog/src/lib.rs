@@ -9,12 +9,16 @@ use std::{
     fs::{File, OpenOptions},
     path::{Path, PathBuf},
     sync::atomic::{AtomicBool, Ordering},
-    time::{SystemTime, UNIX_EPOCH},
+    time::{Instant, SystemTime, UNIX_EPOCH},
 };
 
 const APPLICATION_ID: i32 = 0x45434153;
 const SCHEMA_VERSION: i32 = 3;
+mod publication;
 mod scope;
+pub use publication::{
+    CacheBatchLimits, CacheBatchProgress, CachePackageUpdate, StoreBatchTimings,
+};
 #[derive(Debug)]
 pub enum Error {
     Io(std::io::Error),
@@ -111,8 +115,58 @@ pub struct CatalogCache {
     connection: rusqlite::Connection,
     pub path: PathBuf,
 }
+/// Optional targeted wall timings for a real complete-package publication.
+/// No source bytes, paths, metadata or payload hashes are included.
+#[derive(Clone, Debug, Default)]
+pub struct StorePackageTimings {
+    pub total_ms: f64,
+    pub validate_complete_ms: f64,
+    pub lease_ms: f64,
+    pub source_before_ms: f64,
+    pub begin_ms: f64,
+    pub sql_rows_ms: f64,
+    pub source_after_ms: f64,
+    pub commit_ms: f64,
+    pub parts: usize,
+    pub unsupported: usize,
+    pub grams: u64,
+}
+#[derive(Clone, Debug, Default)]
+pub struct LoadPackageTimings {
+    pub total_ms: f64,
+    pub lease_ms: f64,
+    pub source_before_ms: f64,
+    pub lookup_ms: f64,
+    pub rows_ms: f64,
+    pub json_parse_ms: f64,
+    pub complete_validation_ms: f64,
+    pub source_after_ms: f64,
+    pub commit_ms: f64,
+    pub parts: usize,
+}
 
 impl CatalogCache {
+    /// Per-connection SQLite page-cache target, not a metadata/library limit.
+    /// SQLite allocates lazily; this is not a process-memory ceiling.
+    pub fn set_page_cache_budget_kib(&self, kib: u32) -> Result<()> {
+        if kib == 0 || kib > i32::MAX as u32 {
+            return Err(Error::Invalid(
+                "SQLite page-cache budget is outside its supported positive range".into(),
+            ));
+        }
+        let requested = -i64::from(kib);
+        self.connection
+            .pragma_update(None, "cache_size", requested)?;
+        let actual: i64 = self
+            .connection
+            .pragma_query_value(None, "cache_size", |row| row.get(0))?;
+        if actual != requested {
+            return Err(Error::Invalid(
+                "SQLite did not accept the requested page-cache target".into(),
+            ));
+        }
+        Ok(())
+    }
     /// The caller supplies a private app-data location or explicit test root.
     pub fn open(path: impl AsRef<Path>) -> Result<Self> {
         let path = path.as_ref();
@@ -173,9 +227,24 @@ impl CatalogCache {
         package: &PackageIndex,
         cancel: &AtomicBool,
     ) -> Result<Option<CachedPackage>> {
+        self.load_package_profiled(package, cancel)
+            .map(|(data, _)| data)
+    }
+    pub fn load_package_profiled(
+        &self,
+        package: &PackageIndex,
+        cancel: &AtomicBool,
+    ) -> Result<(Option<CachedPackage>, LoadPackageTimings)> {
+        let total = Instant::now();
+        let mut timing = LoadPackageTimings::default();
+        let mut stage = Instant::now();
         cancelled(cancel)?;
         let _lease = SourceLease::acquire(&package.path)?;
+        timing.lease_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         package.revalidate(cancel)?;
+        timing.source_before_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         let fp = package.fingerprint();
         let key = path_key(&fp.path);
         let modified = time_key(fp.modified);
@@ -184,8 +253,11 @@ impl CatalogCache {
         let _guard = ProgressGuard::new(&self.connection, cancel);
         let fingerprint = scope::fingerprint_signature(&fp);
         let package_id:Option<i64>=sql(tx.query_row("SELECT id FROM package WHERE path_key=?1 AND file_size=?2 AND index_sha=?3 AND modified_ns IS ?4 AND created_ns IS ?5 AND fingerprint_sha=?6 AND expected_casp_count=?7",params![key,fp.file_size as i64,fp.index_sha256.as_slice(),modified,created,fingerprint.as_slice(),fp.casp_count as i64],|r|r.get(0)).optional(),cancel)?;
+        timing.lookup_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         let Some(package_id) = package_id else {
-            return Ok(None);
+            timing.total_ms = total.elapsed().as_secs_f64() * 1000.;
+            return Ok((None, timing));
         };
         let mut result = CachedPackage::default();
         {
@@ -195,11 +267,18 @@ impl CatalogCache {
                 cancelled(cancel)?;
                 let entry_index = usize_value(row.get(0)?)?;
                 let payload_sha256 = fixed(row.get::<_, Vec<u8>>(1)?)?;
-                let casp: CasPart = serde_json::from_str(&row.get::<_, String>(2)?)?;
+                let encoded: String = row.get(2)?;
+                let parse = Instant::now();
+                let casp: CasPart = serde_json::from_str(&encoded)?;
+                timing.json_parse_ms += parse.elapsed().as_secs_f64() * 1000.;
+                timing.parts += 1;
                 // New source-derived compatibility fields must not silently
                 // become zero when an older metadata cache is reopened.
-                if casp.compatibility.is_none() {
-                    return Ok(None);
+                if casp.compatibility.is_none()
+                    || casp.version >= 44 && casp.color_sliders.is_none()
+                {
+                    timing.total_ms = total.elapsed().as_secs_f64() * 1000.;
+                    return Ok((None, timing));
                 }
                 let stored_key = ResourceKey::new(
                     u32_value(row.get(3)?)?,
@@ -227,17 +306,38 @@ impl CatalogCache {
             let mut rows = statement.query([package_id])?;
             while let Some(row) = sql(rows.next(), cancel)? {
                 cancelled(cancel)?;
-                result.unsupported.push(CachedUnsupported {
+                let unsupported = CachedUnsupported {
                     entry_index: usize_value(row.get(0)?)?,
                     message: row.get(1)?,
-                });
+                };
+                // A historical parser mistook the trailing Unknown2 index
+                // word for a committed flag. Reparse only these formerly
+                // rejected locators now that zero is qualified. Do not delete
+                // the old complete package until its replacement commits.
+                if unsupported.message == "Unsupported asset: storage marker 0x0000"
+                    && package.entries.get(unsupported.entry_index).is_some_and(|entry| {
+                        entry.committed == 0 && [0, 0x5a42, 0xffff].contains(&entry.compression)
+                    })
+                {
+                    timing.total_ms = total.elapsed().as_secs_f64() * 1000.;
+                    return Ok((None, timing));
+                }
+                result.unsupported.push(unsupported);
             }
         }
+        timing.rows_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         validate_complete(package, &result.rows, &result.unsupported)?;
+        timing.complete_validation_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         package.revalidate(cancel)?;
+        timing.source_after_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         cancelled(cancel)?;
         sql(tx.commit(), cancel)?;
-        Ok(Some(result))
+        timing.commit_ms = stage.elapsed().as_secs_f64() * 1000.;
+        timing.total_ms = total.elapsed().as_secs_f64() * 1000.;
+        Ok((Some(result), timing))
     }
     pub fn store_package(
         &mut self,
@@ -254,97 +354,62 @@ impl CatalogCache {
         rows: &[CachedPart],
         unsupported: &[CachedUnsupported],
         cancel: &AtomicBool,
-        mut progress: impl FnMut(usize),
+        progress: impl FnMut(usize),
     ) -> Result<()> {
+        self.store_package_profiled_with_progress(package, rows, unsupported, cancel, progress)
+            .map(|_| ())
+    }
+    pub fn store_package_profiled_with_progress(
+        &mut self,
+        package: &PackageIndex,
+        rows: &[CachedPart],
+        unsupported: &[CachedUnsupported],
+        cancel: &AtomicBool,
+        mut progress: impl FnMut(usize),
+    ) -> Result<StorePackageTimings> {
+        let total = Instant::now();
+        let mut timings = StorePackageTimings {
+            parts: rows.len(),
+            unsupported: unsupported.len(),
+            ..Default::default()
+        };
+        let mut stage = Instant::now();
         cancelled(cancel)?;
         validate_complete(package, rows, unsupported)?;
+        timings.validate_complete_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         let _lease = SourceLease::acquire(&package.path)?;
+        timings.lease_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         package.revalidate(cancel)?;
-        let fp = package.fingerprint();
-        let key = path_key(&fp.path);
-        let modified = time_key(fp.modified);
-        let created = time_key(fp.created);
-        let source_label = package
-            .path
-            .file_name()
-            .unwrap_or_default()
-            .to_string_lossy()
-            .into_owned();
+        timings.source_before_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         let tx = self
             .connection
             .transaction_with_behavior(TransactionBehavior::Immediate)?;
+        timings.begin_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         let _guard = ProgressGuard::new(&tx, cancel);
-        let fingerprint = scope::fingerprint_signature(&fp);
-        sql(tx.execute("INSERT INTO package(path_key,path_label,source_label,file_size,index_sha,modified_ns,created_ns,fingerprint_sha,expected_casp_count) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9) ON CONFLICT(path_key) DO UPDATE SET path_label=excluded.path_label,source_label=excluded.source_label,file_size=excluded.file_size,index_sha=excluded.index_sha,modified_ns=excluded.modified_ns,created_ns=excluded.created_ns,fingerprint_sha=excluded.fingerprint_sha,expected_casp_count=excluded.expected_casp_count",params![key,package.path.to_string_lossy(),source_label,fp.file_size as i64,fp.index_sha256.as_slice(),modified,created,fingerprint.as_slice(),fp.casp_count as i64]),cancel)?;
-        let package_id: i64 = tx.query_row(
-            "SELECT id FROM package WHERE path_key=?1",
-            [path_key(&package.path)],
-            |r| r.get(0),
-        )?;
-        sql(
-            tx.execute("DELETE FROM part WHERE package_id=?1", [package_id]),
+        timings.grams = publication::write_package_rows(
+            &tx,
+            package,
+            rows,
+            unsupported,
             cancel,
+            &mut progress,
         )?;
-        sql(
-            tx.execute("DELETE FROM unsupported WHERE package_id=?1", [package_id]),
-            cancel,
-        )?;
-        let mut done = 0;
-        {
-            let mut insert=tx.prepare("INSERT INTO part(package_id,entry_index,key_type,key_group,key_instance,name,body_type,search_norm,payload_sha,casp_json) VALUES(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10)")?;
-            let mut gram_insert = tx.prepare("INSERT INTO gram(gram,part_id) VALUES(?1,?2)")?;
-            for cached in rows {
-                cancelled(cancel)?;
-                let entry = &package.entries[cached.entry_index];
-                let json = serde_json::to_string(&cached.casp)?;
-                let normalized =
-                    format!("{} {} {}", cached.casp.name, source_label, entry.key).to_lowercase();
-                sql(
-                    insert.execute(params![
-                        package_id,
-                        cached.entry_index as i64,
-                        entry.key.type_id as i64,
-                        entry.key.group_id as i64,
-                        entry.key.instance_id.to_be_bytes().as_slice(),
-                        cached.casp.name,
-                        cached.casp.body_type as i64,
-                        normalized,
-                        cached.payload_sha256.as_slice(),
-                        json
-                    ]),
-                    cancel,
-                )?;
-                let part_id = tx.last_insert_rowid();
-                for gram in trigrams(&normalized) {
-                    cancelled(cancel)?;
-                    sql(gram_insert.execute(params![gram, part_id]), cancel)?;
-                }
-                done += 1;
-                progress(done);
-            }
-            let mut insert = tx.prepare(
-                "INSERT INTO unsupported(package_id,entry_index,message) VALUES(?1,?2,?3)",
-            )?;
-            for status in unsupported {
-                cancelled(cancel)?;
-                sql(
-                    insert.execute(params![
-                        package_id,
-                        status.entry_index as i64,
-                        status.message
-                    ]),
-                    cancel,
-                )?;
-                done += 1;
-                progress(done);
-            }
-        }
+        timings.sql_rows_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         cancelled(cancel)?;
         package.revalidate(cancel)?;
+        timings.source_after_ms = stage.elapsed().as_secs_f64() * 1000.;
+        stage = Instant::now();
         // The Windows read lease excludes source writes/replacements until commit.
         drop(_guard);
         sql(tx.commit(), cancel)?;
-        Ok(())
+        timings.commit_ms = stage.elapsed().as_secs_f64() * 1000.;
+        timings.total_ms = total.elapsed().as_secs_f64() * 1000.;
+        Ok(timings)
     }
     /// Exact Rust lowercase/all-word substring semantics. Trigrams only narrow
     /// candidates; every result is checked with str::contains. Short queries

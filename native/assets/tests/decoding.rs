@@ -88,6 +88,61 @@ fn all_shared_flags_high_tgi_raw_zlib_and_refpack() {
     );
 }
 #[test]
+#[ignore = "requires explicit private S4PY_PACKAGE_QUALIFICATION JSON; source is read-only"]
+fn installed_package_payloads_match_independent_s4py() {
+    use sha2::{Digest, Sha256};
+    let manifest = std::env::var_os("S4PY_PACKAGE_QUALIFICATION").expect("private manifest");
+    let manifest: serde_json::Value = serde_json::from_slice(&std::fs::read(manifest).unwrap()).unwrap();
+    let index = PackageIndex::open(manifest["path"].as_str().unwrap()).unwrap();
+    let mut reader = index.reader().unwrap();
+    let rows = manifest["rows"].as_array().unwrap();
+    assert_eq!(rows.len(), index.entries.len());
+    for (entry, expected) in index.entries.iter().zip(rows) {
+        assert_eq!(entry.key.to_string(), expected["key"].as_str().unwrap());
+        let bytes = reader.read_resource(entry, ReadLimits::default()).unwrap();
+        assert_eq!(bytes.len() as u64, expected["expanded"].as_u64().unwrap());
+        assert_eq!(format!("{:x}", Sha256::digest(&bytes)), expected["sha256"].as_str().unwrap());
+        assert_eq!(entry.compression as u64, expected["compression"][0].as_u64().unwrap());
+        assert_eq!(entry.committed as u64, expected["compression"][1].as_u64().unwrap());
+    }
+    index.revalidate(&AtomicBool::new(false)).unwrap();
+}
+
+#[test]
+fn zero_unknown2_preserves_codec_size_and_pin_guards() {
+    // Real packages use Unknown2=0 with zlib. It is not a committed flag.
+    let original = b"abcdefg";
+    let mut z = flate2::write::ZlibEncoder::new(Vec::new(), flate2::Compression::default());
+    z.write_all(original).unwrap();
+    let z = z.finish().unwrap();
+    let rp = [0x10, 0xfb, 0, 0, 7, 0xe0, b'a', b'b', b'c', b'd', 0xff, b'e', b'f', b'g'];
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("unknown2.package");
+    for (compression, payload) in [(0, original.as_slice()), (0x5a42, z.as_slice()), (0xffff, rp.as_slice())] {
+        let mut bytes = package(0, compression, payload, original.len() as u32);
+        let end = bytes.len();
+        bytes[end - 2..].copy_from_slice(&0u16.to_le_bytes());
+        std::fs::write(&path, &bytes).unwrap();
+        let idx = PackageIndex::open(&path).unwrap();
+        assert_eq!(idx.entries[0].committed, 0);
+        assert_eq!(idx.read_resource(&idx.entries[0], ReadLimits::default()).unwrap(), original);
+        let wrong_pin = [0; 32];
+        assert!(matches!(idx.reader().unwrap().read_pinned_resource(&idx.entries[0], wrong_pin, ReadLimits::default(), &AtomicBool::new(false)), Err(Error::Changed)));
+        // Metadata zero does not relax declared expanded-size validation.
+        let index = u32::from_le_bytes(bytes[64..68].try_into().unwrap()) as usize;
+        let expanded_at = index + 4 + 6 * 4;
+        bytes[expanded_at..expanded_at + 4].copy_from_slice(&8u32.to_le_bytes());
+        std::fs::write(&path, &bytes).unwrap();
+        let idx = PackageIndex::open(&path).unwrap();
+        assert!(idx.read_resource(&idx.entries[0], ReadLimits::default()).is_err());
+        bytes[end - 2..].copy_from_slice(&2u16.to_le_bytes());
+        std::fs::write(&path, &bytes).unwrap();
+        let idx = PackageIndex::open(&path).unwrap();
+        assert!(matches!(idx.read_resource(&idx.entries[0], ReadLimits::default()), Err(Error::Unsupported(_))));
+    }
+}
+
+#[test]
 fn malformed_resources_stale_sources_and_budget_are_not_loaded() {
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("data.package");
@@ -113,9 +168,14 @@ fn malformed_resources_stale_sources_and_budget_are_not_loaded() {
     // can retain the same observable timestamp on Windows filesystems; make the
     // metadata difference explicit rather than depending on clock granularity.
     // The retained_payload_pin test separately proves same-stamp rewrites fail.
-    let changed_time=std::fs::metadata(&path).unwrap().modified().unwrap()+std::time::Duration::from_secs(2);
-    std::fs::OpenOptions::new().write(true).open(&path).unwrap()
-        .set_times(std::fs::FileTimes::new().set_modified(changed_time)).unwrap();
+    let changed_time =
+        std::fs::metadata(&path).unwrap().modified().unwrap() + std::time::Duration::from_secs(2);
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .unwrap()
+        .set_times(std::fs::FileTimes::new().set_modified(changed_time))
+        .unwrap();
     assert!(matches!(
         idx.read_resource(&idx.entries[0], ReadLimits::default()),
         Err(Error::Changed)
@@ -251,6 +311,13 @@ fn casp(version: u32) -> Vec<u8> {
     casp_with_parent(version, None)
 }
 fn casp_with_parent(version: u32, parent: Option<ResourceKey>) -> Vec<u8> {
+    casp_with_slider_block(version, parent, None)
+}
+fn casp_with_slider_block(
+    version: u32,
+    parent: Option<ResourceKey>,
+    slider_block: Option<[u8; 44]>,
+) -> Vec<u8> {
     let mut b = Vec::new();
     for n in [version, 0, 0] {
         u32b(&mut b, n);
@@ -330,7 +397,7 @@ fn casp_with_parent(version: u32, parent: Option<ResourceKey>) -> Vec<u8> {
         b.extend(0x8000000000000001u64.to_le_bytes());
     }
     if version >= 44 {
-        b.extend([0; 44]);
+        b.extend(slider_block.unwrap_or([0; 44]));
     }
     if version >= 46 {
         b.push(0);
@@ -379,6 +446,7 @@ fn casp_versions_preserve_labels_tgi_roles_and_reject_unsupported_or_truncated()
         assert_eq!(c.body_type, 5);
         assert_eq!(c.lod0_meshes, [ResourceKey::new(GEOM, 0x22, 0x11)]);
         assert_eq!(c.diffuse, Some(ResourceKey::new(0x2f7d0004, 0x44, 0x33)));
+        assert_eq!(c.color_sliders.is_some(), version >= 44);
         assert!(c.disallow_opposite_gender());
         assert_eq!(
             c.disallow_opposite_frame(),
@@ -428,6 +496,75 @@ fn casp_versions_preserve_labels_tgi_roles_and_reject_unsupported_or_truncated()
     let mut b = casp(52);
     b[..4].copy_from_slice(&99u32.to_le_bytes());
     assert!(matches!(CasPart::parse(&b), Err(Error::Unsupported(_))));
+}
+#[test]
+fn exact_casp_color_slider_bits_survive_invalid_values_cache_serde_and_version_boundaries() {
+    use external_cas_assets::casp::{CaspColorChannel, CaspColorSliders};
+    let bits = [
+        0.2f32.to_bits(),
+        0.05f32.to_bits(),
+        (-0.5f32).to_bits(),
+        0.5f32.to_bits(),
+        0.05f32.to_bits(),
+        (-0.25f32).to_bits(),
+        0.75f32.to_bits(),
+        0.02f32.to_bits(),
+        (-0.75f32).to_bits(),
+        0.25f32.to_bits(),
+        0.01f32.to_bits(),
+    ];
+    let mut raw = [0; 44];
+    for (out, bits) in raw.chunks_exact_mut(4).zip(bits) {
+        out.copy_from_slice(&bits.to_le_bytes());
+    }
+    let expected = CaspColorSliders::from_raw_bytes(raw);
+    assert_eq!(expected.raw_bytes(), raw);
+    assert!(expected.validation_issues().is_empty());
+    let hosv = expected.ranges_hosv();
+    assert_eq!(hosv[0].minimum, -0.5);
+    assert_eq!(hosv[1].maximum, 1.0);
+    assert_eq!(hosv[2].maximum, 0.75);
+    assert_eq!(hosv[3].minimum, -0.75);
+    for version in 44..=52 {
+        let parsed = CasPart::parse(&casp_with_slider_block(version, None, Some(raw))).unwrap();
+        assert_eq!(parsed.color_sliders, Some(expected));
+        assert_eq!(
+            parsed.diffuse,
+            Some(ResourceKey::new(0x2f7d0004, 0x44, 0x33))
+        );
+        let encoded = serde_json::to_vec(&parsed).unwrap();
+        let roundtrip: CasPart = serde_json::from_slice(&encoded).unwrap();
+        assert_eq!(roundtrip.color_sliders, Some(expected));
+    }
+    for (index, invalid) in [
+        (0, (-1f32).to_bits()),
+        (2, 0x7fc12345),
+        (4, (-0f32).to_bits()),
+        (6, (-2f32).to_bits()),
+        (10, f32::INFINITY.to_bits()),
+    ] {
+        let mut invalid_raw = raw;
+        invalid_raw[index * 4..index * 4 + 4].copy_from_slice(&invalid.to_le_bytes());
+        let parsed = CasPart::parse(&casp_with_slider_block(52, None, Some(invalid_raw))).unwrap();
+        let sliders = parsed.color_sliders.unwrap();
+        assert_eq!(sliders.raw_bytes(), invalid_raw);
+        assert!(!sliders.validation_issues().is_empty());
+        let cached: CasPart =
+            serde_json::from_slice(&serde_json::to_vec(&parsed).unwrap()).unwrap();
+        assert_eq!(cached.color_sliders.unwrap().raw_bytes(), invalid_raw);
+    }
+    let mut invalid = expected;
+    invalid.opacity.minimum.bits = (-0.1f32).to_bits();
+    assert_eq!(
+        invalid.validation_issues()[0].channel,
+        CaspColorChannel::Opacity
+    );
+    assert!(
+        CasPart::parse(&casp_with_slider_block(43, None, Some(raw)))
+            .unwrap()
+            .color_sliders
+            .is_none()
+    );
 }
 fn geom() -> Vec<u8> {
     let mut c = b"GEOM".to_vec();

@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "qualification": "exact-public-source-build-whole-sim-launch",
+  "date": "2026-11-12",
+  "platform": "Windows",
+  "binary_sha256": "b17f7fc25e7d87eac0cff966f9b4f3d6d64b8cd52ea70b7368f64ea329a481ce",
+  "private_inputs": "One authorized imported Sim, installed base-game packages and installed CAS UI package; receipts and capture remain private.",
+  "checks": {
+    "clean_process_exit": true,
+    "whole_sim_geometry_loaded": true,
+    "native_rig_loaded": true,
+    "original_room_geometry_loaded": true,
+    "original_cas_idle_selected_and_sampled": true,
+    "no_whole_sim_color_tint": true,
+    "all_required_sources_pinned": true,
+    "original_files_unchanged": true,
+    "no_reported_errors": true
+  },
+  "game_contacted": false,
+  "source_checkpoint_only": true,
+  "complete_material_renderer_accepted": false,
+  "full_cas_accepted": false,
+  "release_accepted": false
+}

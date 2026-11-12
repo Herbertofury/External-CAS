@@ -1,0 +1,4 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Reads separately resolved documents and calls unchanged pinned ParseTuning.
+using System;using System.IO;using System.Collections.Generic;using System.Text.Json;using TS4SimRipper;
+class Program{static void Main(){using var s=new MemoryStream();Console.OpenStandardInput().CopyTo(s);if(s.Length>32*1024*1024)throw new Exception("bound");s.Position=0;using var r=new BinaryReader(s);int count=r.ReadInt32();if(count<0||count>128)throw new Exception("count");var results=new List<object>();for(int i=0;i<count;i++){int n=r.ReadInt32();if(n<1||n>1024*1024)throw new Exception("xml bound");var data=r.ReadBytes(n);if(data.Length!=n)throw new Exception("truncated");results.Add(new TuningHarness().Parse(data));}if(s.Position!=s.Length)throw new Exception("trailing");Console.Write(JsonSerializer.Serialize(results));}}

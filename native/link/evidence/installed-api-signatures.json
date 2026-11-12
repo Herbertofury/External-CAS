@@ -1,0 +1,209 @@
+{
+  "python": "3.7.9",
+  "game_code_executed": false,
+  "runtime_qualified": false,
+  "modules": [
+    {
+      "member": "sims/sim_info.pyc",
+      "sha256": "16eccd773c3292072caadacf548efd8c72edf0c37df6b2786d5e7b389856411b",
+      "signatures": [
+        {
+          "name": "SimInfo.save_sim",
+          "args": [
+            "self",
+            "for_cloning",
+            "full_service"
+          ],
+          "referenced_api_names": [
+            "save_outfits"
+          ]
+        },
+        {
+          "name": "SimInfo.load_sim_info",
+          "args": [
+            "self",
+            "sim_proto",
+            "is_clone",
+            "default_lod"
+          ],
+          "referenced_api_names": [
+            "_base"
+          ]
+        }
+      ]
+    },
+    {
+      "member": "sims/sim_info_base_wrapper.pyc",
+      "sha256": "b7d4d59e3434023d690c707155f47616195446ced8f8f8f86e39f527ae07c7ed",
+      "signatures": [
+        {
+          "name": "SimInfoBaseWrapper.save_sim_info",
+          "args": [
+            "self",
+            "sim_info_msg"
+          ],
+          "referenced_api_names": [
+            "save_outfits"
+          ]
+        },
+        {
+          "name": "SimInfoBaseWrapper.get_current_outfit",
+          "args": [
+            "self"
+          ],
+          "referenced_api_names": []
+        }
+      ]
+    },
+    {
+      "member": "server/client.pyc",
+      "sha256": "930e8c866a7a53fbd159b771e250585a82ca4e41ee39e07ff1d4b7bacdf7bd84",
+      "signatures": [
+        {
+          "name": "Client.active_sim_info",
+          "args": [
+            "self"
+          ],
+          "referenced_api_names": []
+        },
+        {
+          "name": "Client.active_sim_info",
+          "args": [
+            "self",
+            "sim_info"
+          ],
+          "referenced_api_names": []
+        },
+        {
+          "name": "Client.active_sim",
+          "args": [
+            "self"
+          ],
+          "referenced_api_names": [
+            "active_sim_info"
+          ]
+        },
+        {
+          "name": "Client.active_sim",
+          "args": [
+            "self",
+            "sim"
+          ],
+          "referenced_api_names": [
+            "active_sim_info"
+          ]
+        },
+        {
+          "name": "Client.set_active_sim",
+          "args": [
+            "self",
+            "sim"
+          ],
+          "referenced_api_names": []
+        },
+        {
+          "name": "Client.register_active_sim_changed",
+          "args": [
+            "self",
+            "callback"
+          ],
+          "referenced_api_names": []
+        },
+        {
+          "name": "Client.unregister_active_sim_changed",
+          "args": [
+            "self",
+            "callback"
+          ],
+          "referenced_api_names": []
+        }
+      ]
+    },
+    {
+      "member": "services/persistence_service.pyc",
+      "sha256": "d8205ae52f57216e850d2fd85528507ae9585e750e5d296e47a1f8a15b179077",
+      "signatures": [
+        {
+          "name": "PersistenceService.get_zone_proto_buff",
+          "args": [
+            "self",
+            "zone_id"
+          ],
+          "referenced_api_names": []
+        },
+        {
+          "name": "PersistenceService.get_save_slot_proto_guid",
+          "args": [
+            "self"
+          ],
+          "referenced_api_names": []
+        },
+        {
+          "name": "PersistenceService.get_save_slot_proto_buff",
+          "args": [
+            "self"
+          ],
+          "referenced_api_names": []
+        },
+        {
+          "name": "PersistenceService.get_sim_proto_buff",
+          "args": [
+            "self",
+            "sim_id"
+          ],
+          "referenced_api_names": []
+        }
+      ]
+    },
+    {
+      "member": "services/__init__.pyc",
+      "sha256": "1bdc0b7a9afc8e94be6f65ea95ce2ff7151011aaffe0493b43a987079d45af95",
+      "signatures": [
+        {
+          "name": "current_zone_id",
+          "args": [],
+          "referenced_api_names": []
+        },
+        {
+          "name": "sim_info_manager",
+          "args": [],
+          "referenced_api_names": []
+        },
+        {
+          "name": "get_active_sim",
+          "args": [],
+          "referenced_api_names": [
+            "active_sim"
+          ]
+        },
+        {
+          "name": "active_sim_info",
+          "args": [],
+          "referenced_api_names": [
+            "active_sim_info"
+          ]
+        },
+        {
+          "name": "active_household",
+          "args": [],
+          "referenced_api_names": []
+        }
+      ]
+    },
+    {
+      "member": "zone.pyc",
+      "sha256": "735c3463d9f8bcaf88f5d2f530c03556cf79a741a07bba72430ddb416ccf5658",
+      "signatures": [
+        {
+          "name": "Zone.__init__",
+          "args": [
+            "self",
+            "zone_id",
+            "save_slot_data_id"
+          ],
+          "referenced_api_names": []
+        }
+      ]
+    }
+  ]
+}

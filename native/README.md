@@ -1,7 +1,7 @@
 # Native External CAS
 
-This is the active Rust implementation, recovered from the newer local source
-lineage described in `../docs/RECOVERY.md`. It is not an
+This is the active recovered Rust implementation. Its source publication
+boundary is documented in `../docs/EXTERNAL_CAS_PUBLIC_SOURCE.md`. It is not an
 accepted release. Complete Sim appearance, native household creation, game
 synchronization, large-library acceptance and distribution gates remain open.
 
@@ -24,10 +24,20 @@ resources from selected package scope and an explicitly chosen RIG. Current
 sampling is source-tool component playback: events, IK and unsupported controls
 are retained but not executed. It is not proof of native game animation fidelity.
 
-The current wardrobe viewport is an item preview. It does not substitute a
-reference body/skin for the imported Sim's stored physique, sculpts, TONE,
-genetics or occult forms. `scene` resolves those actual native inputs and reports
-missing/ambiguous dependencies while their full material/morph pipeline is built.
+Normal imported-project viewing now assembles the actual Sim through `character`,
+`morph`, `material` and `room`. It resolves the native current form/outfit, rig,
+BGEO/DMAP/BOND resources, real TONE/detail/sculpt textures and layered outfit
+diffuses. Selecting a wardrobe item still opens a separate item inspection;
+Project → View full Sim returns to the assembled draft. No reference body or
+invented skin is substituted. Missing and unqualified inputs stay explicit.
+
+The first actual complete-Sim render uses 16 visible source meshes; replacing
+the top with real installed CC renders 17 meshes/38,418 vertices with the native
+packed color value retained. These are development observations, not visual or
+game acceptance. Source-reference deformation, atlas rounding/ties, skin hue,
+normal/specular shaders, default idle, shadows and full UI behavior remain open.
+The real room geometry/textures and source camera/light tuning load independently;
+current light-transfer equations and camera conventions remain candidates.
 
 Runtime components do not require Node, a browser, Studio, Blender or the game.
 Recovered Node/C#/Python tools are private/reference comparison tools only.
@@ -50,6 +60,12 @@ same native application. Captures show that application's own viewport, without
 desktop/game interaction. Reports include errors and acceptance=false; automated
 verification exits nonzero on a failed requested preview/pose. These controls
 are validation aids, not a substitute for complete user workflow acceptance.
+
+`--game-root ABSOLUTE_PATH --project PROJECT --sim-view` requests whole-Sim
+rendering. `--ui-assets PATH_TO_UI_PACKAGE` loads the local original font/icon
+sources. Repeatable `--character-assets PACKAGE` restricts only the diagnostic
+character indexing scope and reports incomplete installed coverage; normal
+loading uses configured installed packages. None of these flags contacts a game.
 
 Applicable upstream GPL notices are retained in the individual crates and
 `THIRD_PARTY_NOTICES.md`. The final combined distribution and license audit

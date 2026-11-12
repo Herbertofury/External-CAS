@@ -1,0 +1,53 @@
+{
+  "source_game_version": "1.129.39.1030",
+  "game_contacted": false,
+  "source_mutations": false,
+  "native_full_mip_restoration_matches_original_s4pi": true,
+  "native_rgba_matches_independent_pillow": true,
+  "pixels": 3801088,
+  "pillow_version": "12.2.0",
+  "s4pi_source_sha256": "f0de3e2584a4a30d32c1fb53b374e25b8fad2862a21526ed19dee53cb29e67e5",
+  "samples": [
+    {
+      "key": "00B2D882:00000000:89A470D683E1F529",
+      "payload_sha256": "544ecc4b9fd216dc68386a87d9d713756ba073992ea0da6e5eff1d5ee3ac913f",
+      "width": 512,
+      "height": 256,
+      "oracle_dds_sha256": "7caa00dfee190a65410d2c49a8eb45a21876785e529bb345aaae5129bd8ce977",
+      "oracle_rgba_sha256": "40783600a2169aa4967f568a7ca3f0c9764d2d7dcc97e9b800c7eeec23cf20fb"
+    },
+    {
+      "key": "00B2D882:00000000:C3FDF6D310C985A7",
+      "payload_sha256": "777d48896b63ff5ba867249fb50db13b4d975bd889e7bad8d8b08dd44a1b5147",
+      "width": 1024,
+      "height": 1024,
+      "oracle_dds_sha256": "e7adf3f8c8db1ec188189657223e704a68c26e4ff37e0c70993169906406ca94",
+      "oracle_rgba_sha256": "86437cc0969ea1392891ba0c5d0a2d441c6a48669aeda449cdd9ca27f9da303c"
+    },
+    {
+      "key": "00B2D882:00000000:CE21AD10FDBF2352",
+      "payload_sha256": "236f95cee0d3fbf1229d05d76632c95b26859cfe7589990706ecfd67ff774de2",
+      "width": 1024,
+      "height": 1024,
+      "oracle_dds_sha256": "8cf9968b3a52127a6e72024794cd4604d411fe6520f356364958a877151bbef5",
+      "oracle_rgba_sha256": "4d052c73080fdfbe78bc91266530885ff32d4eabe06fe68475c955fe5f2a9310"
+    },
+    {
+      "key": "00B2D882:00000000:3C5322232985C730",
+      "payload_sha256": "af2a1fb6531d9b6da75cf6a8170c338104c27c9ca1f7694e3d6613186ae569fd",
+      "width": 1024,
+      "height": 1024,
+      "oracle_dds_sha256": "256b3de9f77c1973b92635f11f0c5a01fbb7c3877a6c5584556c918014217338",
+      "oracle_rgba_sha256": "b9820787479eb4f683d8c767997423459690f6043b6f2d4d5b4bd0933126acac"
+    },
+    {
+      "key": "00B2D882:00000000:0BC2E1FFEF82FA76",
+      "payload_sha256": "5ad156697d8a7fc1d937f2335a446344e68e3d5f95646bf47ba43321c5514e28",
+      "width": 1024,
+      "height": 512,
+      "oracle_dds_sha256": "c549907fe69ba3a904bda3f9a9e5e8a4d6f168d0b3a9bf25b90bf42ab611e1a0",
+      "oracle_rgba_sha256": "89fc433655d3a691c24d3b88f2aa48611f18acfc6cfb4636b5e9958fb279219a"
+    }
+  ],
+  "qualification_boundary": "Resource decoding only; not GPU sampling, shader permutation, native layer construction or complete game-render parity."
+}

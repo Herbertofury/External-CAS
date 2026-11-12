@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "contains_private_paths_or_assets": false,
+  "base_room": {
+    "selected_meshes": 3,
+    "selected_vertices": 198,
+    "selected_triangles": 328,
+    "selected_decoded_textures": 3,
+    "independent_reference_variants": 2,
+    "independent_reference_meshes": 5,
+    "independent_reference_vertices": 433,
+    "positions_normals_uv_indices_bit_exact": true,
+    "selected_texture_rgba_exact": true,
+    "native_app_render_observed": true
+  },
+  "cas_tuning": {
+    "native_resolved_trees_matched": 9,
+    "native_simdata_partners_matched": 9,
+    "native_simdata_scalar_vector_cells_matched": 476,
+    "camera_contexts": 4,
+    "camera_regions": 34,
+    "pose_overrides": 17,
+    "lighting_profiles": 5,
+    "independent_reader": "unchanged @s4tk/models 0.6.14"
+  },
+  "normal_path_unresolved": [
+    "camera FOV axis, orbit sign and exact Sim anchor",
+    "lighting equations and runtime profile selection",
+    "replacement shader palette and global bone transforms",
+    "glass, mirror, shadow and cubemap rendering",
+    "active DLC entitlement and exhaustive configured mod resource coverage"
+  ],
+  "game_parity_claimed": false
+}

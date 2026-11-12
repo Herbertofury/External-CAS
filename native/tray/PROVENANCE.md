@@ -64,3 +64,26 @@ File identity checks are point-in-time observations. Double reading and hashes
 detect observed changes but do not lock an entire multi-file library against a
 malicious concurrent writer. The owner must still handle stale/concurrent game
 state separately before any future synchronization.
+
+## Native per-part color edits
+
+`OutfitData.part_shifts` is field12 and `ColorShiftList.color_shift` is repeated
+uint64 field1 (`Proto/Outfits.cs`), accepting ordinary or packed varints. The
+stored occult path is Sim30 → attributes17 → tracker repeated3 → form outfits21.
+The entire original wire representation remains the authority for unsupported
+fields. Only selected values and necessary enclosing lengths are reconstructed.
+
+The reference neutral value `0x4000000000000000` is explicit in generated
+`PartData.color_shift`/distributor schema defaults and the reference reader's
+absent-array handling. Four signed16 Q2.14 lanes are decoded in pinned
+`PreviewControl.ImageStack`: brightness bits0–15, saturation16–31, hue32–47,
+opacity48–63. This crate writes raw uint64 values and preserves untouched bits;
+it does not infer slider quantization, allowed ranges or native compatibility.
+
+The independent color oracle uses the unchanged generated schemas in the
+pinned SimRipper source and protobuf-net 3.2.30. Its 55-file manifest consists of
+ordinal-sorted `filename + NUL + lowercase SHA256 + LF` entries and has SHA256
+`089452376ca4b45780b306f317a1b2c669873571f3383019b0bb958bc461f6fe`.
+No generated schema payload, game library, user data or oracle binary is bundled.
+The supplied color-mod archive was inspected read only; no mod code or DLL was
+executed or reused in the Tray writer.

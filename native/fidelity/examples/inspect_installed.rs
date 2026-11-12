@@ -38,6 +38,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut results = Vec::new();
     for name in names {
         let loaded = load_movie(&index, &name)?;
+        if let Some(path) = &evidence {
+            if let Ok(mut file) = std::fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(path.join(format!("{name}.gfx")))
+            {
+                use std::io::Write;
+                file.write_all(&loaded.source_bytes)?;
+            }
+        }
         let movie = loaded.inspect()?;
         let atlases: Vec<_> = movie.external_images.iter().map(|image| match load_atlas(&index,image) {
             Ok(atlas) => {

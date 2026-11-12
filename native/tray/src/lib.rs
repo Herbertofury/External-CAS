@@ -15,7 +15,10 @@ use std::path::{Component, Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 mod draft;
-pub use draft::{OutfitSlot, ProjectDraft, DRAFT_SCHEMA_EVIDENCE_ID};
+pub use draft::{
+    ColorShiftStorage, MissingColorShiftPolicy, OutfitColorShift, OutfitSlot, ProjectDraft,
+    COLOR_SHIFT_SCHEMA_EVIDENCE_ID, DRAFT_SCHEMA_EVIDENCE_ID,
+};
 mod appearance;
 pub use appearance::{
     AppearanceForm, AppearanceModifier, FacialCustomization, GeneticAppearance, GeneticPart,
@@ -789,6 +792,8 @@ pub struct DraftProvenance {
     pub revision: u64,
     pub parent_manifest_sha256: String,
     pub native_game_acceptance_verified: bool,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub operation_schema_evidence_ids: Vec<String>,
 }
 #[derive(Clone, Debug)]
 pub struct TrayProject {

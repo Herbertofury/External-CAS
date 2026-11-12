@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "tray_preservation_tests": 26,
+  "native_shift_schema": "OutfitData12 / ColorShiftList repeated uint64 field1; base and stored occult outfits",
+  "packed_and_unpacked_varints": true,
+  "one_to_ten_byte_value_and_nested_length_changes": true,
+  "unknown_fields_and_noncanonical_unaffected_encodings_preserved": true,
+  "v1_v2_explicit_missing_or_empty_array_materialization": true,
+  "partial_nonempty_arrays_rejected": true,
+  "mixed_casp_color_undo_redo_exact": true,
+  "failed_writes_cancellation_concurrent_changes_keep_recovery_markers": true,
+  "real_disposable_check": {
+    "native_files": 5,
+    "native_color_entries": 114,
+    "independent_original_schema_readbacks": 4,
+    "schema_reader": "original generated SimRipper schemas / protobuf-net 3.2.30",
+    "original_household_bytes": 6868,
+    "zero_shift_household_bytes": 6859,
+    "hue_lane_changed_native_bytes": 1,
+    "unselected_48_bits_preserved": true,
+    "save_reopen_byte_exact": true,
+    "reopened_reverse_restores_original_bytes": true,
+    "nonhousehold_files_unchanged": true,
+    "original_source_conflicts": 0
+  },
+  "originals_written": false,
+  "game_contacted": false,
+  "native_tray_or_game_acceptance_qualified": false
+}

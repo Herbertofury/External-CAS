@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "scope": "Read-only installed human CAS standing-idle CLIP, current v18 wrapper",
+  "source_reader": "Separately supplied unmodified TS4AnimationBrowser.Core 1.9.1 StudioClipDecoderV2",
+  "source_files_sha256": {
+    "ViewerV2/StudioClipDecoderV2.cs": "eed5396adca6a9f880d643e17ee27cc2690cdbc848454531236c4a27dbdc7322",
+    "Animation/ClipAnimation.cs": "33fb7524a10a830462580ea864b1d3b42edba76e2bb62050df4a3e8bf7485f00",
+    "Animation/ClipChannelType.cs": "779fbe3f429e20c9f4cad654eec597588c098e4233572fa186cc394c21e2e875"
+  },
+  "wrapper_fields_exact": true,
+  "skeletal_values_compared": 29579,
+  "different_float_bits": 15977,
+  "maximum_float_difference": 1.1920928955078125e-7,
+  "float_tolerance": 0.000002,
+  "events_retained": 1,
+  "ik_slots_retained": 5,
+  "other_tracks_retained": 23,
+  "sample_ticks": [0, 68, 136],
+  "bone_components_sampled": 129,
+  "rig_bones": 165,
+  "rust_tests_passed": 16,
+  "original_bytes_retained": true,
+  "source_conflicts": 0,
+  "game_contacted": false,
+  "originals_written": false,
+  "native_interpolation_ik_events_control_tracks_qualified": false,
+  "bit_exact_decode_claimed": false
+}

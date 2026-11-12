@@ -18,7 +18,10 @@ reference screenshots and extracted diagnostic assets are deliberately private:
 - [Native resource/outline/atlas validation](../../.local/fidelity/native-ui-assets.json)
 - [Independent BC5 and FreeType validation](../../.local/fidelity/native-independent-validation.json)
 - [Independent compacted-glyph comparison](../../.local/fidelity/native-glyph-oracle-comparison.json)
+- [Source symbol static rendering comparisons](../../.local/fidelity/source-symbol-golden-results.json)
+- [Actual native source navigation controls](../../.local/fidelity/source-controls-20261112)
 - [Actual app with installed UI resources](../../.local/fidelity/native-gallery-20261112T125529381994)
+- [Actual complete Sim and source room](../../.local/fidelity/native-character-app-20261112T143213513504/app.json)
 
 Those links resolve only in this checkout and must remain ignored. The app source
 and test fixtures contain no extracted game artwork, fonts or user content.
@@ -39,6 +42,9 @@ untouched installed-game baseline.
   108 Component sub-image rectangles. Preserve source channel meaning explicitly.
 - [ ] Evaluate exported source symbols and their real state timelines, bitmap
   matrices, placements and color transforms; replace temporary authored marks.
+  Six original navigation symbols and 24 first-state frames now render in the
+  actual app and passed independent static comparisons. Other components and
+  source animation/state transitions remain open.
 - [ ] Verify the source atlas channel presentation and compare actual rendered
   native symbols against authorized installed control captures.
 - [ ] Reuse source panels, button states, clipping, swatches, filter chips,
@@ -55,6 +61,9 @@ untouched installed-game baseline.
   hybrid fields. Mark each tested supported patch and preserve unknown data.
 - [ ] Retain approved search/filter/favorites, expandable catalog and catalog
   sizing/column controls as the source-native UI behavior is mapped.
+- [ ] Qualify all-item/swatches color editing from the supplied update, including
+  actual source ranges, defaults/resets, opacity/transparency and separate
+  specular controls; see [the typed metadata boundary](COLOR_SLIDERS_SOURCE_20261112.md).
 
 The current native floating layout uses real parsed Sim metadata and existing
 catalog/Sims/pose/project handlers. It does not yet reproduce the complete source
@@ -79,9 +88,20 @@ and its current control geometry/icons remain temporary.
 - [ ] Golden comparisons cover multiple body types/ages/species/skin tones,
   outfits, accessories and actual CC under the same source camera/light state.
 
-The current blue/mint/green backdrop is temporary. Existing item previews and
-actual GPU pose tests establish recovered capabilities but do not establish a
-full Sim, native CAS room or indistinguishable appearance.
+The app now draws the actual source curved backdrop and two floor planes, with
+their real geometry and texture pixels. Position/normal/UV/index arrays match
+the retained independent reference. Source MATD alpha/shadow behavior remains
+open. Four camera contexts, 34 regions, 17 pose overrides and five lighting
+profiles have been decoded and independently compared, including SimData class
+defaults. Projection and lighting equations are not established by those records.
+
+The current whole-Sim path renders actual native current-outfit geometry,
+source-reference BGEO→DMAP→BOND deformation, the actual rig and a skin/outfit
+atlas from 33 real layers in the first fixture. It does not use an invented body,
+authored mouth or default skin. The private app receipt retains 297 selected
+resource pins. The A-pose, skin/material response, shadows, morphology seams and
+remaining source UI are visible gaps against the retained same-Sim game capture.
+These observations do not establish indistinguishable appearance.
 
 ## Qualification still required
 

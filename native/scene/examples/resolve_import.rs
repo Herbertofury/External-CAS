@@ -31,7 +31,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let choices = policy.provider_choices_for_keys(plan.required_keys());
         let mut options = SceneOptions::default();
         options.provider_choices = choices.choices.clone();
-        plan = resolve_scene(sim, &catalog, &options);
+        plan = external_cas_scene::resolve_scene_scoped(sim, &catalog, &options, Some(&policy));
         scope.revalidate()?;
         policy_receipt = json!({"observed_game_version":scope.observed_game_version,"config_count":scope.configs.len(),"configured_packages":choices.coverage.configured_packages,"indexed_known_packages":choices.coverage.indexed_known_packages,"unindexed_package_count":choices.coverage.unindexed_paths.len(),"unscoped_catalog_package_count":choices.coverage.unscoped_catalog_paths.len(),"unqualified_directives":choices.coverage.unqualified_config_directives,"configured_scope_complete":choices.coverage.configured_scope_complete(),"active_pack_entitlements_verified":false,"priority_choices":choices.choices.len(),"decisions":choices.decisions.iter().map(|d|json!({"key":d.key.to_string(),"state":format!("{:?}",d.state),"selected":d.selected.map(|p|json!({"package_index":p.package_index,"entry_index":p.entry_index})),"candidates":d.candidates.iter().map(|c|json!({"priority":c.priority,"package":c.package_path,"rules":c.evidence.iter().map(|r|json!({"config":r.config_path,"config_sha256":r.config_sha256,"line":r.line,"pattern":r.pattern,"priority":r.priority})).collect::<Vec<_>>()})).collect::<Vec<_>>()})).collect::<Vec<_>>(),"configs_revalidated":true});
     }

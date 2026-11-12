@@ -92,7 +92,10 @@ impl Tone {
         }
         let mut r = Reader { raw, at: 0 };
         let version = r.u32()?;
-        if !(6..=12).contains(&version) {
+        // Actual native reader 00398060 has a distinct historical v9 skin-set
+        // layout. Do not parse it as the legacy v6-v8 layout merely because an
+        // old reference reader did so. ScenePlan retains the original bytes.
+        if !(6..=12).contains(&version) || version == 9 {
             return Err(ToneError::UnsupportedVersion(version));
         }
         let mut skin_sets = Vec::new();

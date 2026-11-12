@@ -21,3 +21,6 @@ external-cas-scene = { path = "../scene" }
 external-cas-session = { path = "../session" }
 external-cas-catalog-cache = { path = "../catalog" }
 external-cas-fidelity = { path = "../fidelity" }
+external-cas-material = { path = "../material" }
+external-cas-room = { path = "../room" }
+external-cas-character = { path = "../character" }

@@ -280,7 +280,7 @@ fn outfits(f: &[Field<'_>]) -> Result<Vec<OutfitAppearance>> {
         if parts.len() != bodies.len()
             || shifts
                 .as_ref()
-                .map(|s| s.len() != parts.len())
+                .map(|s| !s.is_empty() && s.len() != parts.len())
                 .unwrap_or(false)
         {
             return Err(invalid(
@@ -295,7 +295,7 @@ fn outfits(f: &[Field<'_>]) -> Result<Vec<OutfitAppearance>> {
                 part_index,
                 cas_part_id,
                 body_type: body as u32,
-                color_shift: shifts.as_ref().map(|s| s[part_index]),
+                color_shift: shifts.as_ref().and_then(|s| s.get(part_index)).copied(),
             })
             .collect();
         result.push(OutfitAppearance {

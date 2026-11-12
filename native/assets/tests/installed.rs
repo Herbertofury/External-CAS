@@ -10,7 +10,8 @@ fn sha(bytes: &[u8]) -> String {
 #[test]
 #[ignore = "requires explicit private installed-source manifest; not fixture acceptance"]
 fn installed_pinned_casp_geom_texture_and_rig() {
-    let manifest = std::env::var_os("CAS_ASSET_TEST_MANIFEST").expect("CAS_ASSET_TEST_MANIFEST is required for explicit installed acceptance");
+    let manifest = std::env::var_os("CAS_ASSET_TEST_MANIFEST")
+        .expect("CAS_ASSET_TEST_MANIFEST is required for explicit installed acceptance");
     let j: serde_json::Value = serde_json::from_slice(&std::fs::read(manifest).unwrap()).unwrap();
     assert_eq!(j["private"], true);
     let mut indexes = Vec::new();

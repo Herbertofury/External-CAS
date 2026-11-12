@@ -18,6 +18,9 @@ pub struct TuningRecord {
     pub context: TuningContext,
     pub modifier_names: BTreeMap<u64, String>,
     pub scales: BTreeMap<u64, f32>,
+    /// Every source occurrence, including duplicate names/scales, remains visible.
+    pub scale_bindings: Vec<(u64, String, f32)>,
+    pub duplicate_names: Vec<(u64, String)>,
     pub resolved_xml: Option<Vec<u8>>,
     pub issues: Vec<String>,
 }
@@ -29,19 +32,21 @@ pub struct CombinedXmlInspection {
     pub issues: Vec<String>,
 }
 #[derive(Clone, Debug)]
-struct Node {
-    tag: String,
-    attrs: BTreeMap<String, String>,
-    text: String,
-    children: Vec<usize>,
+pub(crate) struct Node {
+    pub(crate) tag: String,
+    pub(crate) attrs: BTreeMap<String, String>,
+    pub(crate) text: String,
+    pub(crate) children: Vec<usize>,
 }
-#[derive(Clone, Debug)]
-struct Expanded {
-    tag: String,
-    attrs: BTreeMap<String, String>,
-    text: String,
-    children: Vec<Expanded>,
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct ResolvedTuningNode {
+    pub tag: String,
+    pub attrs: BTreeMap<String, String>,
+    pub text: String,
+    pub children: Vec<ResolvedTuningNode>,
 }
+type Expanded = ResolvedTuningNode;
+pub(crate) type NodeInput = (Vec<Node>, Vec<(usize, String)>, Vec<usize>, bool);
 fn invalid(s: impl Into<String>) -> CharacterError {
     CharacterError::Invalid(s.into())
 }
@@ -160,6 +165,8 @@ fn parse_record(node: &Expanded, namespace: String) -> Result<TuningRecord> {
         context: TuningContext::default(),
         modifier_names: BTreeMap::new(),
         scales: BTreeMap::new(),
+        scale_bindings: vec![],
+        duplicate_names: vec![],
         resolved_xml: None,
         issues: vec![],
     };
@@ -168,7 +175,7 @@ fn parse_record(node: &Expanded, namespace: String) -> Result<TuningRecord> {
     fn visit(
         n: &Expanded,
         r: &mut TuningRecord,
-        current: &mut Option<u64>,
+        current: &mut Option<(u64, String)>,
         seen: &mut BTreeSet<String>,
     ) -> Result<()> {
         if let Some(name) = n.attrs.get("n") {
@@ -195,7 +202,7 @@ fn parse_record(node: &Expanded, namespace: String) -> Result<TuningRecord> {
                     ],
                 };
                 if values.iter().any(|v| !known.contains(&v.as_str())) {
-                    return Err(invalid("Unknown tuning context token"));
+                    r.issues.push(format!("Unknown native context token in {name}: {values:?}; retained without inferred meaning"));
                 }
                 match name.as_str() {
                     "Ages" => r.context.ages = Some(values),
@@ -208,22 +215,32 @@ fn parse_record(node: &Expanded, namespace: String) -> Result<TuningRecord> {
                     return Err(invalid("Unsupported modifier name text"));
                 }
                 let key = external_cas_scene::fnv64(&n.text).map_err(invalid)?;
-                if r.modifier_names.insert(key, n.text.clone()).is_some() {
-                    return Err(invalid("Duplicate modifier-name hash"));
+                if r.modifier_names.contains_key(&key) {
+                    r.duplicate_names.push((key, n.text.clone()));
+                } else {
+                    r.modifier_names.insert(key, n.text.clone());
                 }
-                *current = Some(key);
+                *current = Some((key, n.text.clone()));
             } else if name == "Scale" {
                 if !n.children.is_empty() {
                     return Err(invalid("Scale contains child structure"));
                 }
-                let key = current.ok_or_else(|| invalid("Scale has no preceding modifier name"))?;
+                let (key, modifier_name) = current
+                    .as_ref()
+                    .ok_or_else(|| invalid("Scale has no preceding modifier name"))?;
                 let scale = n
                     .text
                     .trim()
                     .parse::<f32>()
                     .map_err(|_| invalid("Scale number"))?;
-                if !scale.is_finite() || r.scales.insert(key, scale).is_some() {
-                    return Err(invalid("Nonfinite/duplicate tuning scale"));
+                if !scale.is_finite() {
+                    return Err(invalid("Nonfinite tuning scale"));
+                }
+                r.scale_bindings.push((*key, modifier_name.clone(), scale));
+                if r.scales.contains_key(key) {
+                    r.issues.push(format!("Repeated scale for {key:016X} retained; reference dictionary keeps its first occurrence"));
+                } else {
+                    r.scales.insert(*key, scale);
                 }
             }
         }
@@ -241,6 +258,17 @@ fn parse_record(node: &Expanded, namespace: String) -> Result<TuningRecord> {
 /// Bounded selective parser. Only shared-group nodes and the exact modifier
 /// class are retained; unrelated combined records are streamed past.
 pub fn inspect_combined_xml(bytes: &[u8], cancel: &AtomicBool) -> Result<CombinedXmlInspection> {
+    let (nodes, roots, groups, _) =
+        read_combined_xml_nodes(bytes, &["Client_CASModifierTuning"], cancel, false)?;
+    inspect_nodes(nodes, roots, groups, cancel)
+}
+pub(crate) fn read_combined_xml_nodes(
+    bytes: &[u8],
+    classes: &[&str],
+    cancel: &AtomicBool,
+    allow_standalone: bool,
+) -> Result<NodeInput> {
+    check(cancel)?;
     if bytes.len() > 32 * 1024 * 1024 {
         return Err(CharacterError::Unsupported(
             "Combined XML byte budget".into(),
@@ -278,8 +306,10 @@ pub fn inspect_combined_xml(bytes: &[u8], cancel: &AtomicBool) -> Result<Combine
                 let direct_group =
                     tag == "g" && stack.last().map(|v| v.0.as_str()) == Some("combined");
                 let record = tag == "I"
-                    && attributes.get("c").map(String::as_str) == Some("Client_CASModifierTuning")
-                    && stack.last().map(|v| v.0.as_str()) == Some("R");
+                    && attributes
+                        .get("c")
+                        .is_some_and(|c| classes.contains(&c.as_str()))
+                    && (stack.last().map(|v| v.0.as_str()) == Some("R") || (allow_standalone && stack.is_empty()));
                 let capture = parent.is_some() || direct_group || record;
                 let id = if capture {
                     if nodes.len() >= 500_000 {
@@ -301,7 +331,7 @@ pub fn inspect_combined_xml(bytes: &[u8], cancel: &AtomicBool) -> Result<Combine
                     if record {
                         roots.push((
                             id,
-                            stack.last().and_then(|v| v.2.clone()).unwrap_or_default(),
+                            stack.last().and_then(|v| v.2.clone()).or_else(||attributes.get("i").cloned()).unwrap_or_default(),
                         ));
                     }
                     Some(id)
@@ -366,9 +396,19 @@ pub fn inspect_combined_xml(bytes: &[u8], cancel: &AtomicBool) -> Result<Combine
             _ => {}
         }
     }
-    if !stack.is_empty() || top.as_deref() != Some("combined") {
+    check(cancel)?;
+    let standalone=allow_standalone && top.as_deref()==Some("I");
+    if !stack.is_empty() || (top.as_deref() != Some("combined") && !standalone) {
         return Err(invalid("Expected complete combined XML root"));
     }
+    Ok((nodes, roots, groups, standalone))
+}
+pub(crate) fn inspect_nodes(
+    nodes: Vec<Node>,
+    roots: Vec<(usize, String)>,
+    groups: Vec<usize>,
+    cancel: &AtomicBool,
+) -> Result<CombinedXmlInspection> {
     let mut out = CombinedXmlInspection {
         records: vec![],
         retained_nodes: nodes.len(),
@@ -398,6 +438,99 @@ pub fn inspect_combined_xml(bytes: &[u8], cancel: &AtomicBool) -> Result<Combine
             Err(e) => out
                 .issues
                 .push(format!("Modifier tuning record unresolved: {e}")),
+        }
+    }
+    Ok(out)
+}
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct ResolvedTuningRecord {
+    pub instance: u64,
+    pub class: String,
+    pub resource_namespace: String,
+    pub root: ResolvedTuningNode,
+}
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct CombinedClassInspection {
+    pub records: Vec<ResolvedTuningRecord>,
+    pub retained_nodes: usize,
+    pub shared_entries: usize,
+    pub issues: Vec<String>,
+}
+/// Bounded exact-class selector over the same schema-checked DATA/XML readers.
+/// Leaves all class fields/tokens uninterpreted. The source payload remains the
+/// byte authority; returned trees resolve shared references for read-only use.
+pub fn inspect_combined_classes(
+    bytes: &[u8],
+    classes: &[&str],
+    cancel: &AtomicBool,
+) -> Result<CombinedClassInspection> {
+    inspect_classes_inner(bytes,classes,cancel,false)
+}
+/// Also accepts a real standalone I document (e.g. user-authorized tuning mod)
+/// without synthesizing a combined wrapper. Root i is retained as namespace;
+/// no TGI or class defaults are inferred.
+pub fn inspect_tuning_classes(bytes:&[u8],classes:&[&str],cancel:&AtomicBool)->Result<CombinedClassInspection>{
+    inspect_classes_inner(bytes,classes,cancel,true)
+}
+fn inspect_classes_inner(bytes:&[u8],classes:&[&str],cancel:&AtomicBool,allow_standalone:bool)->Result<CombinedClassInspection>{
+    if classes.is_empty()
+        || classes.len() > 32
+        || classes
+            .iter()
+            .any(|c| c.is_empty() || c.len() > 128 || !c.is_ascii())
+    {
+        return Err(invalid("Combined class selector bound"));
+    }
+    let (nodes, roots, groups, standalone) = if bytes.starts_with(b"DATA") {
+        crate::packed::read_combined_data_nodes(bytes, classes, cancel)?
+    } else {
+        read_combined_xml_nodes(bytes, classes, cancel,allow_standalone)?
+    };
+    let mut out = CombinedClassInspection {
+        records: vec![],
+        retained_nodes: nodes.len(),
+        shared_entries: 0,
+        issues: vec![],
+    };
+    let mut shared: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+    if groups.len() != 1 && !standalone {
+        out.issues
+            .push("Combined input requires exactly one shared group".into());
+    } else if !standalone {
+        for child in &nodes[groups[0]].children {
+            if let Some(x) = nodes[*child].attrs.get("x") {
+                shared.entry(x.clone()).or_default().push(*child);
+            } else {
+                out.issues.push("Shared child without x ID".into());
+            }
+        }
+    }
+    out.shared_entries = shared.len();
+    for (id, resource_namespace) in roots {
+        check(cancel)?;
+        let result =
+            expand(id, &nodes, &shared, &mut BTreeSet::new(), &mut 0, 0).and_then(|root| {
+                let instance = root
+                    .attrs
+                    .get("s")
+                    .ok_or_else(|| invalid("Tuning instance absent"))?
+                    .parse::<u64>()
+                    .map_err(|_| invalid("Tuning instance is not decimal uint64"))?;
+                let class = root
+                    .attrs
+                    .get("c")
+                    .ok_or_else(|| invalid("Tuning class absent"))?
+                    .clone();
+                Ok(ResolvedTuningRecord {
+                    instance,
+                    class,
+                    resource_namespace,
+                    root,
+                })
+            });
+        match result {
+            Ok(record) => out.records.push(record),
+            Err(e) => out.issues.push(format!("Class record unresolved: {e}")),
         }
     }
     Ok(out)

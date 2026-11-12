@@ -36,6 +36,18 @@ pub struct ClipMetadata {
     pub namespaces: Vec<String>,
     pub ik_slots: Vec<IkSlot>,
     pub events: Vec<ClipEvent>,
+    /// Present for current v18 wrappers. Legacy transform/hash fields above
+    /// remain a byte projection for compatibility, not v18 semantic transforms.
+    pub current_header: Option<CurrentClipHeader>,
+}
+#[derive(Debug,Clone)]
+pub struct CurrentClipHeader {
+    /// Eight opaque 32-bit metadata words; unknown float/flag values, including
+    /// non-finite float bit patterns, are retained without interpretation.
+    pub metadata_words:[u32;8],
+    pub namespace_hashes:[u32;3],
+    pub rig_instance:u64,
+    pub codec_range:std::ops::Range<usize>,
 }
 #[derive(Debug, Clone)]
 pub struct Frame {
@@ -201,7 +213,7 @@ impl Clip {
             trailing: Vec::new(),
             limitations: Vec::new(),
         };
-        if version != 14 {
+        if ![14,18].contains(&version) {
             out.limitations.push(format!(
                 "unsupported CLIP version {version}; original bytes retained"
             ));
@@ -212,12 +224,15 @@ impl Clip {
         if duration < 0. {
             return Err(invalid(r.at - 4, "negative duration"));
         }
-        let initial_quaternion = r.vector()?;
-        let initial_translation = r.vector()?;
-        let mut namespace_hashes = [0u32; 4];
-        for hash in &mut namespace_hashes {
-            *hash = r.u32()?;
-        }
+        let mut current_prefix=None;
+        let (initial_quaternion,initial_translation,namespace_hashes)=if version==18 {
+            let mut words=[0u32;8];for word in &mut words{*word=r.u32()?;}
+            let hashes=[r.u32()?,r.u32()?,r.u32()?];
+            current_prefix=Some((words,hashes));
+            ([f32::from_bits(words[0]),f32::from_bits(words[1]),f32::from_bits(words[2]),f32::from_bits(words[3])],[f32::from_bits(words[4]),f32::from_bits(words[5]),f32::from_bits(words[6])],[words[7],hashes[0],hashes[1],hashes[2]])
+        }else{
+            let q=r.vector()?;let p=r.vector()?;let hashes=[r.u32()?,r.u32()?,r.u32()?,r.u32()?];(q,p,hashes)
+        };
         let name = r.text()?;
         let rig_namespace = r.text()?;
         let namespace_count = r.u32()? as usize;
@@ -249,7 +264,7 @@ impl Clip {
         for _ in 0..event_count {
             let type_id = r.u32()?;
             let size = r.u32()? as usize;
-            if !(12..=16 * 1024 * 1024).contains(&size) {
+            if size>16*1024*1024 || (version==14&&size<12) {
                 return Err(invalid(r.at - 4, "invalid event extent"));
             }
             events.push(ClipEvent {
@@ -257,6 +272,10 @@ impl Clip {
                 payload: r.take(size)?.to_vec(),
             });
         }
+        let current_header=if let Some((metadata_words,namespace_hashes))=current_prefix {
+            let rig_instance=u64::from_le_bytes(r.take(8)?.try_into().unwrap());
+            Some(CurrentClipHeader{metadata_words,namespace_hashes,rig_instance,codec_range:0..0})
+        }else{None};
         out.metadata = Some(ClipMetadata {
             version,
             flags,
@@ -269,6 +288,7 @@ impl Clip {
             namespaces,
             ik_slots,
             events,
+            current_header,
         });
         let codec_size = r.u32()? as usize;
         if codec_size > 16 * 1024 * 1024 {
@@ -276,6 +296,9 @@ impl Clip {
         }
         let codec_base = r.at;
         let bytes = r.take(codec_size)?;
+        if let Some(current)=out.metadata.as_mut().and_then(|m|m.current_header.as_mut()){
+            current.codec_range=codec_base..codec_base+codec_size;
+        }
         out.trailing = r.data[r.at..].to_vec();
         if !out.trailing.is_empty() {
             out.limitations

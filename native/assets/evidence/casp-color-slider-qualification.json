@@ -1,0 +1,662 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "scope": "explicit read-only installed CC sample; source hashes and slider metadata qualification only; no assets/images persisted",
+  "primarySource": "TS4CAS Tools CASP.cs original OpacitySettings/SliderSettings constructors compiled unchanged in memory",
+  "primarySourceSha256": "8894f6af4b5d2c8d8035d7250238941ced178bf57362d0a03191a93a7e81de9c",
+  "oracle": "recovered CASP parser instrumented only to expose its preexisting44-byte skip offset; original C# classes independently decode the block",
+  "oracleReaderSha256": "8376280b30b97177ee840a10c3717932a4c651a95d52592a8be10eb42892edf2",
+  "colorBlocksCompared": 71,
+  "allOriginalCSharpFloatBitsEqual": true,
+  "samples": [
+    {
+      "category": "hair",
+      "sourceHash": "bd7baae05ddc02d6d0f6b731afc42cb92a2094d9d246d6db4ee21d2af6e2c994",
+      "casps": 8,
+      "parts": [
+        {
+          "key": "034AEECB:80000000:ECA56318DDB0630E",
+          "version": 43,
+          "colorBlockPresent": false
+        },
+        {
+          "key": "034AEECB:80000000:CEA628BCB72C7687",
+          "version": 43,
+          "colorBlockPresent": false
+        },
+        {
+          "key": "034AEECB:80000000:EB449914BFB74E0B",
+          "version": 43,
+          "colorBlockPresent": false
+        },
+        {
+          "key": "034AEECB:80000000:D688333E1939E76E",
+          "version": 43,
+          "colorBlockPresent": false
+        },
+        {
+          "key": "034AEECB:80000000:CB17DC9FFEF4F3B5",
+          "version": 43,
+          "colorBlockPresent": false
+        },
+        {
+          "key": "034AEECB:80000000:F570C018BAC0A764",
+          "version": 43,
+          "colorBlockPresent": false
+        },
+        {
+          "key": "034AEECB:80000000:B109B2257773B226",
+          "version": 43,
+          "colorBlockPresent": false
+        },
+        {
+          "key": "034AEECB:80000000:B3CF2202CA088F38",
+          "version": 43,
+          "colorBlockPresent": false
+        }
+      ]
+    },
+    {
+      "category": "clothes",
+      "sourceHash": "d47c3dc718087915ddad72383860f6405b701881c2db5886c661c1743fbef792",
+      "casps": 26,
+      "parts": [
+        {
+          "key": "034AEECB:80000000:C954DBBE0728A254",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "b1bbfdb9461cfd84fa7117605a24c295289e19f3dbc53c37e7d681d792655f7f",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:A78FB530BFD2E656",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "13a3b6172c1aec19b7bd651ceba7a49de16287f4a9fa20b28a63d73ccd275685",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:88160DC597DD1381",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "72b730b82873c4c6c9c97a88713507e01140e58c5a0d5b949b3a6cab4409d9bf",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:F3A40ABA5A4AEFD4",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "c2c8858b0509f9af100ee65a2df1d546e3dfb26a34c8169d79bc652b1872ee4b",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:95D42284EF81BE43",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "755001d630cfd9c3b7770ec90ad23a5bd6107e220e629a952d41d9a84dddf987",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C59C6F64FD4E9A60",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "68d439dd3a013c0f47123fa24ddd1f73eb4950042a1d602271714ff6fdbf4977",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C9FDFAB644BA71E2",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "0d73c1f88a8b049ed81520364b918919e7bc056ad2bed3d89a1207bd56683f96",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:DB62F7D3F1C21114",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "88a114d2ca7ca244cb92117dd81ab0c71e6e529864cedab34107ec1157fb595f",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:910C41EBBA78381E",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "0dac2b358259b499a05273732ee482648b04a15e98a42581373653fa3b05037c",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:CC1A9E992A27D520",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "f75635c4ceb2c542b3e5cebd98c20b975fed2d50e8eb059e843b99277c38a651",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:8A9901D8BD7797A5",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "b12cc43dd131cc9ea9ec30cef4b0b46499a4e7091e145f9b4124353b022d22f8",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:CDD5AEE94CD51A53",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "93072c908b8fa758c26038645dce12f6e25560f5264f5410855eda2821793350",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C57BD2B2DC32A8D6",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "4a72c49e05f20f1398a7f8a360fa51ec8447bb85a931f1fb685e49f641c4e7b2",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:F7C174188EEC5FE2",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "54223fe243a4fc69e85f2573a3c8e7f9276d230b1108ef1f55c865132b4e112e",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:D7700830E72966B0",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "267a2d992fb17a9725a7069786950c386bb94cc24888109318832b616770e4ab",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:88A599517DE2AEFE",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "b8ff539c2346d4de04637dcc05414bfdb5e14ffa065f7f702ecf30263ddbf565",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:D222AD02948F4DAF",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "2568f72da79a6e627335dabee712fbbcb602b8f10564ca2411924490819b4db6",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:932C5BBE06357FE1",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "61e472095b5406c3fb2c774c2530e6cf4f6191079f1dc5ca83dea3a29e60512a",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:8A52BDF7AF2D0490",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "e1867e30560bef25fe8df356b5ffa7ee3e76172cf0f8fe96796fe426699bb68f",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:F83483A4CAF0EF14",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "6acab6ed1bc3ef28069c4fbb7769723689ba7599711e10bdd424b9fbc6602786",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:E3F772C6F0963557",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "5d09f2be7f632213dbe85c7cd5a4822e73b647aeedcd469a5bca1e3eb2e49bd0",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:BA346A494628579F",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "527040a4e31eea014117b2b6fa109e38dc35c89682031ae4224d5789d2690a08",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C84056CC914361A8",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "166a58f49c05c7d102ad0e8010ba8a67d89a209200384ebccb205e68120c4ec8",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:FE4F648FA1ABAEEA",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "0858ea987c00a5ed3dbede30f8d583a72999a820d609151beffec6ccde7d5f75",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:EC08AC7B5C98BBCA",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "585c9616c770eb160c171fffbc90bb63fd7465a16a1b437c254e6fed89b2b504",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:834A8214709ECFDF",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "a0b486263e71a27c669a88a03bb677cd7de6e2e0b9b787eeda36733db1b8a738",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        }
+      ]
+    },
+    {
+      "category": "shoes",
+      "sourceHash": "07c5e75fe9e3bd3a359436e6a6dd7e839f84bcba52568519540b8d9a252db3ff",
+      "casps": 35,
+      "parts": [
+        {
+          "key": "034AEECB:80000000:FBD24463515E4455",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "acfb5e061f5320853e190f753fd16638dc493d5957065b4479c7f1486bf98b50",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:90BEAEABFF48F5F7",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "10c9bf5b4c7c55a6736daa197a4c8c0a75735bafd61e8e653ed2735a85fc8605",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:E8045ABA54C46D33",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "04c2aa730d99839f20ed6bfb99bbdde6d933514dfb20631fb331bc39a429ba4e",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:833834E684143334",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "16bb6ec3d824bb7012dcc3009f4afda9132dba03e577371add43baa5afa2182d",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C9569B00E259FA78",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "653de89a65bfc9761e08a870f4326b3d1612fea22ba065f3449609dbeff8cbd4",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:EB2A907B897CC50D",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "76c228e3d2c370070d43c28bf5bfd9fa7ed268f855a209ba661c652dd148c9c3",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:B61107A550CECAC4",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "77dff7bf24a5411b4f12819e37fba853e4ca7794d6d68f323d7d21e703bafd66",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:8AEC186463561168",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "ba1195023706b139a354ffddad423bd12dedd6982319afbaac1cc7c4148fe3ca",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:CE2BFEBE5499A588",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "94014571beb6ec7a3ee48edf4a297af39d85c1fbfaf6a94d4776a99dd0917ee5",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:FC00A97164351FB8",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "0000a5048caedd4fa48ef25bfa6fbd066161088307adf054ea60c532efc02817",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:A3B7347CD2B057FD",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "8548c469dfde46859cd1562ae17b11e66f31565dc52c75a40e30c0bdd9f0114e",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:B88A54CECC1942B7",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "bf5122e37eb49a5efdab3e36dff10a838ba1714c23bffc5427c46585f1bdf404",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:8A124C7B77CF6B0E",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "1a583b9566acd4a9f4c4730ae253dfdbed19d63906c90f0149542187112a254d",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:9ADE5C4A9B4A249F",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "0d327029a15c60f3f0d932e34e013bc826a08a52bf0802f389f8f6ead997e0cd",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:8D51138CB424BEE9",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "74682612e484cce10cdd0f6862fbb05e4f452a2989809dcdea456085dbded70c",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:A141AE829E960061",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "b7dc405a8f29455a539229c08081305de4da83cd2bbfb47be0b29f6170346407",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:84BBA5327917BF8C",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "b8c592e4931de8a70937e34267139d9490a07b4731f97acd28bf7352370b3a89",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:98F3033FB081CEE0",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "4b33501b29bdedf056d20ff01325c8c803c6a1f7a9b8121c279d3a57ed7803e6",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:E3DF26A3D02C28EF",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "aedac529bf04ecf972a61bd9f1bc394c97fee5ec3c514f0008ace5e145a4d413",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:B39178A97E9B13E4",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "ae7a3aab280a15de3aeed738088584b43215bdde54f904076681bbe76e80fe7e",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:EDA6B4036A88DD2A",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "37b299019d3be616bd4100fef43e2bf3574ad0b3457a45a531ed00be83834250",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:DC7F5407DF3DD8B7",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "f536875e6708d184fae431d988419ab11cdb5c5ec1ed9b1573d4b2916c7954eb",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:D3697C2B6CBA4841",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "30e27ae0944b201935efbc76ccd259104ee150957e05ed250f43cdd507e3c40b",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:97E91559F763EB70",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "dffab5dec8b028b455113f5de81eca3b17a29981ae0c6e1b3221e07b4a5473f5",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:99DB450F025ED4BC",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "9bf6801166ce2ff28fce493a1e3dbd29f23b2d89b3d350f4bba6ee04af4ce3bb",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:B426ACC9D2DB5864",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "fd81b9e36c9f35097cf4b4d1edad7d58d2a609e2dc8389f91f4807bef68a8120",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:A1545C8C46A5D27C",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "fa9b3d109c70b1afe11f39ff14582f709943ea8bf7c395128ffe974bb24e6029",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:F09406413546224F",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "3dc8df8cb6b80c1c76927b724d84a6c07cbaeeaef9f286bf3e2d4d4ae24146a1",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C2679439851DFEBC",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "5913b2052aad29225f69977c1390f697701f4cd5bc923762731855ab139628d3",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:98B336ED0DB113F2",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "d8fc6d88a5410f8253ba4052ef6a4a3ee0366774bff9b8102846f0e3a9f46dd6",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:960903AB33EB5846",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "1fb04debe6d21cf604cf1e4923a30f8baaf624da9f27bf10c71bf8c93bdcaf73",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C6D754C436263125",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "188feab2bb1a7148a6d3448f835be1ac3af5d76e3cb9993bf21f1da31bb17001",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:E22AEE89F66CD238",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "8b2d6c2d04da31df0dcfbbd74fea00fe5e3f74cacf0eee6c61c5422f3911f581",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:B347A80DA267F215",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "719d280c6cb8a1212bddda9dcc4f46816465a95a821f15ff2e526910939b2c47",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:80291DA61EDABE9A",
+          "version": 46,
+          "colorBlockPresent": true,
+          "payloadHash": "47c8355b340d7549e2fe8f8e0fc265ccc52f02df911c37b46abaefe6a345e074",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        }
+      ]
+    },
+    {
+      "category": "accessory",
+      "sourceHash": "1d9e3e016d3468ab0f5f6852fd155a5dbb7259d88dfbe449b413639a9a6663e7",
+      "casps": 9,
+      "parts": [
+        {
+          "key": "034AEECB:80000000:D720B48261EE218C",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "ec635ca041a4ac3ca5013334a4588e78981c029d495f8bc6aef79eb4b038aafa",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:DFA8979C056BD019",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "f67a1ab92884d514cbd1c7f1dc0f49e8a12d16e3bb40c336bd32fb34c5d23921",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:CB7DF304ACDD8E0C",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "b910c7ca212b0c091793a1d420eb9044d659253c9b3e54b030237d2f14ece3a8",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:9D7F0124D2469485",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "0f197f6fb607dff7394d504d462a9bfe60674e11cdd5ec2e0623531b2e29b43e",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:C6109BC9626758FC",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "862a3a6863c5eeb6ea2602a9e9af550744e9c1496648e866ae2a620ac9d1262e",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:9577384E837BBEC1",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "a133a23b406145cb2e2c570ab7da2567e6c8a4d42f9e83758b33088066738c20",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:E785ACDD7FBE5748",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "9fc5ebe6cd5ae9d7c1b0bc96e94d84e39d6001fe97ba0fd699fb776557a20b65",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:B4226E92421C45BE",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "95892be961c4715b755a13346650d6d85fe175ad9937fa1f6b8327397f1287c5",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        },
+        {
+          "key": "034AEECB:80000000:B28CCF7D4349CF74",
+          "version": 49,
+          "colorBlockPresent": true,
+          "payloadHash": "2c9e8c3c11c7d55e44ddac86124a65064e53d9c8b5d84c15c7067f300e5fdde7",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        }
+      ]
+    },
+    {
+      "category": "skin",
+      "sourceHash": "a049b8b0a1a6b8510fbcdcb9d856b282b7d7ad145e14001da0dd110e5c29343b",
+      "casps": 1,
+      "parts": [
+        {
+          "key": "034AEECB:80000000:9630CA648131EF65",
+          "version": 50,
+          "colorBlockPresent": true,
+          "payloadHash": "25c531ff0bf0c410ac7355d7fa1fc52c589a86bc4f8ab31ca8dc2aa92c6b3146",
+          "sliderBlockHash": "4ac5f5415fb58e1b3a53ffba1eab6f17a1c511da3405bee5be5da9c46079fafd",
+          "structuralIssues": []
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "opacity maximum1 is implicit, not an extra stored float",
+    "structural validity is not color-transform, UI fidelity, game-apply or save qualification",
+    "no default slider range was inferred for pre44 resources",
+    "invalid metadata retained as exact IEEE754 bits rather than clamped or defaulted"
+  ]
+}

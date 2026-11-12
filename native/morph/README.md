@@ -57,7 +57,7 @@ as planning issues. Parsing alone does not authorize discarding them.
 
 ## Qualification
 
-Run `cargo test -p external-cas-morph --offline -j 2`. Eleven tests cover native
+Run `cargo test -p external-cas-morph --offline -j 2`. Thirteen tests cover native
 frame-trait paths, physique names and parsing, stale revisions, missing fields,
 malformed/truncated payloads, signed/duplicate IDs, first seam semantics,
 positive/negative/zero weights, accumulated skeletal offsets and byte retention.

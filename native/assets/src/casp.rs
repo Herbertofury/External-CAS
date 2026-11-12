@@ -63,6 +63,146 @@ pub struct CaspCompatibility {
     /// SimRipper HasMesh is lod_count>0, not a test of LOD0 references.
     pub lod_count: u8,
 }
+/// Serialized as raw IEEE754 bits, including NaN payloads and signed zero.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct PreservedFloat32 {
+    pub bits: u32,
+}
+impl PreservedFloat32 {
+    pub fn value(self) -> f32 {
+        f32::from_bits(self.bits)
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct CaspOpacitySettings {
+    pub minimum: PreservedFloat32,
+    pub step: PreservedFloat32,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct CaspSliderSettings {
+    pub minimum: PreservedFloat32,
+    pub maximum: PreservedFloat32,
+    pub step: PreservedFloat32,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+pub struct CaspColorSliders {
+    pub opacity: CaspOpacitySettings,
+    pub hue: CaspSliderSettings,
+    pub saturation: CaspSliderSettings,
+    pub brightness: CaspSliderSettings,
+}
+#[derive(Clone, Copy, Debug)]
+pub struct CaspSliderRange {
+    pub minimum: f32,
+    pub maximum: f32,
+    pub step: f32,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum CaspColorChannel {
+    Hue,
+    Opacity,
+    Saturation,
+    Brightness,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct CaspSliderIssue {
+    pub channel: CaspColorChannel,
+    pub reason: &'static str,
+}
+impl CaspColorSliders {
+    /// Binary order is O(min,step), H(min,max,step), S(...), V(...).
+    pub fn from_raw_bytes(bytes: [u8; 44]) -> Self {
+        let mut values = bytes.chunks_exact(4).map(|b| PreservedFloat32 {
+            bits: u32::from_le_bytes(b.try_into().unwrap()),
+        });
+        let opacity = CaspOpacitySettings {
+            minimum: values.next().unwrap(),
+            step: values.next().unwrap(),
+        };
+        let mut slider = || CaspSliderSettings {
+            minimum: values.next().unwrap(),
+            maximum: values.next().unwrap(),
+            step: values.next().unwrap(),
+        };
+        Self {
+            opacity,
+            hue: slider(),
+            saturation: slider(),
+            brightness: slider(),
+        }
+    }
+    pub fn raw_bytes(self) -> [u8; 44] {
+        let values = [
+            self.opacity.minimum,
+            self.opacity.step,
+            self.hue.minimum,
+            self.hue.maximum,
+            self.hue.step,
+            self.saturation.minimum,
+            self.saturation.maximum,
+            self.saturation.step,
+            self.brightness.minimum,
+            self.brightness.maximum,
+            self.brightness.step,
+        ];
+        let mut raw = [0; 44];
+        for (out, value) in raw.chunks_exact_mut(4).zip(values) {
+            out.copy_from_slice(&value.bits.to_le_bytes());
+        }
+        raw
+    }
+    pub fn ranges_hosv(self) -> [CaspSliderRange; 4] {
+        let range = |s: CaspSliderSettings| CaspSliderRange {
+            minimum: s.minimum.value(),
+            maximum: s.maximum.value(),
+            step: s.step.value(),
+        };
+        [
+            range(self.hue),
+            CaspSliderRange {
+                minimum: self.opacity.minimum.value(),
+                maximum: 1.,
+                step: self.opacity.step.value(),
+            },
+            range(self.saturation),
+            range(self.brightness),
+        ]
+    }
+    /// Structural qualification only. Consumers must additionally qualify
+    /// their numeric domains and color transform; no unsupported range is clamped.
+    pub fn validation_issues(self) -> Vec<CaspSliderIssue> {
+        let mut issues = Vec::new();
+        for (channel, range) in [
+            CaspColorChannel::Hue,
+            CaspColorChannel::Opacity,
+            CaspColorChannel::Saturation,
+            CaspColorChannel::Brightness,
+        ]
+        .into_iter()
+        .zip(self.ranges_hosv())
+        {
+            let reason = if !range.minimum.is_finite()
+                || !range.maximum.is_finite()
+                || !range.step.is_finite()
+            {
+                Some("non-finite raw slider value")
+            } else if range.minimum > range.maximum {
+                Some("minimum exceeds maximum")
+            } else if range.step <= 0. {
+                Some("step is not positive")
+            } else if channel == CaspColorChannel::Opacity && !(0.0..=1.0).contains(&range.minimum)
+            {
+                Some("opacity minimum is outside the implicit zero-to-one domain")
+            } else {
+                None
+            };
+            if let Some(reason) = reason {
+                issues.push(CaspSliderIssue { channel, reason });
+            }
+        }
+        issues
+    }
+}
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct CasPart {
     pub version: u32,
@@ -101,6 +241,9 @@ pub struct CasPart {
     /// None is explicit unknown metadata from an older cache, never zero flags.
     #[serde(default)]
     pub compatibility: Option<CaspCompatibility>,
+    /// None is absent before v44, or unknown in an older cached v44+ CASP.
+    #[serde(default)]
+    pub color_sliders: Option<CaspColorSliders>,
 }
 impl CasPart {
     pub fn disallow_opposite_gender(&self) -> bool {
@@ -251,9 +394,13 @@ impl CasPart {
         }
         let opposite_gender_part = if version >= 38 { Some(r.u64()?) } else { None };
         let fallback_part = if version >= 39 { Some(r.u64()?) } else { None };
-        if version >= 44 {
-            r.skip(44)?;
-        }
+        let color_sliders = if version >= 44 {
+            Some(CaspColorSliders::from_raw_bytes(
+                r.take(44)?.try_into().unwrap(),
+            ))
+        } else {
+            None
+        };
         if version >= 46 {
             let n = r.u8()?;
             for _ in 0..n {
@@ -376,6 +523,7 @@ impl CasPart {
                 fallback_part,
                 lod_count,
             }),
+            color_sliders,
         })
     }
 }

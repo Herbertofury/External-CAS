@@ -36,6 +36,37 @@ callback is not a commit receipt. Schema 3 upgrades schema 1/2 transactionally,
 preserving valid metadata. Unrelated databases and unknown schema versions are
 refused. No arbitrary existing database is repurposed.
 
+## Bounded complete-package batches
+
+`store_packages_with_progress` accepts borrowed `CachePackageUpdate` records
+and `CacheBatchLimits`. Defaults bound one pending group to32 packages,
+4096 parsed/unsupported records and16MiB serialized CASP/status metadata. These
+are staging limits, not library limits. Flush before exceeding them; a genuine
+package larger than a batch uses the original complete-package API.
+
+Every source is validated before publication and again before a single FULL
+SQLite commit, with all Windows source leases retained throughout. Every
+package remains complete, and the whole group publishes atomically. Failed or
+cancelled batches preserve previous cache generations; callers must not blindly
+retry a denied/stale batch. Flush the final group before binding search scope,
+and treat a publication failure as an unqualified indexed epoch. Prepared
+statements are reused with rusqlite's bounded statement cache. Source/payload
+pinning and schema/search semantics are unchanged.
+
+`StorePackageTimings` and `StoreBatchTimings` expose source validation, SQL and
+commit wall times without private asset metadata. The `profile_metadata`
+example accepts an explicit disposable cache path, private real-source package
+manifest and optional batch size1..32. It measures a real-source component;
+it does not establish an application speedup. Full native app cold/warm receipts
+and targeted before/after data remain in the ignored private profiling folder.
+`load_package_profiled` additionally separates source checks, SQLite row work
+and JSON parsing. `set_page_cache_budget_kib` is an optional, verified,
+per-connection SQLite target; the default is unchanged. It neither changes
+durability/schema nor caps the library. The page cache is allocated lazily and
+is not a process-memory ceiling. The app exposes this only as diagnostic
+`EXTERNAL_CAS_CATALOG_CACHE_KIB`; an observed fast run alone does not qualify a
+larger production default. [SQLite documents these cache and durability controls](https://www.sqlite.org/pragma.html).
+
 ## Qualified source scopes
 
 ```rust,ignore

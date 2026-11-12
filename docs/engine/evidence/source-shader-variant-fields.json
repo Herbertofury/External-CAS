@@ -1,0 +1,455 @@
+{
+  "schema": 1,
+  "source_precomp_sha256": "62ffab0f85c3af8ace5a375c968216d1ada2b1c9c2d18f32aa4b25d250a0b101",
+  "source_game_version": "1.129.39.1030",
+  "field_name_hashes_validated": true,
+  "feature_selection_program_executed": false,
+  "live_selection_qualified": false,
+  "records": [
+    {
+      "source_name": "SimSkinCAS",
+      "source_offset": 79166888,
+      "modes": [
+        [
+          2162635622,
+          651259978
+        ],
+        [
+          2803585785,
+          2526618029
+        ],
+        [
+          4028449179,
+          510800050
+        ]
+      ],
+      "bytecode_words": 221,
+      "variant_fields": [
+        {
+          "hash": "F8EF773B",
+          "name": "OPT_FADE_ENABLED",
+          "multiplier": 1,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "70B0C70B",
+          "name": "OPT_MORPHCHANNELS",
+          "multiplier": 2,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F2477C6F",
+          "name": "OPT_SWITCH_SHADOWMAP_TYPE",
+          "multiplier": 4,
+          "start": 0,
+          "range": 4
+        },
+        {
+          "hash": "96DE15F6",
+          "name": "OPT_SKINNING",
+          "multiplier": 16,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "1319C8E7",
+          "name": "OPT_HIGHLIGHTING",
+          "multiplier": 32,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "C38BF5DB",
+          "name": "OPT_MEDATORLIGHTING",
+          "multiplier": 64,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "E09BAB91",
+          "name": "MAP_NORMAL",
+          "multiplier": 128,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "8534219B",
+          "name": "MAP_SPECULAR",
+          "multiplier": 256,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "447C29F7",
+          "name": "MAP_CUBE",
+          "multiplier": 512,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "9F2A6F85",
+          "name": "MAP_EMISSION",
+          "multiplier": 1024,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F48822AB",
+          "name": "MAP_SHEEN",
+          "multiplier": 2048,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "1086F5C5",
+          "name": "OPT_CPU_SKINTONE",
+          "multiplier": 4096,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F66F821E",
+          "name": "OPT_PET",
+          "multiplier": 8192,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "A66723FE",
+          "name": "OPT_ENABLE_CLIP_TEST",
+          "multiplier": 16384,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "974909E0",
+          "name": "OPT_ENABLE_FUR",
+          "multiplier": 32768,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "25E4C386",
+          "name": "OPT_PAINTPELT_MODE",
+          "multiplier": 65536,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "32C40147",
+          "name": "OPT_PAINTPELT_ERASER",
+          "multiplier": 131072,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "988D386B",
+          "name": "OPT_WING_PAINT_MODE",
+          "multiplier": 262144,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "7C615ACF",
+          "name": "OPT_ENABLE_IRIDESCENCE",
+          "multiplier": 524288,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "90FD0FDE",
+          "name": "OPT_SKIN_EMISSION",
+          "multiplier": 1048576,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "CDD17A56",
+          "name": "OPT_ENABLE_SKIN_SPECULAR",
+          "multiplier": 2097152,
+          "start": 0,
+          "range": 2
+        }
+      ],
+      "tail_offset": 79168577
+    },
+    {
+      "source_name": "simskin",
+      "source_offset": 79111696,
+      "modes": [
+        [
+          2162635622,
+          806642883
+        ],
+        [
+          564225242,
+          3046430198
+        ],
+        [
+          2803585785,
+          2526618029
+        ],
+        [
+          4028449179,
+          10809460
+        ]
+      ],
+      "bytecode_words": 219,
+      "variant_fields": [
+        {
+          "hash": "70B0C70B",
+          "name": "OPT_MORPHCHANNELS",
+          "multiplier": 1,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "7118869B",
+          "name": "OPT_INTERIOR",
+          "multiplier": 2,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F8EF773B",
+          "name": "OPT_FADE_ENABLED",
+          "multiplier": 4,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "12931A4B",
+          "name": "OPT_PRETRANSLUCENT_SIM",
+          "multiplier": 8,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F2477C6F",
+          "name": "OPT_SWITCH_SHADOWMAP_TYPE",
+          "multiplier": 16,
+          "start": 0,
+          "range": 4
+        },
+        {
+          "hash": "96DE15F6",
+          "name": "OPT_SKINNING",
+          "multiplier": 64,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "E09BAB91",
+          "name": "MAP_NORMAL",
+          "multiplier": 128,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "8534219B",
+          "name": "MAP_SPECULAR",
+          "multiplier": 256,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "447C29F7",
+          "name": "MAP_CUBE",
+          "multiplier": 512,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "9F2A6F85",
+          "name": "MAP_EMISSION",
+          "multiplier": 1024,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F48822AB",
+          "name": "MAP_SHEEN",
+          "multiplier": 2048,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "1086F5C5",
+          "name": "OPT_CPU_SKINTONE",
+          "multiplier": 4096,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "9FD967DD",
+          "name": "OPT_APPLY_BURNT_TEXTURE",
+          "multiplier": 8192,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "524BE3F9",
+          "name": "OPT_APPLY_GRUBBY_TEXTURE",
+          "multiplier": 16384,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "BC4A6396",
+          "name": "OPT_APPLY_DYED_TEXTURE",
+          "multiplier": 32768,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "AF7B071D",
+          "name": "OPT_APPLY_SCRATCHED_TEXTURE",
+          "multiplier": 65536,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F66F821E",
+          "name": "OPT_PET",
+          "multiplier": 131072,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "A66723FE",
+          "name": "OPT_ENABLE_CLIP_TEST",
+          "multiplier": 262144,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "974909E0",
+          "name": "OPT_ENABLE_FUR",
+          "multiplier": 524288,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "7C615ACF",
+          "name": "OPT_ENABLE_IRIDESCENCE",
+          "multiplier": 1048576,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "90FD0FDE",
+          "name": "OPT_SKIN_EMISSION",
+          "multiplier": 2097152,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "CDD17A56",
+          "name": "OPT_ENABLE_SKIN_SPECULAR",
+          "multiplier": 4194304,
+          "start": 0,
+          "range": 2
+        }
+      ],
+      "tail_offset": 79113439
+    },
+    {
+      "source_name": "simglassCAS",
+      "source_offset": 79161744,
+      "modes": [
+        [
+          2162635622,
+          651259978
+        ],
+        [
+          564225242,
+          3046430198
+        ],
+        [
+          2803585785,
+          2526618029
+        ],
+        [
+          4028449179,
+          10809460
+        ]
+      ],
+      "bytecode_words": 103,
+      "variant_fields": [
+        {
+          "hash": "70B0C70B",
+          "name": "OPT_MORPHCHANNELS",
+          "multiplier": 1,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F8EF773B",
+          "name": "OPT_FADE_ENABLED",
+          "multiplier": 2,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "F2477C6F",
+          "name": "OPT_SWITCH_SHADOWMAP_TYPE",
+          "multiplier": 4,
+          "start": 0,
+          "range": 4
+        },
+        {
+          "hash": "96DE15F6",
+          "name": "OPT_SKINNING",
+          "multiplier": 16,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "E09BAB91",
+          "name": "MAP_NORMAL",
+          "multiplier": 32,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "8534219B",
+          "name": "MAP_SPECULAR",
+          "multiplier": 64,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "447C29F7",
+          "name": "MAP_CUBE",
+          "multiplier": 128,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "9F2A6F85",
+          "name": "MAP_EMISSION",
+          "multiplier": 256,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "C38BF5DB",
+          "name": "OPT_MEDATORLIGHTING",
+          "multiplier": 512,
+          "start": 0,
+          "range": 2
+        },
+        {
+          "hash": "1086F5C5",
+          "name": "OPT_CPU_SKINTONE",
+          "multiplier": 1024,
+          "start": 0,
+          "range": 2
+        }
+      ],
+      "tail_offset": 79162563
+    }
+  ]
+}

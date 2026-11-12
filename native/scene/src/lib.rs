@@ -7,7 +7,8 @@ use external_cas_assets::{Catalog, PackageReader, ReadLimits, ResourceKey};
 use external_cas_tray::{AppearanceForm, SimAppearance};
 pub use scope::{
     ConfigObservation, EffectiveResolution, EffectiveState, GameInstallScope, PackagePriority,
-    PolicyChoices, PriorityRule, RankedProvider, ScopeCoverage, ScopeError, ScopeIssue, ScopePolicy,
+    PolicyChoices, PriorityRule, RankedProvider, ScopeCoverage, ScopeError, ScopeIssue,
+    ScopePolicy,
 };
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
@@ -50,6 +51,8 @@ pub enum DependencyState {
     UniqueInScope,
     ExplicitProvider,
     ByteIdenticalProviders,
+    ConfiguredPriorityProvider,
+    ByteIdenticalPriorityProviders,
     Ambiguous,
     Deleted,
     InvalidProvider,
@@ -286,15 +289,17 @@ fn dependency(
         payload_error: None,
     }
 }
-struct PlanReaders<'a> {
+struct PlanReaders<'a, 'b> {
     catalog: &'a Catalog,
+    policy: Option<&'b ScopePolicy<'a>>,
     readers: BTreeMap<usize, PackageReader<'a>>,
     failed: BTreeMap<usize, String>,
 }
-impl<'a> PlanReaders<'a> {
-    fn new(catalog: &'a Catalog) -> Self {
+impl<'a, 'b> PlanReaders<'a, 'b> {
+    fn new(catalog: &'a Catalog, policy: Option<&'b ScopePolicy<'a>>) -> Self {
         Self {
             catalog,
+            policy,
             readers: BTreeMap::new(),
             failed: BTreeMap::new(),
         }
@@ -337,6 +342,27 @@ impl<'a> PlanReaders<'a> {
         result
     }
     fn load_inner(&mut self, d: &mut Dependency, limits: ReadLimits) -> Result<Vec<u8>, String> {
+        let effective = if d.selected.is_none()
+            && !d.candidates.is_empty()
+            && d.candidates.iter().all(|c| c.key == d.candidates[0].key)
+        {
+            self.policy.map(|p| p.resolve_key(d.candidates[0].key))
+        } else {
+            None
+        };
+        if let Some(p) = &effective {
+            if let Some(selected) = p.selected {
+                d.selected = d
+                    .candidates
+                    .iter()
+                    .find(|c| c.provider == selected)
+                    .cloned();
+                d.state = DependencyState::ConfiguredPriorityProvider;
+            } else if p.state == EffectiveState::DeletedHighestPriority {
+                d.state = DependencyState::Deleted;
+                return Err("Highest-priority provider is a deletion; lower historical resources are not revived".into());
+            }
+        }
         if let Some(c) = d.selected.clone() {
             let bytes = self.read(&c, limits)?;
             d.provider_payload_hashes
@@ -350,22 +376,45 @@ impl<'a> PlanReaders<'a> {
             return Err("No unique full TGI/content provider".into());
         }
         let mut first = None;
+        let eligible = effective
+            .as_ref()
+            .filter(|p| p.state == EffectiveState::TiedHighestPriority)
+            .map(|p| {
+                let maximum = p.candidates.iter().filter_map(|c| c.priority).max();
+                p.candidates
+                    .iter()
+                    .filter(|c| c.priority == maximum)
+                    .map(|c| c.provider)
+                    .collect::<Vec<_>>()
+            });
+        let mut first_candidate = None;
         let mut identical = true;
         for c in &d.candidates {
             let bytes = self.read(c, limits)?;
             d.provider_payload_hashes
                 .push((c.provider, format!("{:x}", Sha256::digest(&bytes))));
+            if eligible
+                .as_ref()
+                .is_some_and(|active| !active.contains(&c.provider))
+            {
+                continue;
+            }
             if let Some(original) = &first {
                 if original != &bytes {
                     identical = false;
                 }
             } else {
                 first = Some(bytes);
+                first_candidate = Some(c.clone());
             }
         }
         if identical {
-            d.state = DependencyState::ByteIdenticalProviders;
-            d.selected = Some(d.candidates[0].clone());
+            d.state = if eligible.is_some() {
+                DependencyState::ByteIdenticalPriorityProviders
+            } else {
+                DependencyState::ByteIdenticalProviders
+            };
+            d.selected = first_candidate;
             Ok(first.unwrap())
         } else {
             Err(
@@ -560,6 +609,17 @@ fn native_skin_state(sim: &SimAppearance) -> Result<(usize, String), String> {
     Ok((level as usize,"stored SimData.attributes[30].suntan_tracker[27].tan_level[1] (protobuf default zero if absent)".into()))
 }
 pub fn resolve_scene(sim: &SimAppearance, catalog: &Catalog, options: &SceneOptions) -> ScenePlan {
+    resolve_scene_scoped(sim, catalog, options, None)
+}
+/// Applies explicit installed numeric priorities during payload resolution.
+/// Equivalence compares only tied effective providers while retaining hashes
+/// for all source generations. Differing active payloads remain unresolved.
+pub fn resolve_scene_scoped<'a>(
+    sim: &SimAppearance,
+    catalog: &'a Catalog,
+    options: &SceneOptions,
+    policy: Option<&ScopePolicy<'a>>,
+) -> ScenePlan {
     let mut plan = ScenePlan {
         native_sim_sha256: sim.base.native.sha256.clone(),
         resolved_form: None,
@@ -575,7 +635,7 @@ pub fn resolve_scene(sim: &SimAppearance, catalog: &Catalog, options: &SceneOpti
         complete_sim: false,
         catalog_issue_count: catalog.issues.len(),
     };
-    let mut readers = PlanReaders::new(catalog);
+    let mut readers = PlanReaders::new(catalog, policy);
     let (form, resolved, occult) = match choose_form(sim, &options.form) {
         Ok(v) => v,
         Err(e) => {

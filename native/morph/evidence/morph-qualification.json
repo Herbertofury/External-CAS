@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-11-12",
-  "rust_tests": 11,
+  "rust_tests": 13,
   "comparison": "full float position/normal arrays against unchanged pinned C# source",
   "bgeo_actual_game_head_geom": {"cases": 6, "vertex_observations": 9222},
   "dmap_v5_authoring_reference_fixture": {"cases": 16, "vertex_observations": 39144, "actual_map_resources": 4},

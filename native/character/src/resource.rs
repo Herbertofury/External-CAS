@@ -1,6 +1,6 @@
 use crate::*;
 use external_cas_assets::{scan::Provider, PackageReader};
-use external_cas_scene::EffectiveResolution;
+use external_cas_scene::{EffectiveResolution, EffectiveState};
 use sha2::{Digest, Sha256};
 use std::{
     collections::BTreeMap,
@@ -10,6 +10,9 @@ use std::{
         Arc,
     },
 };
+#[cfg(test)]
+#[path = "resource_tests.rs"]
+mod tests;
 #[derive(Clone, Debug)]
 pub struct ProviderObservation {
     pub provider: Provider,
@@ -30,7 +33,7 @@ pub struct ResourceObservation {
     pub bytes: Option<Arc<[u8]>>,
     pub error: Option<String>,
 }
-pub(crate) struct Resolver<'a, 'b> {
+pub struct Resolver<'a, 'b> {
     pub catalog: &'a Catalog,
     pub policy: Option<&'b ScopePolicy<'a>>,
     pub choices: &'b BTreeMap<ResourceKey, Provider>,
@@ -147,7 +150,25 @@ impl<'a, 'b> Resolver<'a, 'b> {
             }
         } else if providers.is_empty() {
             out.error = Some("Missing full TGI in configured catalog".into());
+        } else if out
+            .effective_policy
+            .as_ref()
+            .is_some_and(|p| p.state == EffectiveState::DeletedHighestPriority)
+        {
+            out.error=Some("Highest-priority provider is a deletion; lower historical resources are not revived".into());
         } else {
+            let eligible = out
+                .effective_policy
+                .as_ref()
+                .filter(|p| p.state == EffectiveState::TiedHighestPriority)
+                .map(|p| {
+                    let maximum = p.candidates.iter().filter_map(|c| c.priority).max();
+                    p.candidates
+                        .iter()
+                        .filter(|c| c.priority == maximum)
+                        .map(|c| c.provider)
+                        .collect::<Vec<_>>()
+                });
             let mut first: Option<(Provider, Arc<[u8]>, [u8; 32])> = None;
             let mut identical = true;
             for (i, p) in providers.into_iter().enumerate() {
@@ -156,6 +177,9 @@ impl<'a, 'b> Resolver<'a, 'b> {
                         let hash = Sha256::digest(&bytes).into();
                         if let Some(c) = out.candidates.get_mut(i) {
                             c.payload_sha256 = Some(hash);
+                        }
+                        if eligible.as_ref().is_some_and(|active| !active.contains(&p)) {
+                            continue;
                         }
                         if let Some((_, old, _)) = &first {
                             if old.as_ref() != bytes.as_ref() {
@@ -180,7 +204,12 @@ impl<'a, 'b> Resolver<'a, 'b> {
                     out.selected = Some(p);
                     out.bytes = Some(bytes);
                     out.payload_sha256 = Some(hash);
-                    out.selection = "byte-identical-full-TGI-providers".into();
+                    out.selection = if eligible.is_some() {
+                        "byte-identical-highest-priority-full-TGI-providers"
+                    } else {
+                        "byte-identical-full-TGI-providers"
+                    }
+                    .into();
                 } else {
                     out.error=Some("Differing providers remain unresolved without qualified priority/explicit choice".into());
                 }
