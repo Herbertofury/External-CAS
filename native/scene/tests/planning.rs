@@ -335,6 +335,12 @@ fn changed_or_invalid_providers_never_yield_a_rig_payload() {
     let mut bytes = fs::read(&path).unwrap();
     bytes[96] ^= 1;
     fs::write(&path, bytes).unwrap();
+    // Exercise an observable metadata change deterministically. Same-stamp
+    // payload rewrites require a retained payload pin, separately tested by
+    // assets; filesystem timestamp resolution is not a content guarantee.
+    let changed_time=fs::metadata(&path).unwrap().modified().unwrap()+std::time::Duration::from_secs(2);
+    fs::OpenOptions::new().write(true).open(&path).unwrap()
+        .set_times(fs::FileTimes::new().set_modified(changed_time)).unwrap();
     let plan = resolve_scene(&sim(), &catalog, &SceneOptions::default());
     assert!(plan.rig_payload.is_none());
     assert!(plan.failures.iter().any(|f| f.role == "native rig payload"));
