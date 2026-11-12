@@ -1,0 +1,26 @@
+{
+  "date": "2026-11-12",
+  "scope": "native external-cas-assets component; read-only installed-source acceptance",
+  "command": "cargo test -p external-cas-assets --jobs 2 --offline --target-dir native/assets/target -- --nocapture",
+  "environment": ["CAS_ASSET_TEST_MANIFEST=<trusted existing private source-pin manifest>", "CAS_ASSET_ORACLE_ROOT=<recovered resource-index source directory>"],
+  "fixture_tests": {"passed": 6, "failed": 0, "ignored": 0},
+  "installed_acceptance": {
+    "passed": true,
+    "source_whole_file_hashes_matched": true,
+    "decoded_payload_hashes_matched": true,
+    "all_index_locators_match_recovered_node_oracle": true,
+    "casp_label": "yfBody_SP02SwimTwist_SolidBlack",
+    "casp_roles_match_recovered_node_oracle": true,
+    "geom_vertices": 66,
+    "geom_triangles": 72,
+    "all_position_normal_uv_joint_weight_index_palette_bytes_match_recovered_node_oracle": true,
+    "authoring_rig_bones": 165,
+    "every_geom_vertex_uniquely_bound_to_authoring_rig": true
+  },
+  "provenance": "Recovered Node readers retain TS4CAS Tools/Blender GEOM/SimRipper GPL provenance and earlier independent oracle evidence. This run compares the Rust port against those recovered readers; it does not rerun the original C# or Blender tools.",
+  "limitations": [
+    "This evidence covers the explicitly selected installed package pair and authoring rig only.",
+    "It is not complete-Sim, game appearance, native rig selection, animation, material, save, synchronization, UI or large-library performance acceptance.",
+    "No game process or profile was contacted and no source asset bytes or private manifest are included."
+  ]
+}

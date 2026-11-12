@@ -1,0 +1,12 @@
+[workspace]
+resolver = "3"
+members = ["native/app", "native/assets", "native/tray", "native/animation", "native/scene", "native/session", "native/catalog", "native/morph", "native/fidelity", "native/character"]
+default-members = ["native/app"]
+
+[profile.dev]
+debug = 1
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = "debuginfo"

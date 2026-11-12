@@ -1,0 +1,155 @@
+{
+  "packages": [
+    {
+      "indexRows": 940,
+      "packageLabel": "SimulationFullBuild0.package",
+      "runs": [
+        {
+          "cacheHit": false,
+          "elapsedMs": 114.04010000000001,
+          "identicalMetadata": true,
+          "parsedThisPass": 154,
+          "pass": 0,
+          "rows": 154,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 47.934400000000004,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 154,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 598925
+    },
+    {
+      "indexRows": 33,
+      "packageLabel": "GoatDesigns_Jesse-Hair.package",
+      "runs": [
+        {
+          "cacheHit": false,
+          "elapsedMs": 7.9185,
+          "identicalMetadata": true,
+          "parsedThisPass": 8,
+          "pass": 0,
+          "rows": 8,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 2.39,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 8,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 27684021
+    },
+    {
+      "indexRows": 86,
+      "packageLabel": "-SAVAGE-SIMS-AnimusCollection-EnergySquareSplitHemNeckTop.package",
+      "runs": [
+        {
+          "cacheHit": false,
+          "elapsedMs": 15.956499999999998,
+          "identicalMetadata": true,
+          "parsedThisPass": 26,
+          "pass": 0,
+          "rows": 26,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 3.649,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 26,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 10446530
+    },
+    {
+      "indexRows": 42,
+      "packageLabel": "[gloomie galaxie]gummi worm earrings.package",
+      "runs": [
+        {
+          "cacheHit": false,
+          "elapsedMs": 6.829400000000001,
+          "identicalMetadata": true,
+          "parsedThisPass": 9,
+          "pass": 0,
+          "rows": 9,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 1.5537,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 9,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 648189
+    },
+    {
+      "indexRows": 80,
+      "packageLabel": "[LAVISHER]Wedge heel N°2 SLIDERLESS.package",
+      "runs": [
+        {
+          "cacheHit": false,
+          "elapsedMs": 29.7611,
+          "identicalMetadata": true,
+          "parsedThisPass": 35,
+          "pass": 0,
+          "rows": 35,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 7.052499999999999,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 35,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 2140550
+    },
+    {
+      "indexRows": 5,
+      "packageLabel": "mmd_riko_skind_new_rev.package",
+      "runs": [
+        {
+          "cacheHit": false,
+          "elapsedMs": 2.6578,
+          "identicalMetadata": true,
+          "parsedThisPass": 1,
+          "pass": 0,
+          "rows": 1,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 0.5043,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 1,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 9281563
+    }
+  ],
+  "scope": "actual explicit source cache component; not app startup or UI performance"
+}

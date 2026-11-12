@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "rust_tests": 11,
+  "comparison": "full float position/normal arrays against unchanged pinned C# source",
+  "bgeo_actual_game_head_geom": {"cases": 6, "vertex_observations": 9222},
+  "dmap_v5_authoring_reference_fixture": {"cases": 16, "vertex_observations": 39144, "actual_map_resources": 4},
+  "native_linked_dmap_v7": {"pairs": 13, "actual_game_geoms": 8, "cases": 208, "vertex_observations": 264004, "changed_positions": 26444, "changed_normals": 21888},
+  "native_linked_bond_rig": {"resources": 32, "rig_bones": 165, "cases": 96, "bone_observations": 15840, "adjustments": 718, "descendant_position_updates": 1868},
+  "native_linked_bond_mesh": {"resources": 32, "actual_game_geoms": 8, "cases": 512, "vertex_observations": 649856, "changed_positions": 105585, "changed_normals": 104632},
+  "actual_imported_sim_dependency_scope": {"indexed_packages": 3, "source_links": 92, "source_links_resolved": 92, "linked_resources": 137, "linked_resources_decoded": 137, "bgeo": 79, "dmap": 26, "bond": 32, "unresolved_modifier_scales": 87, "opaque_sculpt_suffixes": 1},
+  "all_compared_arrays_equal": true,
+  "original_geom_bytes_preserved": true,
+  "original_tray_source_hashes_unchanged": true,
+  "package_index_pins_unchanged": true,
+  "game_contacted": false,
+  "game_or_profile_writes": false,
+  "full_native_morphology_accepted": false,
+  "native_game_fidelity_accepted": false
+}

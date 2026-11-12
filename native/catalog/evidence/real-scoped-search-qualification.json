@@ -1,0 +1,258 @@
+{
+  "packages": [
+    {
+      "indexRows": 940,
+      "packageLabel": "SimulationFullBuild0.package",
+      "runs": [
+        {
+          "cacheHit": true,
+          "elapsedMs": 32.2895,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 0,
+          "rows": 154,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 31.1415,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 154,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 598925
+    },
+    {
+      "indexRows": 33,
+      "packageLabel": "GoatDesigns_Jesse-Hair.package",
+      "runs": [
+        {
+          "cacheHit": true,
+          "elapsedMs": 2.0179,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 0,
+          "rows": 8,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 2.1602,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 8,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 27684021
+    },
+    {
+      "indexRows": 86,
+      "packageLabel": "-SAVAGE-SIMS-AnimusCollection-EnergySquareSplitHemNeckTop.package",
+      "runs": [
+        {
+          "cacheHit": true,
+          "elapsedMs": 3.9004,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 0,
+          "rows": 26,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 4.3767,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 26,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 10446530
+    },
+    {
+      "indexRows": 42,
+      "packageLabel": "[gloomie galaxie]gummi worm earrings.package",
+      "runs": [
+        {
+          "cacheHit": true,
+          "elapsedMs": 2.3525,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 0,
+          "rows": 9,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 2.5893,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 9,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 648189
+    },
+    {
+      "indexRows": 80,
+      "packageLabel": "[LAVISHER]Wedge heel N°2 SLIDERLESS.package",
+      "runs": [
+        {
+          "cacheHit": true,
+          "elapsedMs": 5.7211,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 0,
+          "rows": 35,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 7.6565,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 35,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 2140550
+    },
+    {
+      "indexRows": 5,
+      "packageLabel": "mmd_riko_skind_new_rev.package",
+      "runs": [
+        {
+          "cacheHit": true,
+          "elapsedMs": 0.6539999999999999,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 0,
+          "rows": 1,
+          "unsupported": 0
+        },
+        {
+          "cacheHit": true,
+          "elapsedMs": 0.4729,
+          "identicalMetadata": true,
+          "parsedThisPass": 0,
+          "pass": 1,
+          "rows": 1,
+          "unsupported": 0
+        }
+      ],
+      "sourceBytes": 9281563
+    }
+  ],
+  "scope": "actual explicit source cache component; not app startup or UI performance",
+  "search": {
+    "qualifiedPackages": 6,
+    "queries": [
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "",
+        "rows": 233
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "",
+        "rows": 53
+      },
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "a",
+        "rows": 233
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "a",
+        "rows": 53
+      },
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "ha",
+        "rows": 53
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "ha",
+        "rows": 53
+      },
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "HAIR",
+        "rows": 53
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "HAIR",
+        "rows": 53
+      },
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "dress",
+        "rows": 10
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "dress",
+        "rows": 0
+      },
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "solid black",
+        "rows": 18
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "solid black",
+        "rows": 0
+      },
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "package",
+        "rows": 233
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "package",
+        "rows": 53
+      },
+      {
+        "body": null,
+        "exactScopedResults": true,
+        "query": "ECA56318",
+        "rows": 1
+      },
+      {
+        "body": 2,
+        "exactScopedResults": true,
+        "query": "ECA56318",
+        "rows": 1
+      }
+    ],
+    "scopeDigest": "ea46d3e0122f2022caf5a2b307523fb89e6e34d5496c6a050473bbfcafdd0432",
+    "sourceRows": 233
+  }
+}

@@ -1,0 +1,17 @@
+[package]
+name = "external-cas-character"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+publish = false
+
+[dependencies]
+external-cas-assets = { path = "../assets" }
+external-cas-tray = { path = "../tray" }
+external-cas-scene = { path = "../scene" }
+external-cas-morph = { path = "../morph" }
+sha2 = "=0.10.9"
+quick-xml = "=0.42.0"
+
+[dev-dependencies]
+serde_json = "=1.0.154"

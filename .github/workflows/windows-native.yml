@@ -1,0 +1,33 @@
+name: Windows native source checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        shell: pwsh
+        run: |
+          rustup toolchain install 1.99.0 --profile minimal
+          rustup default 1.99.0
+          rustc --version
+          cargo --version
+      - name: Test native source workspace
+        run: cargo test --workspace --locked --jobs 2
+      - name: Build native application
+        run: cargo build -p external-cas --locked --jobs 2
+      - name: Validate publication boundary
+        shell: pwsh
+        run: |
+          $forbidden = @(git ls-files | Where-Object { $_ -match '(^|/)(\.local|target|__pycache__)(/|$)|(^|/)private-|\.(package|dds|gfx|ttf|otf|exe|dll|pdb|pyc|sqlite)$' })
+          if ($forbidden.Count) { throw "Forbidden publication entries: $($forbidden -join ', ')" }
+          Write-Host 'Source-only boundary passed. Fixture tests do not imply real-game or release acceptance.'

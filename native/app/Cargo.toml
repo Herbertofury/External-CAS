@@ -1,0 +1,23 @@
+[package]
+name = "external-cas"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+
+[dependencies]
+eframe = { version = "=0.36.2", default-features = false, features = ["default_fonts", "wgpu"] }
+wgpu = "=30.0.1"
+bytemuck = { version = "=1.25.2", features = ["derive"] }
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.154"
+sha2 = "=0.10.9"
+image = { version = "=0.25.10", default-features = false, features = ["png", "jpeg", "dds"] }
+rfd = "=0.16.0"
+external-cas-assets = { path = "../assets" }
+external-cas-tray = { path = "../tray" }
+external-cas-animation = { path = "../animation" }
+external-cas-scene = { path = "../scene" }
+external-cas-session = { path = "../session" }
+external-cas-catalog-cache = { path = "../catalog" }
+external-cas-fidelity = { path = "../fidelity" }

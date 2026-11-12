@@ -1,0 +1,1016 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "scope": "five explicit installed CC packages; hashes and metadata only; source inputs unchanged; no images persisted",
+  "oracle": {
+    "dbpf": "recovered source-pinned dbpf.mjs",
+    "casp": "recovered source-pinned casp.mjs",
+    "pixels": "Pillow decoding original source bytes without Rust reconstruction",
+    "pillowScriptSha256": "49b3ff2e7c8ae2f6367fa8f58e757daf789a1b8ebbee23ce0d90b8f8824dddcf"
+  },
+  "sourceSemantics": {
+    "thumbnailType": "3C1AF1F2",
+    "femaleModelGroup": "00000002",
+    "maleModelGroup": "00000102",
+    "sameInstanceIsExactSwatch": true,
+    "designFallback": "same source package, nonzero OutfitId, identical complete LOD0 references and body context; explicitly design-only",
+    "alpha": "s4pi ThumbnailResource ALFA embedded PNG red channel; both standard insertion and original ToJFIF duplicate JFIFtail handled"
+  },
+  "samples": [
+    {
+      "category": "hair",
+      "sourceBytes": 27684021,
+      "sourceHash": "bd7baae05ddc02d6d0f6b731afc42cb92a2094d9d246d6db4ee21d2af6e2c994",
+      "casps": 8,
+      "thumbnailResources": 2,
+      "exactCaspCount": 1,
+      "designOnlyCaspCount": 7,
+      "missingCaspCount": 0
+    },
+    {
+      "category": "clothes",
+      "sourceBytes": 10446530,
+      "sourceHash": "d47c3dc718087915ddad72383860f6405b701881c2db5886c661c1743fbef792",
+      "casps": 26,
+      "thumbnailResources": 26,
+      "exactCaspCount": 26,
+      "designOnlyCaspCount": 0,
+      "missingCaspCount": 0
+    },
+    {
+      "category": "shoes",
+      "sourceBytes": 2140550,
+      "sourceHash": "07c5e75fe9e3bd3a359436e6a6dd7e839f84bcba52568519540b8d9a252db3ff",
+      "casps": 35,
+      "thumbnailResources": 1,
+      "exactCaspCount": 1,
+      "designOnlyCaspCount": 34,
+      "missingCaspCount": 0
+    },
+    {
+      "category": "accessory",
+      "sourceBytes": 648189,
+      "sourceHash": "1d9e3e016d3468ab0f5f6852fd155a5dbb7259d88dfbe449b413639a9a6663e7",
+      "casps": 9,
+      "thumbnailResources": 18,
+      "exactCaspCount": 9,
+      "designOnlyCaspCount": 0,
+      "missingCaspCount": 0
+    },
+    {
+      "category": "skin",
+      "sourceBytes": 9281563,
+      "sourceHash": "a049b8b0a1a6b8510fbcdcb9d856b282b7d7ad145e14001da0dd110e5c29343b",
+      "casps": 1,
+      "thumbnailResources": 2,
+      "exactCaspCount": 1,
+      "designOnlyCaspCount": 0,
+      "missingCaspCount": 0
+    }
+  ],
+  "thumbnailResources": 49,
+  "totalPixels": 754208,
+  "alphaPixelsExact": true,
+  "maxRgbDifference": 8,
+  "rgbChangedPixels": 88875,
+  "images": [
+    {
+      "category": "hair",
+      "key": "3C1AF1F2:00000002:CEA628BCB72C7687",
+      "payloadHash": "3cf9af721b53161e20f7041c90655791caf821711b92f6e200e320452b15f5a4",
+      "bytes": 15201,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "2c7b1969a661ff42ddd3ccfd62b1225c8796af5bf173cd4c3bc41afc55166803",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "9cbc72c1f8b6e99f932a7b987ecc3580964909198511ea558c65683c4246e301",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 4814
+    },
+    {
+      "category": "hair",
+      "key": "3C1AF1F2:00000102:CEA628BCB72C7687",
+      "payloadHash": "3cf9af721b53161e20f7041c90655791caf821711b92f6e200e320452b15f5a4",
+      "bytes": 15201,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "2c7b1969a661ff42ddd3ccfd62b1225c8796af5bf173cd4c3bc41afc55166803",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "9cbc72c1f8b6e99f932a7b987ecc3580964909198511ea558c65683c4246e301",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 4814
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:88160DC597DD1381",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:F3A40ABA5A4AEFD4",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:C954DBBE0728A254",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:A78FB530BFD2E656",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:95D42284EF81BE43",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:C59C6F64FD4E9A60",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:C9FDFAB644BA71E2",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:DB62F7D3F1C21114",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:910C41EBBA78381E",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:CC1A9E992A27D520",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:8A9901D8BD7797A5",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:CDD5AEE94CD51A53",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:C57BD2B2DC32A8D6",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:F7C174188EEC5FE2",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:D7700830E72966B0",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:88A599517DE2AEFE",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:D222AD02948F4DAF",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:932C5BBE06357FE1",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:8A52BDF7AF2D0490",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:F83483A4CAF0EF14",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:E3F772C6F0963557",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:BA346A494628579F",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:C84056CC914361A8",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:FE4F648FA1ABAEEA",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:EC08AC7B5C98BBCA",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "clothes",
+      "key": "3C1AF1F2:00000002:834A8214709ECFDF",
+      "payloadHash": "7d05e4b6dd4869a9d700e8af6a3bc7faf2fd57e937ef938899b5fd9a973ede68",
+      "bytes": 13697,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "9c5ea86bc7c0e99a0a1a86d60acc9c86f5b3be1763f386a84557d04fc2f8d09d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "bd505bbf3d2047e57313f529e8d227b5cc2a21d061ce1b0c2b2175fbfb563acd",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1211
+    },
+    {
+      "category": "shoes",
+      "key": "3C1AF1F2:00000002:FBD24463515E4455",
+      "payloadHash": "fa0704d2b41db2c48a9159e07187b7a2d0e47db80a810601a2dcc0df08f3e7ae",
+      "bytes": 15596,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "154eb95924f958f7de9a6e3a1b7c079835b229d1a83044ba733693e69983f04c",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "afb64b2d2bbceb76ac35a15d747318e05f5ca96dc20b1f532a67e7c59414e2e8",
+      "maxRgbDifference": 4,
+      "rgbChangedPixels": 3547
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:D720B48261EE218C",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:D720B48261EE218C",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:DFA8979C056BD019",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:DFA8979C056BD019",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:CB7DF304ACDD8E0C",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:CB7DF304ACDD8E0C",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:9D7F0124D2469485",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:9D7F0124D2469485",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:C6109BC9626758FC",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:C6109BC9626758FC",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:9577384E837BBEC1",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:9577384E837BBEC1",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:E785ACDD7FBE5748",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:E785ACDD7FBE5748",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:B4226E92421C45BE",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:B4226E92421C45BE",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000002:B28CCF7D4349CF74",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "accessory",
+      "key": "3C1AF1F2:00000102:B28CCF7D4349CF74",
+      "payloadHash": "1ae826d2da65ce40f1e97504bb0b1efe1736ec6f0588bc227cf6e9558cedcc13",
+      "bytes": 12089,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "d5713eb3c59b76b297cc8e17a2187b235f3311062f99885e68aaa77541990709",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "65d17da936e1c5e4a6f1a762d3ea5048655c00269964f3b1ddb57f1572070831",
+      "maxRgbDifference": 3,
+      "rgbChangedPixels": 1775
+    },
+    {
+      "category": "skin",
+      "key": "3C1AF1F2:00000102:9630CA648131EF65",
+      "payloadHash": "0e9ca9f6c07ebd5702fe986ae671b4ffbf12d573d04344537afaf1133614d8f2",
+      "bytes": 20926,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "0e979f9502c05d278edd339d3d4b5515a56984493b705ee611c802457b579230",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "c586dd06d8ba89e5858b32321ca95722bfede738a5d62b6b1449aacc748f956d",
+      "maxRgbDifference": 8,
+      "rgbChangedPixels": 6521
+    },
+    {
+      "category": "skin",
+      "key": "3C1AF1F2:00000002:9630CA648131EF65",
+      "payloadHash": "465976f1234fab47198b5e99c50fc225f5d5635ba36abe8ad9d40c3e0a614abd",
+      "bytes": 19511,
+      "dimensions": [
+        104,
+        148
+      ],
+      "alpha": "EmbeddedAlfaPngRed",
+      "rgbaHash": "72befea42c073b3149dad68eaa412a1be7c628a72277aabcd1cd6bfa8a97d02d",
+      "alphaHash": "63945896cfa287e0899b933ec8683619f351761cba15822b9bc4ccde3fafb0f0",
+      "alphaPixelsExact": true,
+      "transparentPixels": 0,
+      "partialAlphaPixels": 0,
+      "pillowRgbaHash": "64fe5e427e3b6aad829b494c7800a6984e0b28f8e60e42954f9e094a65a43884",
+      "maxRgbDifference": 7,
+      "rgbChangedPixels": 5743
+    }
+  ],
+  "limitations": [
+    "all49 sampled ALFA planes are fullyopaque; nonopaque alpha is covered by explicit fixtures",
+    "JPEG decoder rounding differs; exact RGB equality is not claimed",
+    "no game load precedence or full native UI appearance qualification",
+    "skin filename sample is an overlay/tattoo, not native TONE",
+    "not actual application performance or full-library qualification"
+  ]
+}

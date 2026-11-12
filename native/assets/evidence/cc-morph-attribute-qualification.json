@@ -1,0 +1,438 @@
+{
+  "date": "2026-11-12",
+  "scope": "actual installed CC GEOM morphology-attribute decoding only",
+  "reference": {
+    "kind": "unmodified Blender GEOM getElementData",
+    "readerHash": "200d95e32cb86c44ae6362432453b10e9f378becc48e2a808fec5cff221e171f"
+  },
+  "samples": [
+    {
+      "category": "hair",
+      "geometries": [
+        {
+          "key": "015A1849:8003D70C:24B2AC3B4AA21621",
+          "payloadHash": "a503c50019c3b2b698a83d910bf5b1a0591317864daa5bb2ddec5bc8f079c76f",
+          "version": 14,
+          "vertices": 8122,
+          "morphAttributesHash": "54e242299c99a3bcb3a13143a30dc89d2552323bb80f818b808c1ddabe871fcd",
+          "counts": {
+            "tags": 0,
+            "tangents": 8122,
+            "vertexIds": 0
+          },
+          "uvStitches": 5111,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:808C2325:24B2AC3B4AA21621",
+          "payloadHash": "d28872b4c83ee4b68623e239bbb6ed858300691d7cd6608e3c4eb9a09fe138cc",
+          "version": 14,
+          "vertices": 6373,
+          "morphAttributesHash": "47463387eec53a326ab88001fe65c7c86866df0a4ae4773ae0700d173b1785da",
+          "counts": {
+            "tags": 0,
+            "tangents": 6373,
+            "vertexIds": 0
+          },
+          "uvStitches": 4288,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:808C2326:24B2AC3B4AA21621",
+          "payloadHash": "3ac5127e0dcde59805b9a209181a5f32c69bd393250395dd6be4c69487889c97",
+          "version": 14,
+          "vertices": 16731,
+          "morphAttributesHash": "b0c278dc77e4be4e8aca6e7e83a0533bab9c6ce758c873297a06457e862123c3",
+          "counts": {
+            "tags": 0,
+            "tangents": 16731,
+            "vertexIds": 0
+          },
+          "uvStitches": 12377,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8003D70D:24B2AC3B4AA21621",
+          "payloadHash": "fb5889b4dd34880212fecddd8557e2ea158d250c7042c6906b4da0098e53854c",
+          "version": 14,
+          "vertices": 6144,
+          "morphAttributesHash": "b59a4f756c5c35ad58c4bfda28204180fd458ede6b36b05bc206c812da74f19f",
+          "counts": {
+            "tags": 0,
+            "tangents": 6144,
+            "vertexIds": 0
+          },
+          "uvStitches": 3130,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8089804C:24B2AC3B4AA21621",
+          "payloadHash": "ef862a284ff909a0cc930f5c257892372810dfe17395bcceb2f4e8ed005726ca",
+          "version": 14,
+          "vertices": 4854,
+          "morphAttributesHash": "a22de26afa1523101a92987a712a7a6aeb63dc771da037d9ef50cba7a2fc7e16",
+          "counts": {
+            "tags": 0,
+            "tangents": 4854,
+            "vertexIds": 0
+          },
+          "uvStitches": 2334,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8089804F:24B2AC3B4AA21621",
+          "payloadHash": "95536ad8fe5b8e98a5d0ecc0a2af0564abd69b6f623a49e131cde62022d6022f",
+          "version": 14,
+          "vertices": 12597,
+          "morphAttributesHash": "ddfc8aee64d49f2f9e3f2785cb95e7ebfdf06e24167025f4d6c6e5c252cae332",
+          "counts": {
+            "tags": 0,
+            "tangents": 12597,
+            "vertexIds": 0
+          },
+          "uvStitches": 5978,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8003D70E:24B2AC3B4AA21621",
+          "payloadHash": "62bc9674c773213d0b5150eea602853133ecf5b05f17168e82688bcdbbb9ff97",
+          "version": 14,
+          "vertices": 2759,
+          "morphAttributesHash": "006860443662dd540c9283e652621cd2db7a21adc64d5d2b751494e864ca6f3f",
+          "counts": {
+            "tags": 0,
+            "tangents": 2759,
+            "vertexIds": 0
+          },
+          "uvStitches": 703,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8091CE8B:24B2AC3B4AA21621",
+          "payloadHash": "44f7379b0e0d5e62cbed335b5365e6525923b0ccfc9e1b1925531944173a609e",
+          "version": 14,
+          "vertices": 2320,
+          "morphAttributesHash": "56db85b89a2d7be8ca01813c692fa447090bf9c30425163df1fc8a0cb6d92579",
+          "counts": {
+            "tags": 0,
+            "tangents": 2320,
+            "vertexIds": 0
+          },
+          "uvStitches": 537,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8091CE88:24B2AC3B4AA21621",
+          "payloadHash": "1b3505fef9c463673a5bf4969f346653ebbcc310015025145b76aeab1c285bf4",
+          "version": 14,
+          "vertices": 5502,
+          "morphAttributesHash": "4128e048ab3c45f62529ade4ea4f69f7887d1cde6fd139d0f4597a2486926624",
+          "counts": {
+            "tags": 0,
+            "tangents": 5502,
+            "vertexIds": 0
+          },
+          "uvStitches": 941,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8003D70F:24B2AC3B4AA21621",
+          "payloadHash": "1f4f2a8d7a055e044fe5b931ae2033937ed83ca36955eeb0c2f51976c99380a7",
+          "version": 14,
+          "vertices": 338,
+          "morphAttributesHash": "d97b80788fa308e2e1f176700a5a7f11a623e497758c51f57965028e38e1dc84",
+          "counts": {
+            "tags": 0,
+            "tangents": 338,
+            "vertexIds": 0
+          },
+          "uvStitches": 6,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:808F9012:0DF68E8A4C620D29",
+          "payloadHash": "1e8e94fdae35e7d97a671924a121a47dcdd50bffab696c80741dcd96fceffc3b",
+          "version": 14,
+          "vertices": 313,
+          "morphAttributesHash": "a6c55a98ee087cfae36d17b5a5c2b4f5c13b8c207582a9bd218fc684c79621ae",
+          "counts": {
+            "tags": 0,
+            "tangents": 313,
+            "vertexIds": 0
+          },
+          "uvStitches": 8,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:808F9011:0DF68E8A4C620D29",
+          "payloadHash": "cea632c8488b7c9e41bcdc2ab4001b145691a9f10243514506fd95ba80b8fce2",
+          "version": 14,
+          "vertices": 582,
+          "morphAttributesHash": "a2a6546adc385f33ad5c42aaf87390cd8b46bcd67a3a05fa11d58108ef063b9a",
+          "counts": {
+            "tags": 0,
+            "tangents": 582,
+            "vertexIds": 0
+          },
+          "uvStitches": 11,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        }
+      ]
+    },
+    {
+      "category": "clothes",
+      "geometries": [
+        {
+          "key": "015A1849:80320DFD:964E03759C4EB1AB",
+          "payloadHash": "3b9bc2e8fe43b8c087ca40d2692cd80484ef358ddaac3a1a620d040963998591",
+          "version": 14,
+          "vertices": 33176,
+          "morphAttributesHash": "47116f4561781702ddaec283d6c7cbfad64f04328a83326fef2c80c8415b5ba0",
+          "counts": {
+            "tags": 33176,
+            "tangents": 33176,
+            "vertexIds": 0
+          },
+          "uvStitches": 24193,
+          "seamStitches": 44,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:80320DFE:964E03759C4EB1AB",
+          "payloadHash": "e138027676880c4496f6189d8417b16da05632c049df81ad7b146528e474aa6a",
+          "version": 14,
+          "vertices": 17568,
+          "morphAttributesHash": "507e2f17af278a430dcd02efdf8e5bb082f5a9b2ade9b5f8b82f53672ab70aed",
+          "counts": {
+            "tags": 17568,
+            "tangents": 17568,
+            "vertexIds": 0
+          },
+          "uvStitches": 7828,
+          "seamStitches": 36,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:80320DFF:964E03759C4EB1AB",
+          "payloadHash": "319ef0e9f865b87b525ee565eeafc13e533fa2a889e47a41cea3bc4bd5bbdf7f",
+          "version": 14,
+          "vertices": 1155,
+          "morphAttributesHash": "40f37df640af734e38af363a1c858ecb7d5b58dcbba858c97ffab06302744e8d",
+          "counts": {
+            "tags": 1155,
+            "tangents": 1155,
+            "vertexIds": 0
+          },
+          "uvStitches": 611,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:80320DFC:964E03759C4EB1AB",
+          "payloadHash": "6375daf83acea053163fde6b1bbd90adf82f5804da4700ebe478afcbb9459566",
+          "version": 14,
+          "vertices": 33176,
+          "morphAttributesHash": "47116f4561781702ddaec283d6c7cbfad64f04328a83326fef2c80c8415b5ba0",
+          "counts": {
+            "tags": 33176,
+            "tangents": 33176,
+            "vertexIds": 0
+          },
+          "uvStitches": 24193,
+          "seamStitches": 44,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        }
+      ]
+    },
+    {
+      "category": "shoes",
+      "geometries": [
+        {
+          "key": "015A1849:8061B6BD:7E1EA3C5B5E78AEB",
+          "payloadHash": "873649886435718bc0423a219f89b4e4a68926c0e6ea314faad4fd7130bbea4d",
+          "version": 14,
+          "vertices": 11218,
+          "morphAttributesHash": "e8ec674d333ce5a7c4f5e501f4c1268244560d998ceab5bdebd4074ae074f486",
+          "counts": {
+            "tags": 11218,
+            "tangents": 11218,
+            "vertexIds": 0
+          },
+          "uvStitches": 4536,
+          "seamStitches": 22,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8061B6BC:7E1EA3C5B5E78AEB",
+          "payloadHash": "514281c216559323b734b3d04df98d739f16074537c15bb6232eb31053eed228",
+          "version": 14,
+          "vertices": 5291,
+          "morphAttributesHash": "f9930450b9e8c2676ce659240c8c992014cec74aafbc3457950e41573071f444",
+          "counts": {
+            "tags": 5291,
+            "tangents": 5291,
+            "vertexIds": 0
+          },
+          "uvStitches": 2248,
+          "seamStitches": 22,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8061B6BF:7E1EA3C5B5E78AEB",
+          "payloadHash": "f901515a33f75ff2f8d54de02282c70c5d7a6984f26f36bd60d12cc2ef3bdbe9",
+          "version": 14,
+          "vertices": 3087,
+          "morphAttributesHash": "20aec7fa63b3648b2531fa53b7e5f328d104d89ed6cebf72b5084f1f2e39c6dd",
+          "counts": {
+            "tags": 3087,
+            "tangents": 3087,
+            "vertexIds": 0
+          },
+          "uvStitches": 1426,
+          "seamStitches": 22,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8061B6BE:7E1EA3C5B5E78AEB",
+          "payloadHash": "ebc734e60890500a7d4d9ea5b7d8beb4dc4648d09439b28dd1eb274c68d6157e",
+          "version": 14,
+          "vertices": 1552,
+          "morphAttributesHash": "d7b93c8ea6514b36c64e49b8beccb07b3373f4b650f3cb5ea1876e1057005885",
+          "counts": {
+            "tags": 1552,
+            "tangents": 1552,
+            "vertexIds": 0
+          },
+          "uvStitches": 727,
+          "seamStitches": 18,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:8061B6B1:7E1EA3C5B5E78AEB",
+          "payloadHash": "6e42e3329e7653af03db6a3215055f9ac27c076e7d413a27a19b7b3f76864566",
+          "version": 14,
+          "vertices": 4,
+          "morphAttributesHash": "b9c89a37341c4fda154ed08f2915b339651b58e532c6b324be01240728c9fba5",
+          "counts": {
+            "tags": 0,
+            "tangents": 4,
+            "vertexIds": 0
+          },
+          "uvStitches": 4,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        }
+      ]
+    },
+    {
+      "category": "accessory",
+      "geometries": [
+        {
+          "key": "015A1849:800AF97E:100AF5A06A19290B",
+          "payloadHash": "a9d4ec371ecc1d6f8d658f1031be5772d1466c7bb3a4cc7bfc77c21a69e9654d",
+          "version": 14,
+          "vertices": 2078,
+          "morphAttributesHash": "599af13fc4864912d3d3a496229cc3650ebe48c4c4f8ac65cf5cd25bcd77da8d",
+          "counts": {
+            "tags": 0,
+            "tangents": 2078,
+            "vertexIds": 0
+          },
+          "uvStitches": 1100,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:800AF97F:100AF5A06A19290B",
+          "payloadHash": "c49789ea563d6e79052ac8c1d99807fa24d4df04ab1c9117ce2588845aeac478",
+          "version": 14,
+          "vertices": 1053,
+          "morphAttributesHash": "b7d856939d80819eaf1cc673798b2268cbe9f2c206e7fcdf431151e6727a8c48",
+          "counts": {
+            "tags": 0,
+            "tangents": 1053,
+            "vertexIds": 0
+          },
+          "uvStitches": 248,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:800AF97C:100AF5A06A19290B",
+          "payloadHash": "3e6846c1d2099db011dd19152ef63090becbaa565bf857882a03f9f0477bd464",
+          "version": 14,
+          "vertices": 542,
+          "morphAttributesHash": "ba54278cab53a407058a660d60481aa332ffd5d056771c372b28090335fcdead",
+          "counts": {
+            "tags": 0,
+            "tangents": 542,
+            "vertexIds": 0
+          },
+          "uvStitches": 64,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        },
+        {
+          "key": "015A1849:800AF97D:100AF5A06A19290B",
+          "payloadHash": "eee31dc34200baa11eb5e4e07b1ec9eadbd87e745af27fba8ae8efd7487564f9",
+          "version": 14,
+          "vertices": 286,
+          "morphAttributesHash": "5d1deff375e3ef04878665652c9954442f25627628d27ae7450e0191285c33fb",
+          "counts": {
+            "tags": 0,
+            "tangents": 286,
+            "vertexIds": 0
+          },
+          "uvStitches": 54,
+          "seamStitches": 0,
+          "allMorphAttributeBytesEqual": true,
+          "originalBytesPreserved": true
+        }
+      ]
+    },
+    {
+      "category": "skin",
+      "geometries": []
+    }
+  ],
+  "limitations": [
+    "stitch tail fields follow authoritative SimRipper layout and first-record semantics; synthetic fixture verifies order/duplicates, not a separate full-tail oracle",
+    "no native morph selection, deformation fidelity, full Sim or game appearance claim"
+  ]
+}

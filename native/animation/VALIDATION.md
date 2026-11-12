@@ -1,0 +1,13 @@
+# Animation validation — 12 November 2026
+
+The native crate's 14 tests pass on Windows. They cover all-byte structural truncations, quantized signs and reserved bits, explicit unsupported preservation, hierarchy cycles/order, inverse binds including nonuniform scales, constant component sampling, exact binding, coordinate conjugation, scale/rotation ordering and explicit partial-preview policy. Default sampling refuses unsupported tracks, events and IK.
+
+A read-only comparison parsed an authorized 165-bone adult-human authoring rig and four installed base-game CLIPs. Across those clips, 11,592 decoded frame records and 42,648 numeric components matched the retained JavaScript decoder exactly after float32 conversion. Maximum source bind difference was 1.506e-6, attributable to retaining near-unit scale and quaternion treatment rather than the reference's unit-scale approximation.
+
+The exact earlier app case was located by its 31 raw ticks, three events and six IK slots. Native Rust produced six distinct palettes at ticks 0, 5, 10, 15, 20 and 30. Its 129 position/rotation source-tool curves and two positive local scale tracks were evaluated. Forty-seven non-bone control tracks were retained and explicitly reported as unevaluated; events and IK remained preserved but unapplied.
+
+All 11,880 compared palette components across those six samples matched the retained source-tool curves plus decoded scale/TRS hierarchy/inverse-bind reference within 1.431e-6; 8,847 components changed between the first and later samples. Scaled palettes are marked nonrigid and require inverse-transpose normal treatment by the renderer. Source-coordinate output is used; native game timing, rig selection, expressions, IK, events, material appearance and GPU visual fidelity remain unverified by this check.
+
+`tools/compare_real_source.mjs` reproduces the exact historical-case comparison with explicitly configured `CAS_ANIMATION_REFERENCE_ROOT`, `CAS_ANIMATION_RIG`, `CAS_ANIMATION_CLIP_PACKAGE` and `CAS_ANIMATION_BRIDGE` absolute local paths. Optional SHA-256 inputs pin the rig/package; an optional exact CLIP key prevents relying on index ordering. Build `examples/oracle_bridge.rs` first. The comparison consumes private resources and derived matrices in memory and prints aggregate results only. It neither launches Studio/the game nor writes assets or game/profile files. Original private input pointers remain in the local recovery documentation, not this source tree.
+
+This is a source-tool numerical comparison, not a new execution of the Studio importer or native game acceptance. The earlier Studio/browser evidence remains historical and must not be represented as validation of this new Rust build.
