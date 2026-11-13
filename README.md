@@ -31,7 +31,8 @@ See the [wiki](https://github.com/Herbertofury/External-CAS/wiki),
 - Actual Sim appearance, installed resource priority, native outfit/rig/TONE
   assembly with source-reference deformation and explicit compatibility gates.
 - Actual installed CAS room geometry/textures and decoded camera/light tuning.
-  Source render-state, projection and appearance qualification remains open.
+  Whole-Sim viewing now applies the selected original orbital/FOV equations.
+  Native Sim/world anchoring, clipping policy and full appearance remain open.
 - Whole imported-Sim viewing, actual current CLIP18 CAS idle, native packed color
   editing, verified save/reopen and retained source receipts. Original files stay
   untouched. Reference materials are still an incomplete renderer boundary.
@@ -40,9 +41,14 @@ See the [wiki](https://github.com/Herbertofury/External-CAS/wiki),
 - Original-movie execution on a Rust worker sharing the app GPU, with installed
   fonts, source font remaps and literal locale strings. The explicit inspection
   path exposes remaining initialization and native-service failures.
+- Monotonic real-draft UI snapshots, stale input/action refusal and actual
+  Undo/Redo routing; source host libraries and static menu metadata are decoded
+  with explicit source and context checks. Complete UI initialization remains open.
 - Source-native vertex packing, sampler descriptors, compressed image operators,
   physique texture weights and light math have independent original-instruction
   comparisons. Complete source planes and actual frame selection remain open.
+- Shared native/wgpu depth and exact prepared/unprepared clothing BC3 export,
+  including real private texture samples. Full material assembly is still in progress.
 
 Wardrobe selection still has a separate item inspection. Project → View full
 Sim displays the assembled imported draft when an installed game source is

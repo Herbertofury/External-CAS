@@ -212,12 +212,39 @@ fn preset_rotation(
         let node = root
             .field("PresetRotation")?
             .ok_or("source SimData PresetRotation absent")?;
-        let Some(DataValue::Vector(values)) = node.field("ViewAngles")? else {
-            return Err("source SimData ViewAngles vector absent".into());
+        let angles = node
+            .field("ViewAngles")?
+            .ok_or("source SimData ViewAngles absent")?;
+        let DataValue::Object { schema, .. } = angles else {
+            return Err("source SimData ViewAngles must be its declared inline object".into());
         };
-        let bits = values
+        let schemas = data
+            .document
+            .schemas
             .iter()
-            .map(DataValue::float_bits)
+            .filter(|s| &s.name == schema)
+            .collect::<Vec<_>>();
+        if schemas.len() != 1 {
+            return Err("source SimData angle schema absent or ambiguous".into());
+        }
+        let mut columns = schemas[0].columns.iter().collect::<Vec<_>>();
+        columns.sort_by_key(|c| c.offset);
+        if columns.len() != 6
+            || columns
+                .iter()
+                .enumerate()
+                .any(|(i, c)| c.offset != i * 4 || c.data_type != 10)
+        {
+            return Err("unsupported source six-angle layout".into());
+        }
+        let bits = columns
+            .iter()
+            .map(|column| {
+                angles
+                    .field(&column.name)?
+                    .ok_or_else(|| "source angle field absent".to_owned())?
+                    .float_bits()
+            })
             .collect::<Result<Vec<_>>>()?;
         let bits: [u32; 6] = bits
             .try_into()
@@ -750,5 +777,97 @@ mod tests {
         let mut invalid = record;
         invalid.root.children[0].children[0].children.pop();
         assert!(preset_rotation(&invalid, &pin, None).is_err());
+    }
+    #[test]
+    fn preset_rotation_defaults_follow_schema_offsets_and_reject_xml_disagreement() {
+        let record = ResolvedTuningRecord {
+            instance: 7,
+            class: "Client_CASTuning".into(),
+            resource_namespace: "castuning".into(),
+            root: n("I", "OwnSource", "", vec![]),
+        };
+        let pin = RoomSourcePin {
+            provider_path: "explicit-own-fixture.package".into(),
+            key: ResourceKey::new(0, 0, 7),
+            ordinal: 0,
+            index_sha256: "00".repeat(32),
+            payload_sha256: "11".repeat(32),
+        };
+        let angles = DataValue::Object {
+            schema: "OwnAngles".into(),
+            schema_hash: 1,
+            fields: (0..6)
+                .rev()
+                .map(|i| {
+                    (
+                        format!("A{i}"),
+                        DataValue::FloatBits((10.0 + i as f32).to_bits()),
+                    )
+                })
+                .collect(),
+        };
+        let mut fields = vec![("ViewAngles".into(), angles)];
+        for name in [
+            "LerpSpeedMult",
+            "RotateKeySpeed",
+            "RotateKeySpeedFast",
+            "RotateContinuousSpeed",
+            "RotateContinuousEaseIn",
+        ] {
+            fields.push((name.into(), DataValue::FloatBits(0.1f32.to_bits())));
+        }
+        let preset = DataValue::Object {
+            schema: "OwnPreset".into(),
+            schema_hash: 2,
+            fields,
+        };
+        let root = DataValue::Object {
+            schema: "Client_CASTuning".into(),
+            schema_hash: 3,
+            fields: vec![("PresetRotation".into(), preset)],
+        };
+        let data = CasDataResource {
+            source: Arc::new(RoomResource {
+                pin: pin.clone(),
+                bytes: vec![],
+            }),
+            document: DataDocument {
+                version: 0x101,
+                issues: vec![],
+                schemas: vec![DataSchema {
+                    name: "OwnAngles".into(),
+                    hash: 1,
+                    size: 24,
+                    columns: (0..6)
+                        .rev()
+                        .map(|i| DataColumn {
+                            name: format!("A{i}"),
+                            data_type: 10,
+                            flags: 0,
+                            offset: i * 4,
+                        })
+                        .collect(),
+                }],
+                instances: vec![("OwnSource".into(), root)],
+            },
+        };
+        let typed = preset_rotation(&record, &pin, Some(&data)).unwrap();
+        assert_eq!(
+            typed.view_angles.unwrap().map(|v| v.value()),
+            [10., 11., 12., 13., 14., 15.]
+        );
+        assert_eq!(typed.rotate_key_speed.unwrap().bits, 0.1f32.to_bits());
+        assert!(typed.simdata_pin.is_some());
+        let mut disagree = record;
+        disagree.root.children.push(n(
+            "U",
+            "PresetRotation",
+            "",
+            vec![n("T", "RotateKeySpeed", "99", vec![])],
+        ));
+        assert!(preset_rotation(&disagree, &pin, Some(&data)).is_err());
+        let mut invalid = data;
+        invalid.document.schemas[0].columns.pop();
+        assert!(preset_rotation(&disagree, &pin, Some(&invalid)).is_err());
     }
 }

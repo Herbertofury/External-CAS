@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "private_assets_included": false,
+  "module": "external-cas-source-ui::menus",
+  "source_resource_type": "SimData 0x545AC67A",
+  "source_payload_sha256": "d6531bdcaa675f1f9127f04ad3a5901746a052b52fd072ae2b56772873a0b3e7",
+  "source_bytes": 12801,
+  "retained_source_entry_counts": {
+    "add_sim": 17,
+    "copy_filters": 8,
+    "randomization_filters": 26
+  },
+  "independent_reader": "@s4tk/models 0.6.14 unchanged SimDataResource.from",
+  "independent_three_packets_match": true,
+  "native_marshaller_rvas": [
+    "004219A0",
+    "004226A0",
+    "004233F0"
+  ],
+  "explicit_context_cases": 12,
+  "all_three_packets_match_original_instructions_each_context": true,
+  "original_instructions_executed": 132694,
+  "context_scope": "Qualification inputs, not fabricated user Sims. Original context builder not executed; native typed-value ABI helpers and explicit pack membership are hooks. No game process or launch.",
+  "support_gates": [
+    "caller must resolve the actual winning provider and pack capabilities",
+    "unknown or unobserved criteria remain unavailable",
+    "full source UI layout, images, services and GFx behavior remain separate gates"
+  ]
+}

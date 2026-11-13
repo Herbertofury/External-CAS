@@ -57,6 +57,9 @@ pub struct Camera {
     pub distance: f32,
     pub target: [f32; 3],
     pub fov_degrees: f32,
+    /// Original CAS orbital/FOV semantics. Explicit preview clipping and room
+    /// origin remain separate from the qualified source camera equations.
+    pub source_cas: bool,
 }
 impl Default for Camera {
     fn default() -> Self {
@@ -66,6 +69,7 @@ impl Default for Camera {
             distance: 3.6,
             target: [0.0, 0.9, 0.0],
             fov_degrees: 36.,
+            source_cas: false,
         }
     }
 }
@@ -97,7 +101,25 @@ pub const IDENTITY: [[f32; 4]; 4] = [
     [0., 0., 0., 1.],
 ];
 impl Camera {
-    fn matrix(&self, aspect: f32) -> [[f32; 4]; 4] {
+    fn matrix(&self, aspect: f32) -> Result<[[f32; 4]; 4], String> {
+        if self.source_cas {
+            use external_cas_scene::cas_camera::*;
+            return source_cas_camera_frame(
+                SourceCasCameraProfile {
+                    target: self.target,
+                    fov_degrees: self.fov_degrees,
+                    distance: self.distance,
+                    orbital_rotation_degrees: self.yaw.to_degrees(),
+                    pitch_degrees: self.pitch.to_degrees(),
+                },
+                SourceCasCameraProjection {
+                    aspect_ratio: aspect,
+                    near_clip: 0.01,
+                    far_clip: 200.,
+                },
+            )
+            .map(|frame| frame.view_projection_rows);
+        }
         let cp = self.pitch.cos();
         let eye = [
             self.target[0] + self.distance * cp * self.yaw.sin(),
@@ -121,9 +143,24 @@ impl Camera {
             [0., 0., far / (near - far), -1.],
             [0., 0., far * near / (near - far), 0.],
         ];
-        mul(projection, view)
+        Ok(mul(projection, view))
+    }
+    pub fn from_source_profile(
+        profile: external_cas_scene::cas_camera::SourceCasCameraProfile,
+    ) -> Result<Self, String> {
+        let camera = Self {
+            yaw: profile.orbital_rotation_degrees.to_radians(),
+            pitch: profile.pitch_degrees.to_radians(),
+            distance: profile.distance,
+            target: profile.target,
+            fov_degrees: profile.fov_degrees,
+            source_cas: true,
+        };
+        camera.matrix(1.)?;
+        Ok(camera)
     }
     pub fn frame(&mut self, minimum: [f32; 3], maximum: [f32; 3]) {
+        self.source_cas = false;
         self.target = std::array::from_fn(|i| (minimum[i] + maximum[i]) * 0.5);
         let diameter = dot(sub(maximum, minimum), sub(maximum, minimum))
             .sqrt()
@@ -908,7 +945,7 @@ impl Viewport {
         );
     }
 
-    pub fn render(&mut self, size: [u32; 2]) {
+    pub fn render(&mut self, size: [u32; 2]) -> Result<(), String> {
         let limit = self.state.device.limits().max_texture_dimension_2d;
         let size = size.map(|n| n.clamp(1, limit));
         if size != self.size {
@@ -927,7 +964,7 @@ impl Viewport {
                     self.texture_id,
                 );
         }
-        let mut matrix = self.camera.matrix(size[0] as f32 / size[1] as f32);
+        let mut matrix = self.camera.matrix(size[0] as f32 / size[1] as f32)?;
         for column in &mut matrix {
             column[0] += self.framing_offset * column[3];
         }
@@ -1016,6 +1053,7 @@ impl Viewport {
         }
         self.state.queue.submit([encoder.finish()]);
         self.rendered_frames += 1;
+        Ok(())
     }
 }
 impl Drop for Viewport {
@@ -1032,7 +1070,7 @@ mod tests {
         let mut camera = Camera::default();
         camera.frame([-0.5, -0.2, 0.], [0.5, 0.2, 1.9]);
         for aspect in [0.3, 1., 3.] {
-            let matrix = camera.matrix(aspect);
+            let matrix = camera.matrix(aspect).unwrap();
             let point = [camera.target[0], camera.target[1], camera.target[2], 1.];
             let clip: [f32; 4] =
                 std::array::from_fn(|r| (0..4).map(|c| matrix[c][r] * point[c]).sum());
@@ -1041,5 +1079,42 @@ mod tests {
             assert!((clip[1] / clip[3]).abs() < 0.0001);
             assert!((0.0..1.0).contains(&(clip[2] / clip[3])));
         }
+    }
+    #[test]
+    fn original_camera_rows_reach_wgsl_column_layout_and_invalid_source_is_refused() {
+        use external_cas_scene::cas_camera::*;
+        let profile = SourceCasCameraProfile {
+            target: [0.04, 0.9, 0.12],
+            fov_degrees: 44.,
+            distance: 3.95,
+            orbital_rotation_degrees: 177.,
+            pitch_degrees: 5.,
+        };
+        let camera = Camera::from_source_profile(profile).unwrap();
+        assert!(camera.source_cas);
+        for aspect in [0.3, 1., 16. / 9., 3.] {
+            let matrix = camera.matrix(aspect).unwrap();
+            let clip: [f32; 4] = std::array::from_fn(|r| {
+                (0..4)
+                    .map(|c| {
+                        matrix[c][r] * [camera.target[0], camera.target[1], camera.target[2], 1.][c]
+                    })
+                    .sum()
+            });
+            assert!(clip[3] > 0.);
+            assert!((clip[0] / clip[3]).abs() < 1e-5);
+            assert!((clip[1] / clip[3]).abs() < 1e-5);
+            assert!((0.0..1.0).contains(&(clip[2] / clip[3])));
+        }
+        assert!(
+            Camera::from_source_profile(SourceCasCameraProfile {
+                distance: 0.,
+                ..profile
+            })
+            .is_err()
+        );
+        let mut invalid = camera;
+        invalid.fov_degrees = f32::NAN;
+        assert!(invalid.matrix(1.).is_err());
     }
 }

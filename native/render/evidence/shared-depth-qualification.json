@@ -1,0 +1,70 @@
+{
+  "actual_renderer_setting_selection_qualified": false,
+  "color_texture_as_depth_refused": true,
+  "complete_cas_render_qualified": false,
+  "controlled_pixels": 256,
+  "controlled_sampler_context": {
+    "anisotropy_floor": 1,
+    "knob_a": false,
+    "knob_b": false
+  },
+  "foreign_depth_context_refused": true,
+  "game_contacted": false,
+  "incomplete_constant_and_texture_bindings_refused": true,
+  "interrupted_shared_depth_callback_recovered": true,
+  "invalid_indices_refused": true,
+  "maximum_absolute_error": 7.450580596923828E-09,
+  "mismatched_depth_extent_refused": true,
+  "native_attribute_packet_executed": true,
+  "native_geom_packing_qualified": false,
+  "native_material_construction_qualified": false,
+  "native_to_wgpu_depth_preserved": true,
+  "ordered_pass_depth_preserved": true,
+  "original_pixel_reference": 3051,
+  "original_pixel_sha256": "7fe86f137295a1cef91003a59c0440f28d01524cabe12c5d80717f2a3a164f47",
+  "original_vertex_reference": 924,
+  "original_vertex_sha256": "0c09f08016b8b2fd008624108d6c7b986e9ed798542b6ab89d08247d220a7b1e",
+  "production_draw_api_executed": true,
+  "shared_depth_controlled_pixels": 512,
+  "shared_depth_maximum_absolute_error": 7.450580596923828E-09,
+  "source_alpha_retained": 0,
+  "source_decode_scales": [
+    32767.0,
+    1.0,
+    1.0,
+    32767.0
+  ],
+  "source_sampler_references": [
+    {
+      "raw": 11,
+      "slot": 0,
+      "state_ordinal": 11
+    },
+    {
+      "raw": 4107,
+      "slot": 1,
+      "state_ordinal": 11
+    },
+    {
+      "raw": 8203,
+      "slot": 2,
+      "state_ordinal": 11
+    },
+    {
+      "raw": 12308,
+      "slot": 3,
+      "state_ordinal": 20
+    },
+    {
+      "raw": 16391,
+      "slot": 4,
+      "state_ordinal": 7
+    },
+    {
+      "raw": 20490,
+      "slot": 5,
+      "state_ordinal": 10
+    }
+  ],
+  "wgpu_to_native_depth_preserved": true
+}

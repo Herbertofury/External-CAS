@@ -140,6 +140,36 @@ pub struct SimAppearance {
     pub base: AppearanceForm,
     pub occult_forms: Vec<AppearanceForm>,
 }
+#[derive(Clone,Debug,Serialize,Deserialize)]
+pub struct NativeTraitIds {pub ids:Vec<u64>,pub native:NativeMessage}
+impl SimAppearance {
+    /// SimData30 -> PersistableSimInfoAttributes10 ->
+    /// PersistableTraitTracker1 repeated uint64. Preserves order, duplicates,
+    /// absent wrappers and unknown native tracker fields without synthesizing IDs.
+    pub fn native_traits(&self)->Result<Option<NativeTraitIds>>{
+        if sha256(&self.base.native.bytes)!=self.base.native.sha256{return Err(invalid("Native trait view belongs to stale Sim bytes"))}
+        let root=fields(&self.base.native.bytes)?;let Some(attributes)=unique(&root,30)?else{return Ok(None)};
+        let attributes=fields(attributes.bytes()?)?;let Some(tracker)=unique(&attributes,10)?else{return Ok(None)};
+        let raw=tracker.bytes()?;let tracker=fields(raw)?;let ids=uints(&tracker,1,u64::MAX,false)?;
+        Ok(Some(NativeTraitIds{ids,native:NativeMessage::new(raw)?}))
+    }
+}
+#[cfg(test)]mod native_traits_tests {
+    use super::*;
+    fn vint(mut value:u64)->Vec<u8>{let mut result=Vec::new();while value>=128{result.push(value as u8|128);value>>=7;}result.push(value as u8);result}
+    fn blob(number:u32,payload:&[u8])->Vec<u8>{let mut out=vint((number as u64)<<3|2);out.extend(vint(payload.len()as u64));out.extend(payload);out}
+    fn sim(bytes:Vec<u8>)->SimAppearance{serde_json::from_value(serde_json::json!({"sim_index":0,"sim_id":1,"base":{"outfits":[],"native":NativeMessage::new(&bytes).unwrap()},"occult_forms":[]})).unwrap()}
+    #[test]fn native_traits_keep_order_duplicates_unknowns_and_absent_wrappers(){
+        let mut tracker=vec![8];tracker.extend(vint(136863));let mut packed=vint(136862);packed.extend(vint(136863));tracker.extend(blob(1,&packed));tracker.extend(blob(53,b"unknown trait metadata"));
+        let view=sim(blob(30,&blob(10,&tracker)));let original=view.base.native.bytes.clone();let result=view.native_traits().unwrap().unwrap();assert_eq!(result.ids,vec![136863,136862,136863]);assert_eq!(result.native.bytes,tracker);assert_eq!(view.base.native.bytes,original);assert!(sim(vec![]).native_traits().unwrap().is_none());assert!(sim(blob(30,&[])).native_traits().unwrap().is_none());
+        let mut stale=view.clone();stale.base.native.bytes.push(0);assert!(stale.native_traits().is_err());
+    }
+    #[test]fn wrong_wires_duplicate_wrappers_and_bad_uint64_are_explicit(){
+        let bad=[blob(1,&[255;11]),vec![13,0,0,0,0]];for tracker in bad{assert!(sim(blob(30,&blob(10,&tracker))).native_traits().is_err());}
+        let mut duplicate=blob(10,&[]);duplicate.extend(blob(10,&[]));assert!(sim(blob(30,&duplicate)).native_traits().is_err());
+        let mut duplicate=blob(30,&[]);duplicate.extend(blob(30,&[]));assert!(sim(duplicate).native_traits().is_err());
+    }
+}
 impl ProjectDraft {
     pub fn appearance(&self) -> Result<Vec<SimAppearance>> {
         let mut result = Vec::new();

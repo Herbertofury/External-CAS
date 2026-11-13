@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "installed_client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "qualification": "isolated original-instruction comparison to explicit functional policy",
+  "native_selector_rva": "0033EEC0",
+  "native_descriptor_helper_rva": "003347B0",
+  "native_model_copy_rva": "019EFF30",
+  "native_material_consumer_rva": "01A1AAB0",
+  "context_byte_offset": "00000249",
+  "force_traits_source": "Client_CASTuning.SpecialTraits",
+  "force_breasts_precedes_force_breastless": true,
+  "cases": 632,
+  "mismatches": 0,
+  "original_instructions": 20366,
+  "original_instruction_addresses": 57,
+  "bounded_interceptions": { "explicit_resolved_tuning_pointer": 632 },
+  "return_contract": "low byte only",
+  "not_qualified": [
+    "active form/profile selection",
+    "persisted trait decoder",
+    "complete material construction",
+    "visible app parity"
+  ],
+  "original_assets_or_programs_included": false,
+  "running_game_contact": false
+}

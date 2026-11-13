@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "cases": 512,
+  "pixels_compared": 8192,
+  "bytes_compared": 32768,
+  "exact_bytes": true,
+  "native_entries_rva": [
+    "0135AD70",
+    "0135A690"
+  ],
+  "native_instructions_interpreted": 344032,
+  "native_functions": [
+    "012DF510",
+    "012E8CD0",
+    "012F0130",
+    "012F9690",
+    "0135A690",
+    "0135AD70",
+    "013D5740"
+  ],
+  "prepared_base_pixels": true,
+  "native_blend_factory_hash": "E96B3B72",
+  "source_encoding": "Legacy literal BGRA and V002 palette-indexed sixteen-pixel native mip streams. V002 kind3 literal input remains explicitly unqualified.",
+  "originals_unchanged": true,
+  "game_contacted": false,
+  "external_io": false,
+  "complete_native_composition_qualified": false,
+  "date": "2026-11-12",
+  "native_client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "pure_import_boundary": "Current native memcpy import name is verified; isolated copy of bounded emulated input replaces that pure dependency. No game module or process is loaded."
+}

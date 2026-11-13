@@ -1,101 +1,29 @@
-//! Original-movie integration. The interpreter, source intake and expensive
-//! first-load work live on an actor; the app presents its shared GPU texture.
+//! Original source movies on a native worker. Only observed draft data and
+//! supported actions cross the versioned editor boundary.
 use eframe::{egui, egui_wgpu::RenderState};
-use external_cas_source_ui::*;
+use external_cas_source_ui::{actor::*, *};
 use std::{
+    collections::{BTreeMap, VecDeque},
     path::PathBuf,
-    sync::{
-        Arc,
-        atomic::{AtomicBool, Ordering},
-        mpsc,
-    },
-    time::{Duration, Instant},
+    sync::{Arc, mpsc},
+    time::Duration,
 };
 
-struct SnapshotHost {
-    editing: Arc<AtomicBool>,
-    strings: Arc<external_cas_fidelity::localization::StringBank>,
-}
-impl UiHost for SnapshotHost {
-    fn call(&self, request: &HostRequest) -> HostReply {
-        if request.bridge == HostBridge::Other("ExternalCAS.GetLocalizedString".into()) {
-            let result = (|| -> Result<String, String> {
-                let Some(HostValue::Object(input)) = request.args.first() else {
-                    return Err("Original LocKey argument was not projected".into());
-                };
-                let Some(HostValue::Number(hash)) = input.get("hash") else {
-                    return Err("Original LocKey hash absent".into());
-                };
-                if !hash.is_finite() || *hash < 0. || *hash > u32::MAX as f64 || hash.fract() != 0.
-                {
-                    return Err("Original LocKey hash is not u32".into());
-                }
-                let tokens = match input.get("tokens") {
-                    Some(HostValue::Null) | Some(HostValue::Undefined) | None => 0,
-                    Some(HostValue::List(values)) => values.len(),
-                    _ => return Err("Original localization tokens unsupported".into()),
-                };
-                let flags = match input.get("flags") {
-                    Some(HostValue::Number(v))
-                        if v.is_finite()
-                            && *v >= 0.
-                            && *v <= u32::MAX as f64
-                            && v.fract() == 0. =>
-                    {
-                        *v as u32
-                    }
-                    _ => return Err("Original localization flags invalid".into()),
-                };
-                Ok(self
-                    .strings
-                    .resolve_literal(*hash as u32, tokens, flags)?
-                    .to_owned())
-            })();
-            return match result {
-                Ok(text) => HostReply::Value(HostValue::String(text)),
-                Err(reason) => HostReply::Unavailable(reason),
-            };
-        }
-        // This editor's CAS/full-edit context is independent of household load.
-        if request.bridge == HostBridge::CallGameService {
-            match request.name.as_str() {
-                "GetGameState" => return HostReply::Value(HostValue::Number(983016380.)),
-                "CasGetCASEditMode" => return HostReply::Value(HostValue::Number(0.)),
-                _ => {}
-            }
-        }
-        HostReply::Unavailable(if self.editing.load(Ordering::Relaxed) {
-            "This original service has no qualified native editor binding".into()
-        } else {
-            "Native household data has not loaded; no service result is fabricated".into()
-        })
-    }
-}
-enum Command {
-    Frame {
-        size: [u32; 2],
-        dpi: f64,
-        input: Vec<UiInput>,
-    },
-}
-enum Message {
-    Progress(&'static str),
-    Frame {
-        frame: UiFrame,
-        status: RuntimeStatus,
-        events: Vec<RuntimeEvent>,
-        ticks: u64,
-        pins: Vec<external_cas_fidelity::installed::SourcePin>,
-        lifecycle_errors: Vec<String>,
-    },
-    Failed(String),
+#[derive(Clone, PartialEq, Eq)]
+struct EditorKey {
+    files: Vec<String>,
+    revision: Option<u64>,
+    slot: Option<usize>,
+    busy: bool,
 }
 pub struct State {
     render: RenderState,
-    command: mpsc::SyncSender<Command>,
-    messages: mpsc::Receiver<Message>,
-    cancel: Arc<AtomicBool>,
-    snapshot: Arc<AtomicBool>,
+    actor: Option<Actor>,
+    editor_key: Option<EditorKey>,
+    editor_snapshot: EditorSnapshot,
+    actions: Vec<ActionRequest>,
+    pending_updates: VecDeque<(String, HostValue)>,
+    source_ready: bool,
     pending_input: Vec<UiInput>,
     texture: Option<egui::TextureId>,
     frame: Option<UiFrame>,
@@ -115,12 +43,6 @@ impl State {
         locale: String,
         string_provider: PathBuf,
     ) -> Self {
-        let (send, receive) = mpsc::sync_channel(1);
-        let (results, messages) = mpsc::channel();
-        let cancel = Arc::new(AtomicBool::new(false));
-        let stopped = cancel.clone();
-        let snapshot = Arc::new(AtomicBool::new(false));
-        let host = snapshot.clone();
         let gpu = SharedGpu {
             instance: render.instance.clone(),
             adapter: render.adapter.clone(),
@@ -128,179 +50,206 @@ impl State {
             queue: render.queue.clone(),
             target_format: wgpu::TextureFormat::Rgba8Unorm,
         };
-        std::thread::spawn(move || {
-            let result = (|| -> Result<(), String> {
-                let progress = |s| {
-                    let _ = results.send(Message::Progress(s));
-                    ctx.request_repaint();
-                };
-                progress("Reading original movie, font and atlas dependencies…");
-                let index = external_cas_assets::PackageIndex::open(&provider)
-                    .map_err(|e| e.to_string())?;
-                let aliases = locale_aliases(&locale)?;
-                let bundle = prepare_movie_bundle_with_aliases(
-                    &index,
-                    &root,
-                    root == "UIContainer",
-                    &aliases,
-                    None,
-                    &stopped,
-                )?;
-                if stopped.load(Ordering::Relaxed) {
-                    return Ok(());
-                }
-                progress("Reading the selected locale string tables…");
-                let strings_index = external_cas_assets::PackageIndex::open(&string_provider)
-                    .map_err(|e| e.to_string())?;
-                let strings = Arc::new(external_cas_fidelity::localization::StringBank::load(
-                    &strings_index,
-                    &stopped,
-                )?);
-                let string_pins = strings.source_pins();
-                progress("Starting the original movie interpreter…");
-                let mut runtime = SourceUiRuntime::new(
-                    gpu,
-                    bundle,
-                    Arc::new(SnapshotHost {
-                        editing: host,
-                        strings,
-                    }),
-                    [1440, 900],
-                    1.,
-                )?;
-                progress("Preloading original definitions and native functions…");
-                let mut loaded = false;
-                for _ in 0..10000 {
-                    if stopped.load(Ordering::Relaxed) {
-                        return Ok(());
-                    }
-                    if runtime.preload() {
-                        loaded = true;
-                        break;
-                    }
-                }
-                if !loaded {
-                    return Err("Original source preload exceeded its operation budget".into());
-                }
-                runtime.bind_native_function_projected(
-                    "olympus.localization.LocKey",
-                    "sGetLocalizedStringFunc",
-                    "ExternalCAS.GetLocalizedString",
-                    &["hash", "tokens", "flags"],
-                )?;
-                let mut lifecycle_errors = Vec::new();
-                // Standalone-widget inspection uses the original manager's
-                // stage settings. Full UIContainer owns its manager lifecycle.
-                if root == "CASNavigation" {
-                    if let Err(error) =
-                        runtime.construct_source_class("olympus.io.CommunicationManager", vec![])
-                    {
-                        lifecycle_errors.push(format!("Original CommunicationManager: {error}"));
-                    }
-                    let mut root_object = None;
-                    for _ in 0..10 {
-                        if let Ok(HostValue::Avm2Handle(id)) = runtime.retain_source_root() {
-                            root_object = Some(id);
-                            break;
-                        }
-                        runtime.tick(Duration::from_secs_f64(1. / 24.));
-                    }
-                    if let Some(root_object) = root_object {
-                        let stage = (|| -> Result<(), String> {
-                            let HostValue::Avm2Handle(stage) =
-                                runtime.get_source_property(root_object, "stage")?
-                            else {
-                                return Err("Original stage is not ready".into());
-                            };
-                            runtime.set_source_property(
-                                stage,
-                                "scaleMode",
-                                HostValue::String("noScale".into()),
-                            )?;
-                            runtime.set_source_property(
-                                stage,
-                                "align",
-                                HostValue::String("TL".into()),
-                            )?;
-                            Ok(())
-                        })();
-                        if let Err(error) = stage {
-                            lifecycle_errors.push(format!("Original stage setup: {error}"));
-                        }
-                    } else {
-                        lifecycle_errors.push("Original root script was not ready".into());
-                    }
-                }
-                let mut size = [1440, 900];
-                let mut dpi = 1.;
-                let mut clock = Instant::now();
-                let mut ticks = 0;
-                while !stopped.load(Ordering::Relaxed) {
-                    let command = match receive.recv_timeout(Duration::from_millis(50)) {
-                        Ok(c) => c,
-                        Err(mpsc::RecvTimeoutError::Timeout) => continue,
-                        Err(_) => break,
-                    };
-                    let Command::Frame {
-                        size: next,
-                        dpi: next_dpi,
-                        input,
-                    } = command;
-                    if next != size || next_dpi != dpi {
-                        runtime.resize(next, next_dpi)?;
-                        size = next;
-                        dpi = next_dpi;
-                    }
-                    for event in input {
-                        runtime.input(event);
-                    }
-                    let now = Instant::now();
-                    runtime.tick(now.duration_since(clock).min(Duration::from_millis(250)));
-                    clock = now;
-                    ticks += 1;
-                    let frame = runtime.render()?;
-                    let mut pins = runtime.source_pins.clone();
-                    pins.extend(string_pins.iter().cloned());
-                    let message = Message::Frame {
-                        frame,
-                        status: runtime.status(),
-                        events: runtime.drain_events(),
-                        ticks,
-                        pins,
-                        lifecycle_errors: lifecycle_errors.clone(),
-                    };
-                    if results.send(message).is_err() {
-                        break;
-                    }
-                    ctx.request_repaint();
-                }
-                Ok(())
-            })();
-            if let Err(error) = result {
-                let _ = results.send(Message::Failed(error));
-                ctx.request_repaint();
-            }
-        });
+        let config = HostConfig {
+            provider,
+            root,
+            locale,
+            string_providers: vec![string_provider],
+            expected_ui_pins: None,
+            trope_global_provider: None,
+            trope_item_providers: vec![],
+            menu_provider: None,
+            static_images: None,
+            static_replies: BTreeMap::from([
+                ("GetGameState".into(), HostValue::Number(983016380.)),
+                ("CasGetCASEditMode".into(), HostValue::Number(0.)),
+            ]),
+            required_before_first_frame: ["CASGetSimInfo".into()].into_iter().collect(),
+            configure_runtime: None,
+        };
+        let initial = EditorSnapshot::default();
+        let result = Actor::spawn(
+            gpu,
+            config,
+            initial.clone(),
+            Arc::new(move || ctx.request_repaint()),
+        );
+        let (actor, error) = match result {
+            Ok(actor) => (Some(actor), None),
+            Err(error) => (None, Some(error)),
+        };
         Self {
             render,
-            command: send,
-            messages,
-            cancel,
-            snapshot,
+            actor,
+            error,
+            editor_key: None,
+            editor_snapshot: initial,
+            actions: vec![],
+            pending_updates: VecDeque::new(),
+            source_ready: false,
             pending_input: vec![],
             texture: None,
             frame: None,
             in_flight: false,
             loading: true,
             status: "Preparing the original CAS interface…".into(),
-            error: None,
             report: serde_json::json!({}),
             ticks: 0,
         }
     }
+    pub fn update_editor(
+        &mut self,
+        draft: Option<&external_cas_tray::ProjectDraft>,
+        slot: Option<usize>,
+        busy: bool,
+    ) {
+        let key = EditorKey {
+            files: draft
+                .map(|d| d.documents().iter().map(|f| f.sha256.clone()).collect())
+                .unwrap_or_default(),
+            revision: draft.map(|d| d.revision()),
+            slot,
+            busy,
+        };
+        if self.editor_key.as_ref() == Some(&key) {
+            return;
+        }
+        let result = (|| -> Result<EditorSnapshot, String> {
+            let mut snapshot = EditorSnapshot {
+                revision: self
+                    .editor_snapshot
+                    .revision
+                    .checked_add(1)
+                    .ok_or("Editor UI revision exhausted")?,
+                ..Default::default()
+            };
+            if let Some(draft) = draft {
+                let household = draft
+                    .documents()
+                    .iter()
+                    .find_map(|d| match &d.summary {
+                        external_cas_tray::DocumentSummary::Household(h) => Some(h),
+                        _ => None,
+                    })
+                    .ok_or("Verified draft household is absent")?;
+                let slots = draft.slots().map_err(|e| e.to_string())?;
+                let index = slot
+                    .and_then(|s| slots.get(s))
+                    .map(|s| s.sim_index)
+                    .unwrap_or(0);
+                let metadata = household
+                    .sims
+                    .get(index)
+                    .ok_or("Selected native Sim metadata is absent")?;
+                let sim_id = metadata
+                    .sim_id
+                    .ok_or("Selected native Sim identity is absent")?;
+                let native = draft
+                    .appearance()
+                    .map_err(|e| e.to_string())?
+                    .into_iter()
+                    .find(|s| s.sim_id == sim_id)
+                    .ok_or("Draft Sim identity and appearance disagree")?;
+                let mut observed_fields = BTreeMap::new();
+                if let Some(id) = metadata.household_id {
+                    observed_fields.insert("householdId".into(), HostValue::String(id.to_string()));
+                }
+                snapshot.sim = Some(ObservedSimInfo {
+                    sim_id,
+                    first_name: metadata.first_name.clone(),
+                    last_name: metadata.last_name.clone(),
+                    age: native.age,
+                    gender: native.gender,
+                    species_type: native.extended_species,
+                    observed_fields,
+                });
+                snapshot.ready = !busy;
+                if !busy && draft.can_undo() {
+                    snapshot.action_services.insert("CasNavigationUndo".into());
+                }
+                if !busy && draft.can_redo() {
+                    snapshot.action_services.insert("CasNavigationRedo".into());
+                }
+            }
+            self.actor
+                .as_ref()
+                .ok_or("Original UI actor is unavailable")?
+                .publish(snapshot.clone())?;
+            Ok(snapshot)
+        })();
+        match result {
+            Ok(snapshot) => {
+                self.pending_input.clear();
+                self.frame = None;
+                if let Some(id) = self.texture.take() {
+                    self.render.renderer.write().free_texture(&id);
+                }
+                self.pending_updates.clear();
+                if let Some(sim) = &snapshot.sim {
+                    match sim.packet() {
+                        Ok(packet) => self
+                            .pending_updates
+                            .push_back(("CASSetSimInfo".into(), packet)),
+                        Err(error) => {
+                            self.error = Some(error);
+                            return;
+                        }
+                    }
+                }
+                for (message, service) in [
+                    ("CasUndoEnabled", "CasNavigationUndo"),
+                    ("CasRedoEnabled", "CasNavigationRedo"),
+                ] {
+                    self.pending_updates.push_back((
+                        message.into(),
+                        HostValue::Bool(
+                            snapshot.ready && snapshot.action_services.contains(service),
+                        ),
+                    ));
+                }
+                self.editor_snapshot = snapshot;
+                self.editor_key = Some(key);
+            }
+            Err(error) => {
+                self.error = Some(format!(
+                    "Original UI editor data failed validation: {error}"
+                ))
+            }
+        }
+    }
+    pub fn take_actions(&mut self) -> Vec<ActionRequest> {
+        std::mem::take(&mut self.actions)
+    }
+    pub fn accepts(&self, request: &ActionRequest) -> bool {
+        self.editor_snapshot.ready
+            && request.snapshot_revision == self.editor_snapshot.revision
+            && self
+                .editor_snapshot
+                .action_services
+                .contains(&request.original.name)
+    }
+    fn send_pending_update(&mut self) {
+        if !self.source_ready || self.in_flight {
+            return;
+        }
+        let Some((name, payload)) = self.pending_updates.pop_front() else {
+            return;
+        };
+        let command = Command::SendMessage { name, payload };
+        match self.actor.as_ref().map(|a| a.try_send(command)) {
+            Some(Ok(())) => {}
+            Some(Err(mpsc::TrySendError::Full(Command::SendMessage { name, payload }))) => {
+                self.pending_updates.push_front((name, payload))
+            }
+            Some(Err(mpsc::TrySendError::Disconnected(_))) => {
+                self.error = Some("Original interface actor stopped".into())
+            }
+            Some(Err(mpsc::TrySendError::Full(_))) => unreachable!(),
+            None => {}
+        }
+    }
     pub fn report(&self) -> serde_json::Value {
-        serde_json::json!({"status":self.status,"error":self.error,"actor_thread":true,"ticks":self.ticks,
-            "runtime":self.report,"full_ui_qualified":false})
+        serde_json::json!({"status":self.status,"error":self.error,"actor_thread":true,"ticks":self.ticks,"runtime":self.report,"snapshot_revision":self.editor_snapshot.revision,"observed_sim_present":self.editor_snapshot.sim.is_some(),"supported_actions":self.editor_snapshot.action_services,"full_ui_qualified":false})
     }
     pub fn capture_ready(&self) -> bool {
         self.error.is_some() || (!self.loading && self.ticks >= 30)
@@ -316,22 +265,60 @@ impl State {
                 .is_some_and(|s| !s.is_empty())
     }
     fn poll(&mut self) {
-        while let Ok(message) = self.messages.try_recv() {
+        while let Some(Ok(message)) = self.actor.as_ref().map(|a| a.try_recv()) {
             match message {
-                Message::Progress(status) => self.status = status.into(),
-                Message::Failed(error) => {
+                ActorEvent::Progress(status) => self.status = status,
+                ActorEvent::Failed(error) => {
                     self.error = Some(error);
                     self.loading = false;
                     self.in_flight = false;
                 }
-                Message::Frame {
+                ActorEvent::WaitingForEditor { revision, missing } => {
+                    self.status = format!(
+                        "Original interface waiting for verified editor data: {}",
+                        missing.join(", ")
+                    );
+                    self.report["waiting_snapshot_revision"] = serde_json::json!(revision);
+                    self.in_flight = false;
+                    self.frame = None;
+                    if let Some(id) = self.texture.take() {
+                        self.render.renderer.write().free_texture(&id);
+                    }
+                }
+                ActorEvent::Action(request) => {
+                    if self.actions.len() >= 256 {
+                        self.error =
+                            Some("Original interface action backlog exceeded its budget".into());
+                    } else {
+                        self.actions.push(request);
+                    }
+                }
+                ActorEvent::InboundResult { operation, result } => {
+                    if let Err(error) = result {
+                        let mut errors = self.report["lifecycle_errors"]
+                            .as_array()
+                            .cloned()
+                            .unwrap_or_default();
+                        if errors.len() < 32 {
+                            errors.push(serde_json::json!(format!("{operation}: {error}")));
+                        }
+                        self.report["lifecycle_errors"] = serde_json::json!(errors);
+                    }
+                }
+                ActorEvent::Frame {
                     frame,
                     status,
                     events,
                     ticks,
                     pins,
-                    lifecycle_errors,
+                    bootstrap,
+                    snapshot_revision,
                 } => {
+                    self.source_ready = bootstrap.source_root_ready;
+                    if snapshot_revision != self.editor_snapshot.revision {
+                        self.in_flight = false;
+                        continue;
+                    }
                     let mut renderer = self.render.renderer.write();
                     if let Some(id) = self.texture {
                         renderer.update_egui_texture_from_wgpu_texture(
@@ -351,27 +338,30 @@ impl State {
                     self.loading = false;
                     self.in_flight = false;
                     self.ticks = ticks;
-                    let errors = events
-                        .iter()
-                        .filter_map(|e| match e {
-                            RuntimeEvent::VmError(s) => Some(s.clone()),
-                            _ => None,
-                        })
-                        .take(32)
-                        .collect::<Vec<_>>();
-                    let previous = self.report["recent_vm_errors"]
+                    self.source_ready = bootstrap.source_root_ready;
+                    let mut errors = self.report["recent_vm_errors"]
                         .as_array()
                         .cloned()
                         .unwrap_or_default();
-                    let mut retained = previous;
-                    retained.extend(errors.into_iter().map(serde_json::Value::String));
-                    if retained.len() > 32 {
-                        retained.drain(..retained.len() - 32);
+                    errors.extend(events.iter().filter_map(|e| match e {
+                        RuntimeEvent::VmError(s) => Some(serde_json::json!(s)),
+                        _ => None,
+                    }));
+                    if errors.len() > 32 {
+                        errors.drain(..errors.len() - 32);
                     }
-                    self.report = serde_json::json!({"vm_errors":status.vm_errors,"unbound_services":status.unbound_services,
-                    "events_dropped":status.events_dropped,"recent_vm_errors":retained,"source_pins":pins,
-                    "complete_gfx_support":status.complete_gfx_support,"lifecycle_errors":lifecycle_errors,
-                    "widget_initialize_completed":false,"full_source_manager_lifecycle_completed":false});
+                    let mut lifecycle = self.report["lifecycle_errors"]
+                        .as_array()
+                        .cloned()
+                        .unwrap_or_default();
+                    for error in &bootstrap.errors {
+                        if lifecycle.len() < 32
+                            && !lifecycle.iter().any(|e| e.as_str() == Some(error))
+                        {
+                            lifecycle.push(serde_json::json!(error));
+                        }
+                    }
+                    self.report = serde_json::json!({"vm_errors":status.vm_errors,"unbound_services":status.unbound_services,"events_dropped":status.events_dropped,"recent_vm_errors":errors,"source_pins":pins,"complete_gfx_support":status.complete_gfx_support,"lifecycle_errors":lifecycle,"widget_initialize_completed":bootstrap.widget_initialized,"source_root_ready":bootstrap.source_root_ready,"full_source_manager_lifecycle_completed":false,"frame_snapshot_revision":snapshot_revision});
                     self.status = format!(
                         "Original movie running · {} VM errors · {} unbound services",
                         status.vm_errors,
@@ -381,13 +371,7 @@ impl State {
             }
         }
     }
-    pub fn surface(
-        &mut self,
-        ui: &mut egui::Ui,
-        viewport: &mut crate::viewport::Viewport,
-        editing: bool,
-    ) {
-        self.snapshot.store(editing, Ordering::Relaxed);
+    pub fn surface(&mut self, ui: &mut egui::Ui, viewport: &mut crate::viewport::Viewport) {
         self.poll();
         egui::CentralPanel::default()
             .frame(egui::Frame::NONE)
@@ -399,7 +383,9 @@ impl State {
                     (rect.height() * scale).max(1.) as u32,
                 ];
                 viewport.framing_offset = 0.;
-                viewport.render(size);
+                if let Err(error) = viewport.render(size) {
+                    self.error = Some(format!("Original interface viewport failed: {error}"));
+                }
                 ui.painter().image(
                     viewport.texture_id,
                     rect,
@@ -414,7 +400,13 @@ impl State {
                         egui::Color32::WHITE,
                     );
                 }
-                for event in ui.input(|i| i.events.clone()) {
+                for event in ui.input(|i| {
+                    if self.editor_snapshot.ready && self.texture.is_some() {
+                        i.events.clone()
+                    } else {
+                        vec![]
+                    }
+                }) {
                     let point = |p: egui::Pos2| {
                         (
                             ((p.x - rect.left()) * scale) as f64,
@@ -475,19 +467,25 @@ impl State {
                 if self.pending_input.len() > 4096 {
                     self.error =
                         Some("Original interface input backlog exceeded its budget".into());
-                    self.cancel.store(true, Ordering::Relaxed);
+                    self.actor = None;
                 }
-                if !self.in_flight && self.error.is_none() {
-                    let command = Command::Frame {
+                self.send_pending_update();
+                if !self.in_flight
+                    && self.error.is_none()
+                    && self.actor.is_some()
+                    && (!self.source_ready || self.pending_updates.is_empty())
+                {
+                    let command = Command::Frame(FrameRequest {
                         size,
                         dpi: scale as f64,
                         input: std::mem::take(&mut self.pending_input),
-                    };
-                    match self.command.try_send(command) {
+                    });
+                    match self.actor.as_ref().expect("active actor").try_send(command) {
                         Ok(()) => self.in_flight = true,
-                        Err(mpsc::TrySendError::Full(Command::Frame { input, .. })) => {
-                            self.pending_input = input
+                        Err(mpsc::TrySendError::Full(Command::Frame(frame))) => {
+                            self.pending_input = frame.input;
                         }
+                        Err(mpsc::TrySendError::Full(_)) => unreachable!(),
                         Err(mpsc::TrySendError::Disconnected(_)) => {
                             self.error = Some("Original interface actor stopped".into());
                             self.loading = false;
@@ -513,7 +511,6 @@ impl State {
 }
 impl Drop for State {
     fn drop(&mut self) {
-        self.cancel.store(true, Ordering::Relaxed);
         if let Some(id) = self.texture {
             self.render.renderer.write().free_texture(&id);
         }

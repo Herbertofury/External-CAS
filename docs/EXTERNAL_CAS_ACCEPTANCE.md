@@ -4,6 +4,24 @@ The full objective is the owner's November 12, 2026 request in the current Codex
 chat and its attached goal-objective.md. This is a working source checkout,
 not an accepted release. Checked boxes require direct current evidence.
 
+Latest qualified component checkpoint (13 November UTC): 325 workspace tests
+passed; 17 explicit private-source checks were excluded from ordinary CI. The
+actual Windows app applied the source camera equations, rendered the imported
+Sim with real CC, committed two native edits to a separate recovery revision,
+closed and reopened it. Camera, source pins and the retained Sim image crop
+matched exactly; originals remained unchanged. Full source material/UI/game
+acceptance is still false. These observations do not check the full gates below.
+
+Current source/evidence links:
+
+- [Original UI/editor bridge](../native/source_ui/README.md) and
+  [actual application receipt](../native/source_ui/evidence/desktop-editor-integration.json).
+- [Camera/frame contracts](engine/CAS_CAMERA_LIGHT_ROTATION_20261112.md),
+  [source math receipt](engine/evidence/cas-camera-source-math.json) and
+  [app source](../native/app/src/viewport.rs).
+- [Shared room/native depth](../native/render/evidence/shared-depth-qualification.json)
+  and [native clothing export](../native/material/evidence/native-bc3-export-qualification.json).
+
 - [x] Isolate work from active Apex checkout and game session: branch
   `external-cas/standalone-native-20261112`, base `1ba0986` in a new checkout.
 - [x] Preserve ignored/unpublished source, dirty changes and private input references.

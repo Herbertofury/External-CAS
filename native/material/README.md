@@ -160,6 +160,33 @@ reversed/equal endpoints and transparent selectors. This is not a replacement
 for source selection, native HSL/masks, canvas flags or ordered assembly.
 See [compressed-blend evidence](evidence/native-compressed-blend-qualification.json).
 
+`native_rle2` retains original source bytes and all selected split-stream ranges,
+checks every mip/run/stream extent and exposes explicit prepared image and shadow
+operations that return a new plane. The actual imported Sim's12 diffuse and6
+shadow RLE2 resources matched original native routines for54 complete16x32 mip
+operations (27,648 pixels;110,592 bytes). Destination pixels were controlled
+inputs, so this qualifies source parsing and operators without inventing native
+canvas initialization or complete layer order. The optional qualification
+example emits private raw inputs only to a new exclusive output directory.
+See [real-source evidence](evidence/actual-native-image-jobs-qualification.json).
+
+`native_image_source` implements native RLEBlend's existing same-group/instance
+LRLE probe. Ambiguous/unreadable probes remain unresolved; only proven absence
+allows the declared source. Exact shadow resources do not inherit this probe.
+All provider observations remain pinned and missing-resource substitutions are
+not authored.
+
+`native_lrle::prepare_native_lrle_mip_zero` preserves the original source and
+exposes qualified Legacy/V002Palette profiles. It explicitly refuses the V002
+kind3 literal branch, whose fabricated BGRA input differs from the maintained
+decoder in the current native image job. All3 actual LRLE mip-zero sources
+pass the profile gate. At1024x2048, all24 complete operations /201,326,592 bytes
+match the original native routines, across4 opacities and both alpha modes.
+Another512 controlled Legacy-literal/V002-palette blocks match32,768 bytes.
+`blend_native_lrle_mip` requires an explicit prepared destination and returns a
+new plane; it does not choose a native canvas or image stack.
+See [full LRLE evidence](evidence/actual-native-lrle-jobs-qualification.json).
+
 `native_physique` and `native_physique_source` provide the actual native detail
 weight order and source-pinned CASTuning parameters. The native builder matches
 483 ordered preset calls across 64 controlled nine-weight profiles, including
@@ -175,3 +202,15 @@ All 260 blocks / 4,160 pixels matched isolated execution of the unchanged native
 numeric routines byte for byte. Native compressed-block preparation, complete
 input ordering and final atlas placement remain separate gates. This component
 does not silently replace the existing reference atlas with a native claim.
+
+`native_bc3` implements the source CAS exporter's final prepared BGRA block
+compression, including its constant-luminance covariance path, endpoint
+quantization, ordered dithering and special alpha rules. All 919 checked
+prepared blocks (599 synthetic and 320 sampled from five private decoded
+textures) matched the original output and 304-byte color preparation state.
+Another 64 original exporter cases preserve the exact unprepared compressed
+color and native alpha state. The port uses the same x86_64 approximate
+reciprocal instructions as the source; an emulator's full-precision reciprocal
+is not a correct reference for those operations. This does not qualify the
+complete layer stack, mip policy or full app material binding.
+See [the sanitized exporter receipt](evidence/native-bc3-export-qualification.json).

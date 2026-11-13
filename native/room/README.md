@@ -43,6 +43,13 @@ trees and 476 binary scalar/vector cells across nine partners: four contexts,
 34 camera regions, 17 pose overrides and five lighting profiles. Projection
 conventions, runtime camera anchoring and lighting equations remain open.
 
+`preset_rotations(&CasTuningScene)` exposes each selected `Client_CASTuning`
+record's six view angles and rotation/lerp settings. Its matching SimData partner
+supplies only observed class defaults after explicit XML bit agreement. Angle
+order follows the source inline schema's byte offsets; omitted values without a
+partner remain unknown. The native motion selector, easing and update cadence
+are separate renderer/host qualification work.
+
 `RoomRequest.mods` accepts an explicit Mods root, observed profile options,
 optional selected package subset and optional already indexed catalog.
 `discover_mods` reads configured package paths; `index_configured_mods` prepares

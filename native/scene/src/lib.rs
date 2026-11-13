@@ -2,6 +2,8 @@
 //! authoring rig or invented skin for missing or ambiguous native dependencies.
 mod scope;
 mod tone;
+pub mod cas_view;
+pub mod cas_camera;
 use external_cas_assets::scan::Provider;
 use external_cas_assets::{Catalog, PackageReader, ReadLimits, ResourceKey};
 use external_cas_tray::{AppearanceForm, SimAppearance};

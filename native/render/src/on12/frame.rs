@@ -51,6 +51,37 @@ pub struct OriginalDepth {
     has_stencil: bool,
     bridge_id: u64,
 }
+#[derive(Clone, Copy)]
+enum DepthAttachment<'a> {
+    Owned(&'a OriginalDepth),
+    Shared(&'a SharedDepthTarget),
+}
+impl DepthAttachment<'_> {
+    fn view(&self) -> &ID3D11DepthStencilView {
+        match self {
+            Self::Owned(d) => &d.view,
+            Self::Shared(d) => &d.view,
+        }
+    }
+    fn size(&self) -> [u32; 2] {
+        match self {
+            Self::Owned(d) => d.size,
+            Self::Shared(d) => [d.texture.width(), d.texture.height()],
+        }
+    }
+    fn owner(&self) -> u64 {
+        match self {
+            Self::Owned(d) => d.bridge_id,
+            Self::Shared(d) => d.bridge_id,
+        }
+    }
+    fn has_stencil(&self) -> bool {
+        match self {
+            Self::Owned(d) => d.has_stencil,
+            Self::Shared(_) => false,
+        }
+    }
+}
 /// Source channel storage and SRV color space are separate explicit decisions.
 #[derive(Clone, Copy, Debug)]
 pub enum PlaneFormat {
@@ -376,9 +407,59 @@ impl OriginalShaderBridge {
         blend_factor: [f32; 4],
         stencil_reference: u32,
     ) -> Result<()> {
+        unsafe {
+            self.draw_scene_attachments(
+                target,
+                state,
+                depth.map(DepthAttachment::Owned),
+                draws,
+                clear,
+                blend_factor,
+                stencil_reference,
+            )
+        }
+    }
+    /// Draws original stages into color AND depth owned by wgpu. No implicit
+    /// clear separates the room, Sim, accessory, or subsequent wgpu passes.
+    ///
+    /// # Safety
+    /// Requires the resource qualification and exclusive color/depth/queue
+    /// frame ownership specified by `draw_shared_target_and_depth`.
+    pub unsafe fn draw_scene_with_shared_depth(
+        &mut self,
+        target: &SharedTarget,
+        state: &OriginalPassState,
+        depth: &SharedDepthTarget,
+        draws: &[OriginalDraw<'_>],
+        clear: OriginalClear,
+        blend_factor: [f32; 4],
+        stencil_reference: u32,
+    ) -> Result<()> {
+        unsafe {
+            self.draw_scene_attachments(
+                target,
+                state,
+                Some(DepthAttachment::Shared(depth)),
+                draws,
+                clear,
+                blend_factor,
+                stencil_reference,
+            )
+        }
+    }
+    unsafe fn draw_scene_attachments(
+        &mut self,
+        target: &SharedTarget,
+        state: &OriginalPassState,
+        depth: Option<DepthAttachment<'_>>,
+        draws: &[OriginalDraw<'_>],
+        clear: OriginalClear,
+        blend_factor: [f32; 4],
+        stencil_reference: u32,
+    ) -> Result<()> {
         let size = [target.texture.width(), target.texture.height()];
         if state.bridge_id != self.bridge_id
-            || depth.is_some_and(|d| d.bridge_id != self.bridge_id || d.size != size)
+            || depth.is_some_and(|d| d.owner() != self.bridge_id || d.size() != size)
             || clear
                 .color
                 .is_some_and(|v| v.iter().any(|n| !n.is_finite()))
@@ -386,7 +467,7 @@ impl OriginalShaderBridge {
                 .depth
                 .is_some_and(|v| !v.is_finite() || !(0.0..=1.0).contains(&v))
             || ((clear.depth.is_some() || clear.stencil.is_some()) && depth.is_none())
-            || (clear.stencil.is_some() && depth.is_some_and(|d| !d.has_stencil))
+            || (clear.stencil.is_some() && depth.is_some_and(|d| !d.has_stencil()))
             || blend_factor.iter().any(|n| !n.is_finite())
         {
             return Err("Original frame owner/extent/value validation failed".into());
@@ -394,8 +475,10 @@ impl OriginalShaderBridge {
         for draw in draws {
             validate_draw(self.bridge_id, draw)?;
         }
-        unsafe {
-            self.draw_shared_target(target, |_, context, view| {
+        let draw = |_: &ID3D11Device,
+                    context: &ID3D11DeviceContext,
+                    view: &ID3D11RenderTargetView| {
+            unsafe {
                 context.ClearState();
                 if let Some(color) = clear.color {
                     context.ClearRenderTargetView(view, &color);
@@ -412,14 +495,17 @@ impl OriginalShaderBridge {
                     };
                     if flags != 0 {
                         context.ClearDepthStencilView(
-                            &depth.view,
+                            depth.view(),
                             flags,
                             clear.depth.unwrap_or(1.),
                             clear.stencil.unwrap_or(0),
                         );
                     }
                 }
-                context.OMSetRenderTargets(Some(&[Some(view.clone())]), depth.map(|d| &d.view));
+                context.OMSetRenderTargets(
+                    Some(&[Some(view.clone())]),
+                    depth.as_ref().map(|d| d.view()),
+                );
                 context.OMSetBlendState(&state.blend, Some(&blend_factor), u32::MAX);
                 context.OMSetDepthStencilState(&state.depth, stencil_reference);
                 context.RSSetState(&state.rasterizer);
@@ -457,7 +543,15 @@ impl OriginalShaderBridge {
                     context.DrawIndexed(draw.mesh.count, 0, 0);
                 }
                 Ok(())
-            })
+            }
+        };
+        unsafe {
+            match depth {
+                Some(DepthAttachment::Shared(depth)) => {
+                    self.draw_shared_target_and_depth(target, depth, |d, c, v, _| draw(d, c, v))
+                }
+                _ => self.draw_shared_target(target, draw),
+            }
         }
     }
 }

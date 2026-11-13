@@ -47,6 +47,67 @@ impl Default for RoomState {
     }
 }
 impl RoomState {
+    /// Selects a unique source context and default region. The coordinate
+    /// origin is explicitly the same first room object used for room meshes;
+    /// this does not establish the game's native Sim/world anchor.
+    pub fn default_source_camera(
+        &self,
+        age: Option<u32>,
+        species: Option<u32>,
+    ) -> Result<crate::viewport::Camera, String> {
+        let tuning = self
+            .tuning
+            .as_ref()
+            .ok_or("Original camera tuning is not ready")?;
+        let age = match age {
+            Some(128) => "INFANT",
+            Some(2) => "TODDLER",
+            Some(4) => "CHILD",
+            Some(8) => "TEEN",
+            Some(16) => "YOUNGADULT",
+            Some(32) => "ADULT",
+            Some(64) => "ELDER",
+            _ => return Err("Native age has no qualified camera token".into()),
+        };
+        let species = match species {
+            Some(1) => "HUMAN",
+            Some(2) => "DOG",
+            Some(3) => "CAT",
+            Some(4) => "SMALLDOG",
+            Some(5) => "FOX",
+            Some(6) => "HORSE",
+            _ => return Err("Native species has no qualified camera token".into()),
+        };
+        let selected = external_cas_room::select_camera(&tuning.cameras, age, species, None, None)?;
+        let candidates = selected
+            .cameras
+            .iter()
+            .filter(|c| c.source_region_id == Some(64) && c.region == "CameraDefault")
+            .collect::<Vec<_>>();
+        let [region] = candidates.as_slice() else {
+            return Err("Default source camera region is absent or ambiguous".into());
+        };
+        let origin = self
+            .source
+            .as_ref()
+            .and_then(|s| s.world_objects.first())
+            .and_then(|o| o.position())
+            .ok_or("Explicit room camera origin is unavailable")?;
+        let p = &region.camera;
+        crate::viewport::Camera::from_source_profile(
+            external_cas_scene::cas_camera::SourceCasCameraProfile {
+                target: p.target_relative_to(origin)?,
+                fov_degrees: p.fov.finite()?,
+                distance: p.distance.finite()?,
+                orbital_rotation_degrees: p.orbital_rotation.finite()?,
+                pitch_degrees: p
+                    .pitch
+                    .as_ref()
+                    .ok_or("Original source camera pitch is absent")?
+                    .finite()?,
+            },
+        )
+    }
     pub fn load(&mut self, root: PathBuf, ctx: &egui::Context) {
         self.cancel.store(true, Ordering::Relaxed);
         self.cancel = Arc::new(AtomicBool::new(false));

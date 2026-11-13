@@ -18,6 +18,10 @@ No generic backdrop, body, gallery art or random pose is a completion substitute
 Original paired vertex/pixel shaders now execute successfully through the
 Rust-owned D3D11On12/shared-wgpu boundary outside the game. This establishes
 controlled stage execution and target ownership, not accepted CAS appearance.
+The same boundary now preserves a shared wgpu/native depth allocation in both
+directions, allowing original Sim passes and the room to retain one occlusion
+history. Its controlled GPU receipt is in
+[render evidence](../../native/render/evidence/shared-depth-qualification.json).
 [Native shader loading](../../native/shader) reads the actual
 PRECOMP/DXBC boundary in Rust. The
 [shader record](SIMSKIN_DX11_20261112.md) identifies exact source families,
@@ -95,6 +99,14 @@ STBL/token context. ExternalInterface alone does not supply it. The service
 boundary then needs typed Rust handlers and response/state messages connected
 to the real native draft. Unimplemented commands must remain explicit; drawing
 the source button while ignoring its request is not source-native behavior.
+
+The app now publishes source-pinned draft Sim identity/appearance through a
+monotonic editor snapshot. Original Undo/Redo requests enter the existing
+verified recovery-edit path only while available and against that snapshot;
+stale frames, inputs and action requests cannot silently mutate a newer Sim.
+The exact source enable/refresh messages are sent after observed state changes.
+Original widget initialization still fails at documented source class/global
+lifecycle boundaries, so complete placement and interactive behavior remain open.
 
 Identity, voice, pronouns, gender options, traits, aspirations, sexuality,
 relationships, household selection, undo/redo, randomization, genealogy,

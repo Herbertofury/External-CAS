@@ -49,4 +49,11 @@ pub fn blend_native_image_in_place(base:&mut Pixels,source:&Pixels,opacity:f32,a
         let vectors:Vectors=serde_json::from_str(include_str!("../evidence/native-blend-vectors.json")).unwrap();assert_eq!(vectors.vectors.len(),256);let cancel=AtomicBool::new(false);
         for vector in vectors.vectors{let input=vector.input;assert_eq!(native_image_opacity_weight(input.opacity).unwrap(),vector.weight);let alpha=if input.force_source_alpha{NativeBlendAlpha::ForceSourceAlphaOpaque}else{NativeBlendAlpha::InterpolateSourceAlpha};let result=blend_native_image_block(&input.base,&input.source,input.opacity,alpha,&cancel).unwrap();assert_eq!(format!("{:x}",Sha256::digest(result.concat())),vector.bgra_sha256);}
     }
+    #[test]fn native_legacy_literal_and_v002_palette_jobs_match_all_synthetic_bytes(){
+        use sha2::{Digest,Sha256};
+        #[derive(serde::Deserialize)]struct Vector{version:u32,force_alpha:bool,opacity:f32,base_bgra:[[u8;4];16],source_bgra:[[u8;4];16],bgra_sha256:String}
+        #[derive(serde::Deserialize)]struct Vectors{vectors:Vec<Vector>}
+        let vectors:Vectors=serde_json::from_str(include_str!("../evidence/native-lrle-blend-vectors.json")).unwrap();assert_eq!(vectors.vectors.len(),512);let cancel=AtomicBool::new(false);
+        for vector in vectors.vectors{assert!(matches!(vector.version,0|1));let alpha=if vector.force_alpha{NativeBlendAlpha::ForceSourceAlphaOpaque}else{NativeBlendAlpha::InterpolateSourceAlpha};let result=blend_native_image_block(&vector.base_bgra,&vector.source_bgra,vector.opacity,alpha,&cancel).unwrap();assert_eq!(format!("{:x}",Sha256::digest(result.concat())),vector.bgra_sha256);}
+    }
 }
