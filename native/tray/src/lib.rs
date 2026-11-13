@@ -22,7 +22,7 @@ pub use draft::{
 mod appearance;
 pub use appearance::{
     AppearanceForm, AppearanceModifier, FacialCustomization, GeneticAppearance, GeneticPart,
-    NativeField, NativeMessage, OutfitAppearance, OutfitPartAppearance, SimAppearance,
+    NativeField, NativeMessage, OutfitAppearance, OutfitLayerIds, OutfitPartAppearance, SimAppearance,
 };
 
 pub const MAX_FILE_BYTES: u64 = 64 * 1024 * 1024;

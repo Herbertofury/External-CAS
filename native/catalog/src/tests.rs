@@ -5,9 +5,9 @@ use std::io::Write;
 fn part(name: &str, body_type: u32) -> CasPart {
     serde_json::from_value(serde_json::json!({
         "version":52,"name":name,"sort_priority":1.5,"swatch_order":7,"outfit_id":0x80000000u32,"material_hash":123,"flags1":255,"flags2":128,"layer_id":65535,"compatibility":{"exclude_part_flags":[1,0,0xffffffffu64],"exclude_modifier_region_flags":0xffffffffu64,"opposite_gender_part":0xfedcba9876543210u64,"fallback_part":0,"lod_count":1},"color_sliders":{"opacity":{"minimum":{"bits":0},"step":{"bits":1028443341}},"hue":{"minimum":{"bits":3204448256u32},"maximum":{"bits":1056964608},"step":{"bits":1028443341}},"saturation":{"minimum":{"bits":3204448256u32},"maximum":{"bits":1056964608},"step":{"bits":1028443341}},"brightness":{"minimum":{"bits":3204448256u32},"maximum":{"bits":1056964608},"step":{"bits":1028443341}}},
-        "tags":[[65535,0xffffffffu32],[1,1],[1,1]],"price":0xffffffffu32,"title_key":13,"description_key":14,"create_description_key":15,"texture_space":2,"body_type":body_type,"body_sub_type":19,
+        "tags":[[65535,0xffffffffu32],[1,1],[1,1]],"price":0xffffffffu32,"title_key":13,"description_key":14,"create_description_key":15,"texture_space":2,"body_type":body_type,"body_sub_type":19,"shared_uv_space":0,
         "age":255,"gender":32,"age_gender_reserved":65535,"species":1,"pack_id":23,"pack_flags":128,"colors":[0xffffffffu32,0],"occult_mask":0xffffffffu32,"sort_layer":-5,"composition_method":3,
-        "references":[{"type_id":CASP,"group_id":0x80000000u32,"instance_id":0xfedcba9876543210u64}],"roles":[{"role":"parent","table_index":0,"lod":null,"key":{"type_id":CASP,"group_id":0x80000000u32,"instance_id":0xfedcba9876543210u64}}],"diffuse":null,"normal":null,"specular":null,"lod0_meshes":[]
+        "references":[{"type_id":CASP,"group_id":0x80000000u32,"instance_id":0xfedcba9876543210u64}],"roles":[{"role":"parent","table_index":0,"lod":null,"key":{"type_id":CASP,"group_id":0x80000000u32,"instance_id":0xfedcba9876543210u64}}],"diffuse":null,"normal":null,"specular":null,"lod0_meshes":[],"region_overrides":[]
     })).unwrap()
 }
 #[test]
@@ -36,6 +36,34 @@ fn formerly_rejected_unknown2_zero_reparses_only_eligible_cached_statuses() {
     assert_eq!(cache.load_package(&package, &cancel).unwrap().unwrap().unsupported, vec![other]);
     cache.store_package(&package, &rows, &[], &cancel).unwrap();
     assert_eq!(cache.load_package(&package, &cancel).unwrap().unwrap().rows.len(), 1);
+}
+
+#[test]
+fn old_generic_refpack_header_reparses_once_without_erasing_previous_status() {
+    let temp = tempfile::tempdir().unwrap();
+    let path = temp.path().join("source.package");
+    let (raw_package, _) = source(&path, 1);
+    let mut cache = CatalogCache::open(temp.path().join("cache.sqlite")).unwrap();
+    let cancel = AtomicBool::new(false);
+    let old = CachedUnsupported { entry_index: 0, message: "Unsupported asset: RefPack header".into() };
+    cache.store_package(&raw_package, &[], &[old.clone()], &cancel).unwrap();
+    assert!(cache.load_package(&raw_package, &cancel).unwrap().is_some());
+    let mut bytes = std::fs::read(&path).unwrap();
+    let index = u32::from_le_bytes(bytes[64..68].try_into().unwrap()) as usize;
+    let size_at = index + 4 + 5 * 4;
+    let size = u32::from_le_bytes(bytes[size_at..size_at + 4].try_into().unwrap());
+    bytes[size_at..size_at + 4].copy_from_slice(&(size | 0x80000000).to_le_bytes());
+    bytes.extend([0xff, 0xff, 1, 0]);
+    bytes[44..48].copy_from_slice(&36u32.to_le_bytes());
+    std::fs::write(&path, bytes).unwrap();
+    let package = PackageIndex::open(&path).unwrap();
+    cache.store_package(&package, &[], &[old.clone()], &cancel).unwrap();
+    assert!(cache.load_package(&package, &cancel).unwrap().is_none());
+    let retained: String = cache.connection.query_row("SELECT message FROM unsupported", [], |r| r.get(0)).unwrap();
+    assert_eq!(retained, old.message);
+    let still_unsupported = CachedUnsupported { entry_index: 0, message: "Unsupported asset: RefPack header 0x51fb".into() };
+    cache.store_package(&package, &[], &[still_unsupported.clone()], &cancel).unwrap();
+    assert_eq!(cache.load_package(&package, &cancel).unwrap().unwrap().unsupported, vec![still_unsupported]);
 }
 
 #[test]
@@ -89,6 +117,47 @@ fn older_slider_metadata_reparses_only_versions_with_a_source_color_block() {
     rows[0].casp.color_sliders = None;
     cache.store_package(&package, &rows, &[], &cancel).unwrap();
     assert!(cache.load_package(&package, &cancel).unwrap().is_some());
+}
+#[test]
+fn older_shared_uv_metadata_reparses_only_v27_plus_and_keeps_complete_previous_cache() {
+    let temp=tempfile::tempdir().unwrap();
+    let (package,mut rows)=source(&temp.path().join("original.package"),1);
+    let mut cache=CatalogCache::open(temp.path().join("cache.sqlite")).unwrap();
+    let cancel=AtomicBool::new(false);
+    rows[0].casp.version=27;rows[0].casp.shared_uv_space=Some(0);
+    cache.store_package(&package,&rows,&[],&cancel).unwrap();
+    assert!(cache.load_package(&package,&cancel).unwrap().is_some());
+    let original:String=cache.connection.query_row("SELECT casp_json FROM part",[],|r|r.get(0)).unwrap();
+    let mut older:serde_json::Value=serde_json::from_str(&original).unwrap();
+    older.as_object_mut().unwrap().remove("shared_uv_space");
+    let old_text=serde_json::to_string(&older).unwrap();
+    cache.connection.execute("UPDATE part SET casp_json=?1",[&old_text]).unwrap();
+    assert!(cache.load_package(&package,&cancel).unwrap().is_none());
+    let retained:String=cache.connection.query_row("SELECT casp_json FROM part",[],|r|r.get(0)).unwrap();
+    assert_eq!(retained,old_text);
+    rows[0].casp.version=26;rows[0].casp.shared_uv_space=None;
+    cache.store_package(&package,&rows,&[],&cancel).unwrap();
+    let loaded=cache.load_package(&package,&cancel).unwrap().unwrap();
+    assert_eq!(loaded.rows[0].casp.shared_uv_space,None);
+    assert_eq!(loaded.rows[0].casp.effective_shared_uv_body_type(),Some(rows[0].casp.body_type));
+}
+
+#[test]
+fn old_region_override_metadata_reparses_without_publishing_inferred_empty() {
+    let temp=tempfile::tempdir().unwrap();
+    let (package,rows)=source(&temp.path().join("original.package"),1);
+    let mut cache=CatalogCache::open(temp.path().join("cache.sqlite")).unwrap();
+    let cancel=AtomicBool::new(false);
+    cache.store_package(&package,&rows,&[],&cancel).unwrap();
+    assert!(cache.load_package(&package,&cancel).unwrap().is_some());
+    let original:String=cache.connection.query_row("SELECT casp_json FROM part",[],|r|r.get(0)).unwrap();
+    let mut old:serde_json::Value=serde_json::from_str(&original).unwrap();
+    old.as_object_mut().unwrap().remove("region_overrides");let old_text=serde_json::to_string(&old).unwrap();
+    cache.connection.execute("UPDATE part SET casp_json=?1",[&old_text]).unwrap();
+    assert!(cache.load_package(&package,&cancel).unwrap().is_none());
+    let retained:String=cache.connection.query_row("SELECT casp_json FROM part",[],|r|r.get(0)).unwrap();assert_eq!(retained,old_text);
+    cache.store_package(&package,&rows,&[],&cancel).unwrap();
+    assert_eq!(cache.load_package(&package,&cancel).unwrap().unwrap().rows[0].casp.region_overrides.as_ref().unwrap().len(),0);
 }
 #[test]
 fn optional_page_cache_target_is_per_connection_and_preserves_full_durability_and_metadata() {

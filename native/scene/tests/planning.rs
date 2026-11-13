@@ -106,17 +106,8 @@ impl Fixture {
         path
     }
 }
-impl Drop for Fixture {
-    fn drop(&mut self) {
-        let target = self.root.canonicalize().unwrap();
-        let parent = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("target-fixtures")
-            .canonicalize()
-            .unwrap();
-        assert!(target.starts_with(parent));
-        fs::remove_dir_all(target).unwrap();
-    }
-}
+// Preserve generated fixtures for inspection. Disk cleanup is an explicit
+// user-controlled operation; tests do not recursively delete their folders.
 
 #[test]
 fn rig_hash_vectors_match_compiled_original_fnv_source() {
@@ -657,6 +648,15 @@ fn highest_priority_tombstone_does_not_restore_lower_resource() {
         EffectiveState::DeletedHighestPriority
     );
     assert!(p.provider_choices_for_keys([key]).choices.is_empty());
+}
+#[test]
+fn multiple_highest_priority_tombstones_are_absent_but_mixed_live_ties_stay_unresolved(){
+    let fixture=Fixture::new();let root=install_fixture(&fixture);let key=native_rig_key(Some(1),Some(32),1).unwrap().0;
+    fs::write(root.join("Data/Simulation/Resource.cfg"),b"Priority -20\nPackedFile SimulationDeltaBuild*.package\nPriority -30\nPackedFile SimulationFullBuild*.package\n").unwrap();
+    let full=fixture.package("install/Data/Client/ClientFullBuild0.package",&[(key,vec![1])]);let client=fixture.package("install/Data/Client/ClientDeltaBuild0.package",&[(key,vec![2])]);let simulation=fixture.package("install/Data/Simulation/SimulationDeltaBuild0.package",&[(key,vec![3])]);
+    for path in [&client,&simulation]{let mut bytes=fs::read(path).unwrap();let n=bytes.len();bytes[n-4..n-2].copy_from_slice(&0xffe0u16.to_le_bytes());fs::write(path,bytes).unwrap();}
+    let scope=GameInstallScope::discover(&root).unwrap();let catalog=Catalog::scan_roots(&[full.clone(),client.clone(),simulation.clone()],&AtomicBool::new(false),|_|{}).unwrap();let policy=scope.prepare(&catalog).unwrap();let resolution=policy.resolve_key(key);assert_eq!(resolution.state,EffectiveState::DeletedHighestPriority);assert!(resolution.selected.is_none());assert_eq!(resolution.candidates.len(),3);assert!(policy.provider_choices_for_keys([key]).choices.is_empty());
+    let _simulation=fixture.package("install/Data/Simulation/SimulationDeltaBuild0.package",&[(key,vec![3])]);let catalog=Catalog::scan_roots(&[full,client,simulation],&AtomicBool::new(false),|_|{}).unwrap();let scope=GameInstallScope::discover(&root).unwrap();let resolution=scope.prepare(&catalog).unwrap().resolve_key(key);assert_eq!(resolution.state,EffectiveState::TiedHighestPriority);assert!(resolution.selected.is_none());
 }
 #[test]
 fn pack_delta_directory_does_not_invent_a_priority_above_its_config() {

@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "platform": "Windows",
+  "gpu": "NVIDIA GeForce RTX 4090",
+  "backend": "D3D12 and D3D11On12 on one shared device and queue",
+  "original_vertex_reference": 924,
+  "original_vertex_sha256": "0c09f08016b8b2fd008624108d6c7b986e9ed798542b6ab89d08247d220a7b1e",
+  "original_pixel_reference": 3051,
+  "original_pixel_sha256": "7fe86f137295a1cef91003a59c0440f28d01524cabe12c5d80717f2a3a164f47",
+  "source_vertex_metadata": {
+    "exact_input_triples": 8,
+    "exact_constant_buffers": 3,
+    "exact_constant_members_and_default_bits": 23
+  },
+  "production_draw_api": {
+    "controlled_pixels": 256,
+    "maximum_absolute_error": 7.450580596923828e-09,
+    "original_zero_alpha_retained": true,
+    "invalid_indices_refused": true,
+    "incomplete_constants_and_textures_refused": true,
+    "ordered_pass_depth_preserved": true,
+    "native_encoded_attribute_packet_executed": true,
+    "source_decode_scales": [
+      32767,
+      1,
+      1,
+      32767
+    ]
+  },
+  "shared_target_boundary": {
+    "formats": [
+      "RGBA32_FLOAT",
+      "RGBA8_UNORM",
+      "RGBA8_SRGB"
+    ],
+    "byte_exact_independent_wgpu_reference_pixels": 1920,
+    "foreign_context_acquisitions_refused": 9,
+    "interrupted_callbacks_recovered": 9,
+    "missing_original_vertex_inputs_refused": true,
+    "foreign_vertex_source_bindings_refused": true
+  },
+  "readback_in_production": false,
+  "game_contacted": false,
+  "native_geom_packing_qualified": false,
+  "native_material_construction_qualified": false,
+  "complete_cas_render_qualified": false,
+  "sampler_descriptor_original_comparison_cases": 1152,
+  "source_sampler_records_created_on_actual_gpu": [
+    11,
+    11,
+    11,
+    20,
+    7,
+    10
+  ],
+  "actual_renderer_setting_selection_qualified": false
+}

@@ -31,7 +31,7 @@ Payload reads reuse one `PackageReader` per package, including one initial
 index/source revalidation and per-read change checks. Source-open failures are
 retained during that planning pass rather than repeatedly retried.
 
-TONE v6–12 common fields are bounded and decoded; the entire original payload
+TONE v6–8 and v10–12 common fields are bounded and decoded; the entire original payload
 and any uninterpreted suffix remain retained. The native value shift is not
 reset. Skin-set selection follows the observed native suntan state at
 SimData.attributes(30) → suntan_tracker(27) → tan_level(1), or an explicit

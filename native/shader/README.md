@@ -6,6 +6,29 @@ and constant-buffer preparation records from an explicit local installation.
 It validates bounded DXBC containers and preserves every unknown record word.
 It does not load a game executable or choose a runtime shader permutation.
 
+`named_set_count`/`named_set` retain source-named shader families, mode pairs,
+the original feature-program words/hash, variant fields (including unaligned
+names), raw record words and parsed metadata prefix. Following parameter/heap
+metadata remains explicitly unparsed in the pinned library. Retained program
+hashes are checked again before returning `NamedShaderSet::feature_program`.
+
+`FeatureProgram::evaluate` accepts explicit renderer IDs, material feature
+hashes and the source caller's wildcard-empty-list flag. It preserves the
+installed interpreter's rotating32-bit membership, boolean operations, forward
+branches,32 field accumulators and wrapping sum. It rejects malformed bounds,
+stack overflow/underflow, operand-word jump targets, cancellation and native
+failure opcodes. It does not infer those inputs from convenient texture flags.
+The current engine's material/renderer input producers remain a separate
+production selection gate.
+
+The compiled Rust evaluator matches1,384 controlled inputs across all173
+installed named sets against isolated emulation of the original current
+wrapper/evaluator instructions:854 exact masks and530 explicit rejections.
+There is no native game process or I/O in that comparison. The only intercepted
+intrinsic is bounded stack-buffer memset. Proprietary program words and machine
+instructions stay in the ignored local evidence; see the ignored acceptance
+test and [functional interpreter record](../../docs/engine/SOURCE_FEATURE_VM_20261112.md).
+
 No original shader bytecode, disassembly or game binary belongs in this crate or
 a distributed package. A renderer may request the original installed shader
 after source, stage, feature selection, bindings and pass-state validation.
@@ -34,3 +57,11 @@ cargo run -p external-cas-shader --example inspect_precomp -- 'ABSOLUTE_PRECOMP_
 The example prints private source receipts and metadata, never original shader
 bytes. It is diagnostic tooling; the final native renderer integration and its
 complete-frame comparison gates remain open.
+
+`vertex_bindings` preserves the original packed register/index/usage triples
+and stage-specific constant preparations. The triple count is a byte extent;
+semantic names use the source consumer's low-nibble domain, independently of
+the feature interpreter's renderer IDs. Unknown flag bits remain retained.
+The actual VS924 case matches all eight triples, three buffers and 23 members
+against independent source inspection, including every default bit. See
+[the paired-stage contract](../../docs/engine/ORIGINAL_VERTEX_CONTRACTS_20261112.md).

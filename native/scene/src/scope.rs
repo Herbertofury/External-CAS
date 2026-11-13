@@ -554,7 +554,7 @@ impl ScopePolicy<'_> {
                 .filter(|c| c.priority == Some(highest))
                 .collect::<Vec<_>>();
             match winners.as_slice() {
-                [w] if w.deleted => (EffectiveState::DeletedHighestPriority, None),
+                winners if winners.iter().all(|w|w.deleted) => (EffectiveState::DeletedHighestPriority, None),
                 [w] => {
                     if candidates.len() == 1 {
                         (EffectiveState::UniqueProvider, Some(w.provider))

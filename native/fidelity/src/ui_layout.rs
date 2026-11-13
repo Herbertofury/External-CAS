@@ -223,7 +223,9 @@ impl UiLayoutManifest {
         Ok(result)
     }
 }
-pub fn parse_manifest(raw: &[u8]) -> Result<UiLayoutManifest, String> {
+/// Shared bounded source-XML tree reader. It retains unknown fields and never
+/// resolves DTDs/external entities; specialized adapters validate their own root.
+pub fn parse_xml_tree(raw: &[u8]) -> Result<UiXmlNode, String> {
     if raw.len() > 16 * 1024 * 1024 {
         return Err("UI manifest byte budget".into());
     }
@@ -315,7 +317,10 @@ pub fn parse_manifest(raw: &[u8]) -> Result<UiLayoutManifest, String> {
     if !stack.is_empty() {
         return Err("truncated source UI manifest".into());
     }
-    let root = root.ok_or("source UI root absent")?;
+    root.ok_or_else(|| "source UI root absent".into())
+}
+pub fn parse_manifest(raw: &[u8]) -> Result<UiLayoutManifest, String> {
+    let root = parse_xml_tree(raw)?;
     if root.tag != "widgetList" {
         return Err("unsupported source UI manifest root".into());
     }

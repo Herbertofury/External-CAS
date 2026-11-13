@@ -63,7 +63,12 @@ pub fn load(
         if atlases.contains_key(&image.id) {
             return Err("duplicate source external image ID".into());
         }
-        let atlas = load_atlas(index, image)?;
+        let atlas = load_atlas(index, image).map_err(|e| {
+            format!(
+                "source atlas {:?} ({:?}): {e}",
+                image.file_name, image.target_size
+            )
+        })?;
         result.atlas_pins.push(atlas.pin.clone());
         atlases.insert(image.id, atlas);
     }

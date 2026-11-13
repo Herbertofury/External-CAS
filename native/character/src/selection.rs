@@ -194,6 +194,8 @@ mod tests {
             description_key: 0,
             create_description_key: None,
             texture_space: 0,
+            shared_uv_space: Some(0),
+            region_overrides: Some(Vec::new()),
             body_type: 6,
             body_sub_type: 0,
             age: 56,

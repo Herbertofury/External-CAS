@@ -1,0 +1,601 @@
+{
+  "schema": 1,
+  "game_version": "1.129.39.1030",
+  "precomp_sha256": "62ffab0f85c3af8ace5a375c968216d1ada2b1c9c2d18f32aa4b25d250a0b101",
+  "source_candidate": {
+    "ordinal": 68912,
+    "raw_words": [
+      3741868984,
+      144,
+      132096,
+      68912,
+      769,
+      2474980,
+      2
+    ],
+    "techniques": [
+      {
+        "raw_words": [
+          1203231173,
+          3906428,
+          1
+        ],
+        "passes": [
+          {
+            "raw_words": [
+              924,
+              3051,
+              0,
+              0,
+              0,
+              2147483648
+            ]
+          }
+        ]
+      },
+      {
+        "raw_words": [
+          3427618522,
+          3906440,
+          1
+        ],
+        "passes": [
+          {
+            "raw_words": [
+              925,
+              0,
+              0,
+              0,
+              0,
+              2147483648
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "live_selection_qualified": false,
+  "game_contact": false,
+  "original_shader_bytes_distributed": false,
+  "vs": {
+    "924": {
+      "source_record": 48764,
+      "sha256": "0c09f08016b8b2fd008624108d6c7b986e9ed798542b6ab89d08247d220a7b1e",
+      "input_triples_raw": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          2
+        ],
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          0,
+          35
+        ],
+        [
+          6,
+          0,
+          4
+        ],
+        [
+          7,
+          0,
+          5
+        ]
+      ],
+      "constant_buffers": [
+        {
+          "slot": 0,
+          "preparation_index": 31,
+          "buffer_name": "$Globals",
+          "byte_count": 3024,
+          "members": [
+            {
+              "parameter_index": 0,
+              "hash": "AEED2E06",
+              "name": "ObjectToWorldSpaceMatrix",
+              "offset": 0,
+              "size": 64,
+              "type_word": 275
+            },
+            {
+              "parameter_index": 27,
+              "hash": "B4D8A81E",
+              "name": "ObjectToClipSpaceMatrix",
+              "offset": 64,
+              "size": 64,
+              "type_word": 275
+            },
+            {
+              "parameter_index": 62,
+              "hash": "7AE50F62",
+              "name": "SkinMatrices",
+              "offset": 128,
+              "size": 2880,
+              "type_word": 46083
+            },
+            {
+              "parameter_index": 64,
+              "hash": "FE2EDBDF",
+              "name": "NormalMapUVxform",
+              "offset": 3008,
+              "size": 16,
+              "type_word": 259
+            }
+          ]
+        },
+        {
+          "slot": 2,
+          "preparation_index": 2,
+          "buffer_name": "RenderSystemCbuffer",
+          "byte_count": 288,
+          "members": [
+            {
+              "parameter_index": 8,
+              "hash": "80586EAB",
+              "name": "WorldSpaceCameraPosition",
+              "offset": 0,
+              "size": 16,
+              "type_word": 259
+            },
+            {
+              "parameter_index": 9,
+              "hash": "05F4764F",
+              "name": "WorldToClipSpaceMatrix",
+              "offset": 16,
+              "size": 64,
+              "type_word": 275
+            },
+            {
+              "parameter_index": 10,
+              "hash": "B41B0AA4",
+              "name": "LocalToClipSpaceMatrix",
+              "offset": 80,
+              "size": 64,
+              "type_word": 275
+            },
+            {
+              "parameter_index": 11,
+              "hash": "58E0685B",
+              "name": "viewDistanceBasis",
+              "offset": 144,
+              "size": 16,
+              "type_word": 259
+            },
+            {
+              "parameter_index": 12,
+              "hash": "A53E8014",
+              "name": "WorldToViewSpaceMatrix",
+              "offset": 160,
+              "size": 64,
+              "type_word": 275
+            },
+            {
+              "parameter_index": 13,
+              "hash": "8F1FC61C",
+              "name": "ViewToWorldSpaceMatrix",
+              "offset": 224,
+              "size": 64,
+              "type_word": 275
+            }
+          ]
+        },
+        {
+          "slot": 5,
+          "preparation_index": 3,
+          "buffer_name": "SkyDataCbuffer",
+          "byte_count": 208,
+          "members": [
+            {
+              "parameter_index": 14,
+              "hash": "8E79F20F",
+              "name": "SkyIntensity",
+              "offset": 0,
+              "size": 16,
+              "type_word": 259
+            },
+            {
+              "parameter_index": 15,
+              "hash": "A12465A2",
+              "name": "HorizonLight",
+              "offset": 16,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 16,
+              "hash": "1EFB038A",
+              "name": "HorizonDark",
+              "offset": 32,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 17,
+              "hash": "AE9B7510",
+              "name": "SkyLight",
+              "offset": 48,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 18,
+              "hash": "B4617B20",
+              "name": "SkyDark",
+              "offset": 64,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 19,
+              "hash": "2670748D",
+              "name": "Sun",
+              "offset": 80,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 20,
+              "hash": "D8918A7F",
+              "name": "Halo",
+              "offset": 96,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 21,
+              "hash": "23E5E4EF",
+              "name": "MoonVector",
+              "offset": 112,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 22,
+              "hash": "65259630",
+              "name": "MinspecHorizonColor",
+              "offset": 128,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 23,
+              "hash": "12DF95AC",
+              "name": "SunVector",
+              "offset": 144,
+              "size": 16,
+              "type_word": 258
+            },
+            {
+              "parameter_index": 24,
+              "hash": "D6071B93",
+              "name": "AmbientDomeTop",
+              "offset": 160,
+              "size": 16,
+              "type_word": 259
+            },
+            {
+              "parameter_index": 25,
+              "hash": "C485BA87",
+              "name": "AmbientDomeBottom",
+              "offset": 176,
+              "size": 16,
+              "type_word": 259
+            },
+            {
+              "parameter_index": 26,
+              "hash": "516681CD",
+              "name": "FogParams",
+              "offset": 192,
+              "size": 16,
+              "type_word": 259
+            }
+          ]
+        }
+      ]
+    },
+    "925": {
+      "source_record": 48816,
+      "sha256": "f8f9d9125f281ac09e082288eba5e61ecb1bedea26da249c933685821eff75a6",
+      "input_triples_raw": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          1
+        ],
+        [
+          2,
+          0,
+          2
+        ],
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          4,
+          1,
+          6
+        ],
+        [
+          5,
+          0,
+          35
+        ],
+        [
+          6,
+          0,
+          4
+        ],
+        [
+          7,
+          0,
+          5
+        ]
+      ],
+      "constant_buffers": []
+    }
+  },
+  "ps": {
+    "3051": {
+      "source_record": 548216,
+      "sha256": "7fe86f137295a1cef91003a59c0440f28d01524cabe12c5d80717f2a3a164f47",
+      "texture_bindings": [
+        {
+          "slot": 0,
+          "parameter_index": 278,
+          "hash": "4DC0C8BC",
+          "source_name": "OverlayTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 1,
+          "parameter_index": 288,
+          "hash": "5E2CC5B9",
+          "source_name": "SkinToneAndMakeupTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 2,
+          "parameter_index": 381,
+          "hash": "69EDEC9E",
+          "source_name": "ClothWithAlphaTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 3,
+          "parameter_index": 382,
+          "hash": "3C410F96",
+          "source_name": "SkinDetailHSL",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 4,
+          "parameter_index": 298,
+          "hash": "6E56548A",
+          "source_name": "NormalMap",
+          "other_words": [
+            1,
+            22
+          ]
+        },
+        {
+          "slot": 5,
+          "parameter_index": 383,
+          "hash": "E02DF0F4",
+          "source_name": "CASAmbientIntensityTexture",
+          "other_words": [
+            1,
+            22
+          ]
+        }
+      ],
+      "constant_buffers": [
+        {
+          "slot": 0,
+          "preparation_index": 918,
+          "buffer_name": "$Globals",
+          "byte_count": 3072,
+          "members": [
+            {
+              "parameter_index": 279,
+              "hash": "1E04B76D",
+              "source_name": "LightDirections",
+              "byte_offset": 0,
+              "byte_size": 64,
+              "type_word": 1027
+            },
+            {
+              "parameter_index": 280,
+              "hash": "30EA53AF",
+              "source_name": "LightColors",
+              "byte_offset": 64,
+              "byte_size": 64,
+              "type_word": 1027
+            },
+            {
+              "parameter_index": 300,
+              "hash": "3C45E334",
+              "source_name": "NormalMapScale",
+              "byte_offset": 3008,
+              "byte_size": 16,
+              "type_word": 256
+            },
+            {
+              "parameter_index": 384,
+              "hash": "8715A7E8",
+              "source_name": "SkinDetail2ndOverlayOpacity",
+              "byte_offset": 3024,
+              "byte_size": 16,
+              "type_word": 259
+            },
+            {
+              "parameter_index": 385,
+              "hash": "3785BB0E",
+              "source_name": "CASRimFalloff",
+              "byte_offset": 3040,
+              "byte_size": 16,
+              "type_word": 259
+            },
+            {
+              "parameter_index": 386,
+              "hash": "96ECC1BF",
+              "source_name": "CASAmbientIntensity",
+              "byte_offset": 3056,
+              "byte_size": 16,
+              "type_word": 257
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "native_vertex_formats": [
+    {
+      "native_format": 0,
+      "dxgi_format": 41,
+      "bytes": 4
+    },
+    {
+      "native_format": 1,
+      "dxgi_format": 16,
+      "bytes": 8
+    },
+    {
+      "native_format": 2,
+      "dxgi_format": 6,
+      "bytes": 12
+    },
+    {
+      "native_format": 3,
+      "dxgi_format": 2,
+      "bytes": 16
+    },
+    {
+      "native_format": 4,
+      "dxgi_format": 30,
+      "bytes": 4
+    },
+    {
+      "native_format": 5,
+      "dxgi_format": 28,
+      "bytes": 4
+    },
+    {
+      "native_format": 6,
+      "dxgi_format": 37,
+      "bytes": 4
+    },
+    {
+      "native_format": 7,
+      "dxgi_format": 13,
+      "bytes": 8
+    },
+    {
+      "native_format": 8,
+      "dxgi_format": 28,
+      "bytes": 4
+    },
+    {
+      "native_format": 9,
+      "dxgi_format": 37,
+      "bytes": 4
+    },
+    {
+      "native_format": 10,
+      "dxgi_format": 13,
+      "bytes": 8
+    },
+    {
+      "native_format": 11,
+      "dxgi_format": 35,
+      "bytes": 4
+    },
+    {
+      "native_format": 12,
+      "dxgi_format": 11,
+      "bytes": 8
+    },
+    {
+      "native_format": 13,
+      "dxgi_format": 0,
+      "bytes": 4
+    },
+    {
+      "native_format": 14,
+      "dxgi_format": 0,
+      "bytes": 4
+    },
+    {
+      "native_format": 15,
+      "dxgi_format": 34,
+      "bytes": 4
+    },
+    {
+      "native_format": 16,
+      "dxgi_format": 10,
+      "bytes": 8
+    },
+    {
+      "native_format": 17,
+      "dxgi_format": 0,
+      "bytes": 0
+    },
+    {
+      "native_format": 18,
+      "dxgi_format": 0,
+      "bytes": 0
+    },
+    {
+      "native_format": 19,
+      "dxgi_format": 0,
+      "bytes": 0
+    }
+  ],
+  "cb1": {
+    "byte_count": 16,
+    "slot": 1,
+    "layout_scale_producer_rva": "012AF550",
+    "context_scale_setter_rva": "012A20B0",
+    "actual_buffer_bind_rva": "0129E540",
+    "producer_to_setter_edge_qualified": false
+  }
+}

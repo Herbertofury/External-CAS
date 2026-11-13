@@ -199,4 +199,65 @@ fn binding_tables_keep_raw_default_bits_and_refuse_foreign_parameter_extents() {
             "offset {offset}"
         );
     }
+    let mut repeated = raw;
+    put(&mut repeated, 296, 32);
+    let limited = ShaderLibrary::from_bytes(
+        "fixture".into(),
+        repeated,
+        Limits {
+            decoded_shader_bytes: 1024,
+            ..Limits::default()
+        },
+        &AtomicBool::new(false),
+    )
+    .unwrap();
+    assert!(
+        limited
+            .pixel_bindings(1, &AtomicBool::new(false))
+            .unwrap_err()
+            .contains("decoded budget")
+    );
+}
+
+#[test]
+fn vertex_metadata_uses_byte_count_and_retains_flagged_semantics() {
+    let mut raw = fixture();
+    raw.resize(1200, 0);
+    // Replace the fixture's PS table with a single VS metadata record.
+    put(&mut raw, 84, 256 - 84);
+    put(&mut raw, 88, 1);
+    put(&mut raw, 96, 0);
+    put(&mut raw, 300, 900 - 300);
+    put(&mut raw, 304, 6);
+    raw[900..906].copy_from_slice(&[5, 0, 0x23, 4, 1, 6]);
+    let cancel = AtomicBool::new(false);
+    let library =
+        ShaderLibrary::from_bytes("fixture".into(), raw.clone(), Limits::default(), &cancel)
+            .unwrap();
+    let bindings = library.vertex_bindings(1, &cancel).unwrap();
+    assert_eq!(bindings.inputs.len(), 2);
+    assert_eq!(bindings.inputs[0].raw_usage, 0x23);
+    assert_eq!(
+        bindings.inputs[0].semantic().unwrap(),
+        VertexSemantic::BlendIndices
+    );
+    assert_eq!(bindings.inputs[1].semantic().unwrap().name(), "COLOR");
+    assert_eq!(bindings.inputs[1].semantic_index, 1);
+    assert!(library.vertex_bindings(0, &cancel).is_err());
+    assert!(library.vertex_bindings(2, &cancel).is_err());
+    assert!(library.vertex_bindings(1, &AtomicBool::new(true)).is_err());
+    for bytes in [5, u32::MAX] {
+        let mut broken = raw.clone();
+        put(&mut broken, 304, bytes);
+        let library =
+            ShaderLibrary::from_bytes("fixture".into(), broken, Limits::default(), &cancel)
+                .unwrap();
+        assert!(library.vertex_bindings(1, &cancel).is_err());
+    }
+    // Unknown semantics are retained in the reader and rejected by consumers.
+    assert!(VertexSemantic::from_native_usage(0x2f).is_err());
+    assert_eq!(
+        VertexSemantic::from_native_usage(0x12).unwrap(),
+        VertexSemantic::TexCoord
+    );
 }

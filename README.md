@@ -37,8 +37,12 @@ See the [wiki](https://github.com/Herbertofury/External-CAS/wiki),
   untouched. Reference materials are still an incomplete renderer boundary.
 - Original shader loading in Rust and a native D3D11On12/wgpu sharing boundary;
   controlled original CAS shader execution independently checks the recovered math.
-- Actual source UI manifest/runtime adapters and a documented original-movie
-  interpreter investigation. The full source UI runtime is not integrated yet.
+- Original-movie execution on a Rust worker sharing the app GPU, with installed
+  fonts, source font remaps and literal locale strings. The explicit inspection
+  path exposes remaining initialization and native-service failures.
+- Source-native vertex packing, sampler descriptors, compressed image operators,
+  physique texture weights and light math have independent original-instruction
+  comparisons. Complete source planes and actual frame selection remain open.
 
 Wardrobe selection still has a separate item inspection. Project → View full
 Sim displays the assembled imported draft when an installed game source is
@@ -46,6 +50,12 @@ configured. Complete shader planes, direct manipulation, creation/genetics,
 all CAS controls, room mirrors/transparency/shadows, Tray/game acceptance,
 qualified synchronization and release packaging remain open. No end-to-end
 or indistinguishable-appearance acceptance is claimed.
+
+Original UI inspection additionally requires explicit `--source-ui-root MOVIE`,
+`--source-ui-locale ll_cc` and `--source-ui-strings STRINGS_PACKAGE`, alongside
+`--ui-assets`. It is a development compatibility path. It reports source VM,
+host-service and lifecycle errors; complete original widget placement and
+behavior are not yet qualified. Native game/creator resources stay local.
 
 The source-linked [engine implementation map](docs/engine/ENGINE_CAS_IMPLEMENTATION_MAP.md)
 and [shader contract](docs/engine/SIMSKIN_DX11_20261112.md) identify the concrete

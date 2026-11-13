@@ -8,6 +8,8 @@ publish = false
 [dependencies]
 wgpu = "=30.0.1"
 external-cas-shader = { path = "../shader" }
+external-cas-assets = { path = "../assets" }
+external-cas-animation = { path = "../animation" }
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "=0.62.2", features = ["Win32_Graphics_Direct3D", "Win32_Graphics_Direct3D11", "Win32_Graphics_Direct3D11on12", "Win32_Graphics_Direct3D12", "Win32_Graphics_Dxgi_Common"] }

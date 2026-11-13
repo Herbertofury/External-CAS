@@ -21,6 +21,10 @@ hit requires the current observed fingerprint and complete recorded statuses.
 `CasPart` serialization retains all parsed fields, ordered duplicate tags,
 unsigned keys, role references and colors. Unsupported CASPs retain their exact
 per-entry message. No missing or unsupported entry is silently truncated.
+Older v27+ metadata missing the source SharedUVSpace u32 is a targeted cache
+miss; raw zero is a valid hit and retains native BodyType fallback semantics.
+Pre-v27 metadata without that nonexistent field remains eligible. A miss never
+deletes the preceding complete package generation before replacement commits.
 
 Each publication uses an immediate SQLite transaction. Rows, unsupported
 statuses, source fingerprint and indexed search postings become visible

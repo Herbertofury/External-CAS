@@ -276,6 +276,8 @@ impl CatalogCache {
                 // become zero when an older metadata cache is reopened.
                 if casp.compatibility.is_none()
                     || casp.version >= 44 && casp.color_sliders.is_none()
+                    || casp.version >= 27 && casp.shared_uv_space.is_none()
+                    || casp.region_overrides.is_none()
                 {
                     timing.total_ms = total.elapsed().as_secs_f64() * 1000.;
                     return Ok((None, timing));
@@ -317,6 +319,19 @@ impl CatalogCache {
                 if unsupported.message == "Unsupported asset: storage marker 0x0000"
                     && package.entries.get(unsupported.entry_index).is_some_and(|entry| {
                         entry.committed == 0 && [0, 0x5a42, 0xffff].contains(&entry.compression)
+                    })
+                {
+                    timing.total_ms = total.elapsed().as_secs_f64() * 1000.;
+                    return Ok((None, timing));
+                }
+                // The old RefPack signature mask rejected valid high flags
+                // (installed STBL header0x50FB). Reparse these old generic
+                // failures once; the current reader retains explicit header
+                // bytes for any still-unsupported variant. Preserve the prior
+                // complete generation until a replacement transaction commits.
+                if unsupported.message == "Unsupported asset: RefPack header"
+                    && package.entries.get(unsupported.entry_index).is_some_and(|entry| {
+                        entry.compression == 0xffff
                     })
                 {
                     timing.total_ms = total.elapsed().as_secs_f64() * 1000.;

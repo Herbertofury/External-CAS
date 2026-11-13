@@ -1,10 +1,13 @@
 [workspace]
 resolver = "3"
-members = ["native/app", "native/assets", "native/tray", "native/animation", "native/scene", "native/session", "native/catalog", "native/morph", "native/fidelity", "native/character", "native/link", "native/material", "native/room", "native/shader", "native/render"]
+members = ["native/app", "native/assets", "native/tray", "native/animation", "native/scene", "native/session", "native/catalog", "native/morph", "native/fidelity", "native/character", "native/link", "native/material", "native/room", "native/shader", "native/render", "native/source_ui"]
 default-members = ["native/app"]
 
 [profile.dev]
 debug = 1
+
+[profile.dev.package.ruffle_core]
+debug = 0
 
 [profile.release]
 lto = "thin"

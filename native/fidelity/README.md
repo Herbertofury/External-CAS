@@ -8,6 +8,13 @@ provider or select it in the installed UI source picker.
 
 ## Runtime API
 
+- `localization::StringBank::load(index, cancel)` retains pinned STBL tables from
+  an explicitly selected locale package. Exact literal lookup refuses ambiguous
+  hashes and unsupported token/grammar/flag formatting; it does not invent text.
+- `font_config::load_font_config(index)` retains the original font configuration,
+  explicit legacy remaps, ordered source faces, locale nodes and lexical metrics.
+  `canonical_alias()` follows only declared remaps and refuses cycles. A host
+  must separately qualify multi-face glyph fallback and metric application.
 - `GfxMovie::inspect(bytes)` validates an uncompressed GFX/FWS movie and exposes
   stage dimensions, frame rate/count, imports, exported symbol classes, compacted
   font headers, external image names and sub-image rectangles. `raw()` retains the

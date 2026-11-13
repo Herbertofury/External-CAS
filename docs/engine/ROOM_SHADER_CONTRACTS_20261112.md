@@ -41,14 +41,24 @@ reference. VS2404 has position/UV inputs and no blend input. VS2406 consumes
 matrix rows from `SkinMatrices` at CB0 register7 onward. This variant consumes
 one joint index; it does not read the accompanying weight attribute.
 
-This confirms **direct indexing of the uploaded GPU palette**, not how that
-palette is constructed or reordered. SKIN bones/inverse binds, MLOD joint
-references, parent-bone identity, the object rig and the source rest/world
-transforms remain distinct inputs. The configured room has vertices with index0
-and full first weight, but its SKIN tables do not trivially match all MLOD joint
-references. Uploading the first SKIN matrix or inventing a missing rest bone
-would not be a qualified fix. Rest-space inspection is still possible under an
-explicit diagnostic boundary while the engine palette producer is unresolved.
+This confirms **direct indexing of the uploaded GPU palette**. Further current
+client inspection now establishes its source indirection. MLOD loader1B99E60
+resolves the associated SKIN and sends its joint-reference hashes to1285B90.
+That function replaces each hash with its first matching SKIN hash-array index,
+or-1 if absent.12202F0 copies those per-mesh indices and normalizes negative
+values to0.121DB60 separately looks up those SKIN hashes in the supplied rig;
+121E100 combines the selected inverse binds with the selected pose transforms
+and emits the3x4 palette in per-mesh slot order. Thus a vertex index0 does not
+automatically select global SKIN entry0.
+
+The no-pose branch of121E100 writes identity3x4 matrices. The draw caller also
+has a no-rig/no-pose branch that publishes an identity palette. These observed
+branches do not yet establish which configured null-Rig object path selects a
+static or skinned feature vector. The configured room's missing transformBone
+hash in one SKIN is now explained as a source fallback-to0 case; the external
+app must retain that diagnosis rather than silently inventing a rest bone or
+pretending every SKIN directly matches the MLOD hash. Object transforms and the
+live caller/feature context remain qualification gates.
 
 PS8522 samples DiffuseMap, multiplies by native diffuse RGBA and interpolated
 vertex color, and outputs an alpha/bloom term controlled by BloomFactor. Its
@@ -73,8 +83,9 @@ do not remove the environment/scene dependencies. The selected material's DDS
 file cannot replace the dynamic translucent scene input or cubemap.
 
 The observed diffuse-present pass has raw overrides `{0x15,0}` and `{0x01,1}`.
-Their source mechanical roles are blend-enable and depth-write-mask in the
-maintained engine research, but current consumer/context qualification remains
+Their mechanical roles are blend-enable and depth-write-mask in the current
+installed state dispatcher at RVA129EF50, independently agreeing with the
+maintained engine research. Current context and state inheritance remain
 separate. A single transparent source-over surface is not automatically the
 engine's glass pass. Reflection/refraction, depth, inherited states and input
 render targets must be constructed explicitly.
@@ -114,10 +125,11 @@ outputRGBA = 1-LightingTweaks.x*mask
 ```
 
 The pass records raw states`(0x15,1),(0x01,0),(0x18,15),(0x16,9),(0x17,1)`.
-The maintained consumer identifies blend enabled, depth writes off, RGBA write
-mask and destination-color/zero factors, yielding a multiplicative shadow
-operation. The source consumer mapping is build-scoped; the current app must
-qualify that mapping and the inherited state rather than apply arbitrary
+The current installed dispatcher129EF50 confirms blend enabled, depth writes
+off, RGBA write mask and destination-color/zero factors, yielding a multiplicative
+shadow operation. Its comparison/blend/stencil translator tables are recorded
+in [current state evidence](evidence/current-state-translators.json). The current
+app must still qualify the inherited state rather than apply arbitrary
 source-over alpha. Source geometry, packed position/height data, atlas selector
 and the producer of the third texture-coordinate component are part of the
 contract. A null VRTF pointer needs the actual implicit vertex declaration.

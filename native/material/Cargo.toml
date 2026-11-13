@@ -12,6 +12,7 @@ external-cas-assets = { path = "../assets" }
 external-cas-character = { path = "../character" }
 external-cas-scene = { path = "../scene" }
 external-cas-morph = { path = "../morph" }
+external-cas-room = { path = "../room" }
 image = { version = "=0.25.10", default-features = false, features = ["png", "jpeg", "dds"] }
 
 [dev-dependencies]

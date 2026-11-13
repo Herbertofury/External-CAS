@@ -91,6 +91,23 @@ pub struct OutfitAppearance {
     pub parts: Vec<OutfitPartAppearance>,
     pub native: NativeMessage,
 }
+#[derive(Clone,Debug,Serialize,Deserialize)]
+pub struct OutfitLayerIds {
+    pub values:Vec<u32>,
+    /// Complete LayerIdsList wrapper, including all unrecognized fields.
+    pub native:NativeMessage,
+}
+impl OutfitAppearance {
+    /// Schema-proven OutfitData15 -> LayerIdsList1 repeated uint32. Absence
+    /// stays None; no zero offsets or parallel-array elements are invented.
+    pub fn native_layer_ids(&self)->Result<Option<OutfitLayerIds>>{
+        if sha256(&self.native.bytes)!=self.native.sha256{return Err(invalid("Native outfit layer IDs belong to a changed message"))}
+        let f=fields(&self.native.bytes)?;let Some(owner)=unique(&f,15)? else{return Ok(None)};let raw=owner.bytes()?;
+        let values=uints(&fields(raw)?,1,u32::MAX as u64,false)?.into_iter().map(|v|v as u32).collect::<Vec<_>>();
+        if values.len()!=self.parts.len(){return Err(invalid("Native outfit part/layer arrays differ in length; original fields retained"))}
+        Ok(Some(OutfitLayerIds{values,native:NativeMessage::new(raw)?}))
+    }
+}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AppearanceForm {
     /// None is the base SimData message; no implicit species or form label.
@@ -390,4 +407,19 @@ fn parse_sim_appearance(sim_index: usize, raw: &[u8]) -> Result<SimAppearance> {
         base: form(raw, None, current_outfit_category, current_outfit_index)?,
         occult_forms,
     })
+}
+#[cfg(test)]mod outfit_layer_tests{
+    use super::*;
+    fn vint(mut n:u64)->Vec<u8>{let mut b=vec![];while n>=128{b.push(n as u8|128);n>>=7;}b.push(n as u8);b}
+    fn blob(field:u32,payload:&[u8])->Vec<u8>{let mut b=vint((field as u64)<<3|2);b.extend(vint(payload.len()as u64));b.extend(payload);b}
+    fn outfit(raw:Vec<u8>,count:usize)->OutfitAppearance{OutfitAppearance{outfit_index:0,outfit_id:1,category:Some(0),category_index:0,parts:(0..count).map(|part_index|OutfitPartAppearance{part_index,cas_part_id:part_index as u64+1,body_type:6,color_shift:None}).collect(),native:NativeMessage::new(&raw).unwrap()}}
+    #[test]fn packed_and_unpacked_uint32_layers_preserve_unknown_wrapper_bytes(){
+        let mut values=vint(1);values.extend(vint(u32::MAX as u64));let packed=blob(1,&values);let mut unpacked=vec![8,1,8];unpacked.extend(vint(u32::MAX as u64));
+        for mut wrapper in [packed,unpacked]{wrapper.extend(blob(99,b"future-layer-data"));let raw=blob(15,&wrapper);let source=outfit(raw.clone(),2);let projected=source.native_layer_ids().unwrap().unwrap();assert_eq!(projected.values,vec![1,u32::MAX]);assert_eq!(projected.native.bytes,wrapper);assert!(projected.native.fields.iter().any(|f|f.number==99));assert_eq!(source.native.bytes,raw);}
+    }
+    #[test]fn absent_malformed_misaligned_duplicate_and_stale_layers_do_not_get_defaults(){
+        assert!(outfit(vec![],2).native_layer_ids().unwrap().is_none());assert!(outfit(blob(15,&[]),2).native_layer_ids().is_err());assert_eq!(outfit(blob(15,&[]),0).native_layer_ids().unwrap().unwrap().values,Vec::<u32>::new());
+        for wrapper in [vec![8,128],vec![10,2,1],{let mut b=vec![8];b.extend(vint(u32::MAX as u64+1));b}]{assert!(outfit(blob(15,&wrapper),1).native_layer_ids().is_err());}
+        let mut raw=blob(15,&[8,1]);raw.extend(blob(15,&[8,2]));assert!(outfit(raw,1).native_layer_ids().is_err());let mut stale=outfit(blob(15,&[8,1]),1);stale.native.bytes[3]=2;assert!(stale.native_layer_ids().is_err());
+    }
 }

@@ -204,6 +204,12 @@ impl CaspColorSliders {
     }
 }
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub struct CaspRegionOverride {
+    pub region: u8,
+    /// Original float32 bits, retaining non-finite values and signed zero.
+    pub layer_bits: u32,
+}
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct CasPart {
     pub version: u32,
     pub name: String,
@@ -244,8 +250,26 @@ pub struct CasPart {
     /// None is absent before v44, or unknown in an older cached v44+ CASP.
     #[serde(default)]
     pub color_sliders: Option<CaspColorSliders>,
+    /// Exact v27+ SharedUVSpace/UVoverride u32, including raw zero. None is
+    /// absent before v27 or unknown in an older cached v27+ record.
+    #[serde(default)]
+    pub shared_uv_space: Option<u32>,
+    /// Ordered serialized region/layer overrides. Some(empty) is parsed empty;
+    /// None is unknown metadata from an older cache. Duplicate regions remain.
+    #[serde(default)]
+    pub region_overrides: Option<Vec<CaspRegionOverride>>,
 }
 impl CasPart {
+    /// Native normal-UV selector uses BodyType when SharedUVSpace is zero.
+    /// An older cached v27+ record without this field remains unknown.
+    pub fn effective_shared_uv_body_type(&self) -> Option<u32> {
+        match self.shared_uv_space {
+            Some(0) => Some(self.body_type),
+            Some(code) => Some(code),
+            None if self.version < 27 => Some(self.body_type),
+            None => None,
+        }
+    }
     pub fn disallow_opposite_gender(&self) -> bool {
         self.flags1 & 0x80 != 0
     }
@@ -430,12 +454,16 @@ impl CasPart {
         let composition_method = r.u8()?;
         pending.push(("region-map", r.u8()?, None));
         let overrides = r.u8()?;
-        r.skip(overrides as usize * 5)?;
+        let mut region_overrides = Vec::with_capacity(overrides as usize);
+        for _ in 0..overrides {
+            region_overrides.push(CaspRegionOverride {
+                region: r.u8()?,
+                layer_bits: r.u32()?,
+            });
+        }
         pending.push(("normal", r.u8()?, None));
         pending.push(("specular", r.u8()?, None));
-        if version >= 27 {
-            r.skip(4)?;
-        }
+        let shared_uv_space = if version >= 27 { Some(r.u32()?) } else { None };
         if version >= 29 {
             pending.push(("emission", r.u8()?, None));
         }
@@ -524,6 +552,8 @@ impl CasPart {
                 lod_count,
             }),
             color_sliders,
+            shared_uv_space,
+            region_overrides: Some(region_overrides),
         })
     }
 }

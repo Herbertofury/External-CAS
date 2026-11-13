@@ -1,0 +1,152 @@
+{
+  "schema": 1,
+  "game_version": "1.129.39.1030",
+  "client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "selector_rva": "01A2C150",
+  "controlled_original_instruction_cases": 7168,
+  "compiled_rust_bit_exact": true,
+  "emulated_instructions": 82062,
+  "visited_instruction_addresses": 51,
+  "native_calls_or_io": false,
+  "game_contact": false,
+  "raw_part_code_domains_qualified": true,
+  "unchanged_output_preserved_as_none": true,
+  "explicit_geom_override": {"source_literal": "NormalMapTransformOverride", "hash": "5844E532", "literal_rva": "022CBD50"},
+  "distinct_shader_binding": "NormalMapUVxform",
+  "constant_vectors": [
+    {
+      "rva": "0x22cbed0",
+      "bits": [
+        "00000000",
+        "3F000000",
+        "3F800000",
+        "40000000"
+      ],
+      "floats": [
+        0.0,
+        0.5,
+        1.0,
+        2.0
+      ]
+    },
+    {
+      "rva": "0x22cbee0",
+      "bits": [
+        "00000000",
+        "3F400000",
+        "3F800000",
+        "40800000"
+      ],
+      "floats": [
+        0.0,
+        0.75,
+        1.0,
+        4.0
+      ]
+    },
+    {
+      "rva": "0x22cbf00",
+      "bits": [
+        "3F000000",
+        "3E000000",
+        "40000000",
+        "41000000"
+      ],
+      "floats": [
+        0.5,
+        0.125,
+        2.0,
+        8.0
+      ]
+    },
+    {
+      "rva": "0x22cbef0",
+      "bits": [
+        "3F400000",
+        "3CA00000",
+        "40800000",
+        "40800000"
+      ],
+      "floats": [
+        0.75,
+        0.01953125,
+        4.0,
+        4.0
+      ]
+    },
+    {
+      "rva": "0x22cbec0",
+      "bits": [
+        "3F400000",
+        "00000000",
+        "40800000",
+        "3F800000"
+      ],
+      "floats": [
+        0.75,
+        0.0,
+        4.0,
+        1.0
+      ]
+    },
+    {
+      "rva": "0x22cbf10",
+      "bits": [
+        "3F400000",
+        "00000000",
+        "40800000",
+        "41000000"
+      ],
+      "floats": [
+        0.75,
+        0.0,
+        4.0,
+        8.0
+      ]
+    },
+    {
+      "rva": "0x1fa9f00",
+      "bits": [
+        "00000000",
+        "00000000",
+        "3F800000",
+        "3F800000"
+      ],
+      "floats": [
+        0.0,
+        0.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "rva": "0x1e4aab0",
+      "bits": [
+        "00000000",
+        "00000000",
+        "3F800000",
+        "40000000"
+      ],
+      "floats": [
+        0.0,
+        0.0,
+        1.0,
+        2.0
+      ]
+    }
+  ],
+  "primary_code": {
+    "source": "CASP BodyType",
+    "native_field": "64",
+    "named_simulation_api": "get_caspart_bodytype",
+    "wrapper_rva": "00662BB0",
+    "read_rva": "00662C59"
+  },
+  "secondary_code": {
+    "source": "v27+CASP SharedUVSpace/UVoverride;0 means BodyType",
+    "native_field": "1E4",
+    "reader_rva": "019FA470",
+    "write_rva": "019FBA8B",
+    "zero_fallback_rva": "019FBA9A"
+  }
+}

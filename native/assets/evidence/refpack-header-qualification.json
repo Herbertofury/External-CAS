@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "independent_reader": "Unchanged Rick/Gibbed.RefPack Decompression.cs, original source plus separate bounded stdin/hash harness",
+  "reader_source_sha256": "e06c2fd9303fa7a1646e97b3291443174a2d36c3ce08a4d4cdd3275b33b5a6c9",
+  "reader_license": "zlib-style, original notice retained in private oracle source",
+  "signature_contract": "(big_endian_header & 0x1FFF) == 0x10FB; 0x8000 selects four-byte size; doubled flag0x0100 unsupported",
+  "synthetic_accepted_flag_bytes": [16, 48, 80, 112, 144, 176, 208, 240],
+  "real_resources": 1,
+  "real_header_hex": "50FB",
+  "real_resource_type_hex": "220557DA",
+  "real_expanded_bytes": 4307230,
+  "real_payload_sha256": "6ba9161559a3710fb0417709080d7e205cf967ba2d3e54ed74adb82d6211ceda",
+  "native_matches_unchanged_gibbed": true,
+  "native_matches_separately_observed_s4tk_0_6_14": true,
+  "malformed_size_truncation_backreference_trailing_budget_and_cancel_guards_preserved": true,
+  "game_contact": false,
+  "source_mutations": false,
+  "source_payload_or_localization_strings_redistributed": false
+}

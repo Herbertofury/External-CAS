@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "date": "2026-11-13",
+  "platform": "Windows",
+  "binary_sha256": "3996600176fe0d9fed86e004d5a583e855d34833bc13d3bedf030cb9aa955c03",
+  "scope": "Exact public source executable, original CASNavigation movie, one authorized real imported Sim and installed room; private source receipts and captures are not distributed.",
+  "checks": {
+    "actor_owns_interpreter": true,
+    "original_movie_advanced": true,
+    "actor_completed_without_failure": true,
+    "original_movie_font_atlas_and_string_sources_pinned": true,
+    "whole_native_sim_and_original_room_present": true,
+    "original_files_unchanged": true,
+    "original_localization_function_error_resolved": true,
+    "remaining_failures_reported": true,
+    "incomplete_ui_produces_failed_diagnostic_exit": true
+  },
+  "remaining_vm_errors": 1,
+  "remaining_vm_error": "Original standalone navigation requires a global CASRandomizeFilter class supplied by the complete UI context.",
+  "unbound_services": ["CASGetSimInfo", "GetDisabledTutorialElements", "MarkElementVisibility"],
+  "original_widget_and_manager_lifecycle_qualified": false,
+  "game_contacted": false,
+  "full_ui_accepted": false,
+  "full_cas_accepted": false,
+  "release_accepted": false
+}

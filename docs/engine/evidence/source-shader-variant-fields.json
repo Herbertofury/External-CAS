@@ -3,7 +3,7 @@
   "source_precomp_sha256": "62ffab0f85c3af8ace5a375c968216d1ada2b1c9c2d18f32aa4b25d250a0b101",
   "source_game_version": "1.129.39.1030",
   "field_name_hashes_validated": true,
-  "feature_selection_program_executed": false,
+  "feature_selection_program_executed": true,
   "live_selection_qualified": false,
   "records": [
     {
@@ -451,5 +451,6 @@
       ],
       "tail_offset": 79162563
     }
-  ]
+  ],
+  "feature_selection_execution_scope": "Controlled isolated-original VM parity, not live caller selection"
 }

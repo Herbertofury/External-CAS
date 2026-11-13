@@ -37,3 +37,36 @@ not application or full-CAS acceptance. The next renderer work must supply the
 actual source planes, vertex packing, rig/pose, constants, feature/technique
 selection, render states and final presentation described in
 [the engine map](../../docs/engine/ENGINE_CAS_IMPLEMENTATION_MAP.md).
+
+The production draw API now accepts the original paired stages, an explicit
+native input declaration/encoded vertex stream, immutable geometry, per-stage
+constant buffers, channel/color-space-specific material planes (including
+unmodified BC1/BC3), samplers and pass states. All required metadata constants
+and pixel textures must be present. Missing vertex inputs, foreign owners,
+duplicate bindings and changed source revisions are refused. Depth/color/stencil
+clears are explicit so ordered passes can preserve earlier depth.
+
+An additional controlled GPU case executes the original normal/skinned CAS
+VS924 + PS3051 through this API. All 256 pixels match expected encoded-channel
+values within 7.5e-9, including the source alpha output of zero. The latest case
+uses the qualified initial Short4/UNORM/Short2 attribute packet and the original
+six sampler records with explicit controlled settings. It does not qualify
+complete source mesh grouping, tag context or deformation-stage selection.
+Source-native material construction, complete
+feature selection, inherited state and actual application integration remain open.
+
+```powershell
+cargo run -p external-cas-render --example qualify_original_draw -- 'ABSOLUTE_PRECOMP_PATH'
+```
+
+`EncodedCasMesh` requires explicit position/normal/tangent packing stages and
+both authored UV sets. Bone hashes map to their actual unique rig indices in a
+bounded 60-entry packet palette. Missing fields, mismatched raw weights, source
+body 0x72's unqualified tag context and excess palette entries are refused.
+Authored geometry remains untouched. Storage is compatible with the inspected
+VS924; it does not pretend to reproduce every native batching decision.
+
+The native sampler descriptor port matches all 1,152 original producer cases
+byte for byte. The two source control flags and anisotropy floor remain explicit
+inputs; live settings selection is a separate gate. Invalid descriptors are
+left for strict D3D validation rather than silently repaired.

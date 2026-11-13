@@ -35,7 +35,8 @@ The first actual complete-Sim render uses 16 visible source meshes; replacing
 the top with real installed CC renders 17 meshes/38,418 vertices with the native
 packed color value retained. These are development observations, not visual or
 game acceptance. Source-reference deformation, atlas rounding/ties, skin hue,
-normal/specular shaders, default idle, shadows and full UI behavior remain open.
+complete material/shader binding, full ASM scheduling, shadows and UI behavior
+remain open; the original current CLIP18 standing idle is restored.
 The real room geometry/textures and source camera/light tuning load independently;
 current light-transfer equations and camera conventions remain candidates.
 

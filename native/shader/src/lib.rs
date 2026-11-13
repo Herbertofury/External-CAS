@@ -2,6 +2,11 @@
 //! No game executable is loaded. Unknown effect words and pass states stay
 //! uninterpreted; this reader never guesses which runtime permutation to use.
 use sha2::{Digest, Sha256};
+mod feature;
+mod set;
+mod vertex;
+pub use feature::{FeatureEvaluation, FeatureInputs, FeatureLimits, FeatureProgram};
+pub use set::{NamedShaderSet, VariantField};
 use std::{
     path::{Path, PathBuf},
     sync::{
@@ -9,6 +14,7 @@ use std::{
         atomic::{AtomicBool, Ordering},
     },
 };
+pub use vertex::{VertexBindings, VertexInput, VertexSemantic};
 pub type Result<T> = std::result::Result<T, String>;
 #[cfg(test)]
 mod tests;
@@ -106,12 +112,45 @@ pub struct PixelBindings {
     pub source_file_sha256: String,
     pub pixel_ref: u32,
     pub textures: Vec<TextureBinding>,
+    pub raw_sampler_references: Vec<u16>,
     pub constant_buffers: Vec<ConstantBuffer>,
+}
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct SamplerRecord {
+    pub ordinal: usize,
+    pub source_file_sha256: String,
+    /// Packed border color, raw MipLODBias bits and native setting flags.
+    /// Resolution requires the actual native sampler/settings contract.
+    pub raw_words: [u32; 3],
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
+pub struct SamplerReference {
+    pub raw: u16,
+    pub slot: u16,
+    pub state_ordinal: u16,
+}
+impl SamplerReference {
+    pub fn from_raw(raw: u16) -> Self {
+        Self {
+            raw,
+            slot: raw >> 12,
+            state_ordinal: raw & 0x0fff,
+        }
+    }
+}
+impl PixelBindings {
+    pub fn sampler_references(&self) -> impl Iterator<Item = SamplerReference> + '_ {
+        self.raw_sampler_references
+            .iter()
+            .copied()
+            .map(SamplerReference::from_raw)
+    }
 }
 #[derive(Clone, Debug)]
 pub struct ShaderCode {
     pub stage: Stage,
     pub reference: u32,
+    pub source_file_sha256: String,
     pub source_record: usize,
     pub raw_record: Vec<u32>,
     pub sha256: String,
@@ -139,6 +178,7 @@ pub struct ShaderLibrary {
     states: Table,
     parameters: Table,
     preparations: Table,
+    samplers: Table,
     limits: Limits,
 }
 fn u16_at(raw: &[u8], offset: usize) -> Result<u16> {
@@ -275,6 +315,7 @@ impl ShaderLibrary {
         let states = table(&bytes, payload + 76, 8, limits)?;
         let parameters = table(&bytes, payload + 60, 8, limits)?;
         let preparations = table(&bytes, payload + 84, 28, limits)?;
+        let samplers = table(&bytes, payload + 92, 12, limits)?;
         check(cancel)?;
         let pin = SourcePin {
             path,
@@ -294,6 +335,7 @@ impl ShaderLibrary {
             states,
             parameters,
             preparations,
+            samplers,
             limits,
         })
     }
@@ -302,6 +344,19 @@ impl ShaderLibrary {
     }
     pub fn effect_count(&self) -> usize {
         self.effects.count
+    }
+    pub fn sampler_count(&self) -> usize {
+        self.samplers.count
+    }
+    pub fn sampler_record(&self, ordinal: usize) -> Result<SamplerRecord> {
+        if ordinal >= self.samplers.count {
+            return Err("Sampler record outside source table".into());
+        }
+        Ok(SamplerRecord {
+            ordinal,
+            source_file_sha256: self.pin.sha256.clone(),
+            raw_words: words(&self.bytes, self.samplers.offset + ordinal * 12)?,
+        })
     }
     fn stage_table(&self, stage: Stage) -> Table {
         match stage {
@@ -328,6 +383,13 @@ impl ShaderLibrary {
         }
         let at = self.ps.offset + (reference as usize - 1) * self.ps.stride;
         let texture_table = table(&self.bytes, at + 12, 8, self.limits)?;
+        if texture_table
+            .count
+            .checked_mul(std::mem::size_of::<TextureBinding>())
+            .is_none_or(|n| n > self.limits.decoded_shader_bytes)
+        {
+            return Err("Shader texture-binding metadata exceeds decoded budget".into());
+        }
         let mut textures = Vec::new();
         for i in 0..texture_table.count {
             check(cancel)?;
@@ -344,7 +406,36 @@ impl ShaderLibrary {
                 raw_words,
             });
         }
-        let indices = table(&self.bytes, at + 36, 2, self.limits)?;
+        let constant_buffers = self.constant_buffers(at + 36, cancel)?;
+        let sampler_table = table(&self.bytes, at + 28, 2, self.limits)?;
+        let mut raw_sampler_references = Vec::with_capacity(sampler_table.count);
+        for i in 0..sampler_table.count {
+            check(cancel)?;
+            let raw = u16_at(&self.bytes, sampler_table.offset + i * 2)?;
+            if SamplerReference::from_raw(raw).state_ordinal as usize >= self.samplers.count {
+                return Err("Shader sampler reference outside source state table".into());
+            }
+            raw_sampler_references.push(raw);
+        }
+        Ok(PixelBindings {
+            source_file_sha256: self.pin.sha256.clone(),
+            pixel_ref: reference,
+            textures,
+            raw_sampler_references,
+            constant_buffers,
+        })
+    }
+    fn constant_buffers(&self, field: usize, cancel: &AtomicBool) -> Result<Vec<ConstantBuffer>> {
+        let indices = table(&self.bytes, field, 2, self.limits)?;
+        // Repeated references can amplify a tiny source table into very large
+        // output. Bound the whole decoded observation, not only each buffer.
+        let mut decoded_bytes = indices
+            .count
+            .checked_mul(std::mem::size_of::<ConstantBuffer>())
+            .ok_or("Shader constant metadata extent overflow")?;
+        if decoded_bytes > self.limits.decoded_shader_bytes {
+            return Err("Shader constant metadata exceeds decoded budget".into());
+        }
         let mut constant_buffers = Vec::new();
         for i in 0..indices.count {
             check(cancel)?;
@@ -356,6 +447,20 @@ impl ShaderLibrary {
             let raw_words = words::<7>(&self.bytes, at)?;
             let members = table(&self.bytes, at + 12, 8, self.limits)?;
             let defaults = table(&self.bytes, at + 20, 4, self.limits)?;
+            decoded_bytes = defaults
+                .count
+                .checked_mul(4)
+                .and_then(|n| {
+                    members
+                        .count
+                        .checked_mul(std::mem::size_of::<ConstantBinding>())
+                        .and_then(|m| n.checked_add(m))
+                })
+                .and_then(|n| decoded_bytes.checked_add(n))
+                .ok_or("Shader decoded metadata extent overflow")?;
+            if decoded_bytes > self.limits.decoded_shader_bytes {
+                return Err("Shader constant metadata exceeds aggregate decoded budget".into());
+            }
             if defaults
                 .count
                 .checked_mul(4)
@@ -391,12 +496,7 @@ impl ShaderLibrary {
                 default_words,
             });
         }
-        Ok(PixelBindings {
-            source_file_sha256: self.pin.sha256.clone(),
-            pixel_ref: reference,
-            textures,
-            constant_buffers,
-        })
+        Ok(constant_buffers)
     }
     pub fn effect(&self, ordinal: usize) -> Result<Effect> {
         if ordinal >= self.effects.count {
@@ -493,6 +593,7 @@ impl ShaderLibrary {
         Ok(ShaderCode {
             stage,
             reference,
+            source_file_sha256: self.pin.sha256.clone(),
             source_record: at,
             raw_record,
             sha256: format!("{:x}", Sha256::digest(&dxbc)),

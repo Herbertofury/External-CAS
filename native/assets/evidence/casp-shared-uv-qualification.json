@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "reader": "Original TS4CAS Tools XmodsDataLib CASP.cs compiled unchanged with original TGI/Enums/FNV; private stdin harness only",
+  "reader_source_sha256": "8894f6af4b5d2c8d8035d7250238941ced178bf57362d0a03191a93a7e81de9c",
+  "source_commit": "67d00ebb9016092b8f64ef94ec7ffb5329cf3342",
+  "license": "GPL-3.0-or-later",
+  "game_contact": false,
+  "source_mutations": false,
+  "packages": 6,
+  "parts": 17,
+  "versions": [
+    42,
+    44,
+    46
+  ],
+  "body_types": [
+    2,
+    7,
+    8,
+    13,
+    22,
+    31
+  ],
+  "all_raw_u32_match": true,
+  "rows": [
+    {
+      "body_type": 2,
+      "effective_shared_uv_body_type": 2,
+      "payload_sha256": "a0164b9808bad6baf280bb75fc42f4c156946d37c11df058928f07e766c87ad4",
+      "shared_uv_raw": 2,
+      "version": 46
+    },
+    {
+      "body_type": 2,
+      "effective_shared_uv_body_type": 2,
+      "payload_sha256": "3c043155cdba71e51a6f8be95f5cf2bf191e9dc119f3f371115ede781d4c010a",
+      "shared_uv_raw": 2,
+      "version": 46
+    },
+    {
+      "body_type": 2,
+      "effective_shared_uv_body_type": 2,
+      "payload_sha256": "09f9ec11b28c3426d1f4bebc503da0ef7690fdebcfe39d5b7794000c443b92fd",
+      "shared_uv_raw": 2,
+      "version": 46
+    },
+    {
+      "body_type": 7,
+      "effective_shared_uv_body_type": 7,
+      "payload_sha256": "350cf835a2071df2239e2020c4784935674a8500570cfc77eea2289a90729f68",
+      "shared_uv_raw": 7,
+      "version": 42
+    },
+    {
+      "body_type": 7,
+      "effective_shared_uv_body_type": 7,
+      "payload_sha256": "51fc16d796c70997521676175e0d36d6b68f6423a3f0d592b03ab2a3a4696cd2",
+      "shared_uv_raw": 7,
+      "version": 42
+    },
+    {
+      "body_type": 7,
+      "effective_shared_uv_body_type": 7,
+      "payload_sha256": "a6424245d3a80dc91522fba75e44fb70e06e19d14878caa78c254c8c37cc04a3",
+      "shared_uv_raw": 7,
+      "version": 42
+    },
+    {
+      "body_type": 31,
+      "effective_shared_uv_body_type": 31,
+      "payload_sha256": "01bcd3cfa4bf6b404f4974672e98260005023549e6898bf6b3c16f7e2096d4dd",
+      "shared_uv_raw": 31,
+      "version": 44
+    },
+    {
+      "body_type": 31,
+      "effective_shared_uv_body_type": 31,
+      "payload_sha256": "59185ca569a3f852bdd1194b9cc1d3b894d91dfdf2b76f0649c9f61870dad7e4",
+      "shared_uv_raw": 31,
+      "version": 44
+    },
+    {
+      "body_type": 31,
+      "effective_shared_uv_body_type": 31,
+      "payload_sha256": "532f504526cda9100200072458988b606ddee134abc0d80e9dd2b758e396cc01",
+      "shared_uv_raw": 31,
+      "version": 44
+    },
+    {
+      "body_type": 13,
+      "effective_shared_uv_body_type": 13,
+      "payload_sha256": "52abc50dc9b3714b04482880a2ed774741f323a6e3480204adadb4de6b37e74f",
+      "shared_uv_raw": 13,
+      "version": 42
+    },
+    {
+      "body_type": 13,
+      "effective_shared_uv_body_type": 13,
+      "payload_sha256": "24f53b907d3fc3aefc735009594348cc2e60da0a37c5a34f0f747efd2a7e8d32",
+      "shared_uv_raw": 13,
+      "version": 42
+    },
+    {
+      "body_type": 13,
+      "effective_shared_uv_body_type": 13,
+      "payload_sha256": "da1368cf0af10a872012ee55020cf2725b38294fb25fd041e8ced35717105cc9",
+      "shared_uv_raw": 13,
+      "version": 42
+    },
+    {
+      "body_type": 8,
+      "effective_shared_uv_body_type": 8,
+      "payload_sha256": "6315c49d04e8100940ac7160318d3694b41285d3bf577c20b27b770bb5fec398",
+      "shared_uv_raw": 8,
+      "version": 42
+    },
+    {
+      "body_type": 8,
+      "effective_shared_uv_body_type": 8,
+      "payload_sha256": "54bbd965184167c05d33ed6bab13452087945a6e6ac2b62f72bfebfc2f22e2d3",
+      "shared_uv_raw": 8,
+      "version": 42
+    },
+    {
+      "body_type": 8,
+      "effective_shared_uv_body_type": 8,
+      "payload_sha256": "2ad2e6c01734e0df8195eeb09aef533db0bc0a31195874f5bfe168280ebadc9d",
+      "shared_uv_raw": 8,
+      "version": 42
+    },
+    {
+      "body_type": 22,
+      "effective_shared_uv_body_type": 22,
+      "payload_sha256": "93b9ac2ba1a4de27830ed32debdaa082c4cff9e08d6862fc4f77f865fdfe9190",
+      "shared_uv_raw": 22,
+      "version": 42
+    },
+    {
+      "body_type": 22,
+      "effective_shared_uv_body_type": 22,
+      "payload_sha256": "991d4c5e5bfd8703ce39421ecf2e3ae0c204ef7e3b99fd80cde03955782732c3",
+      "shared_uv_raw": 22,
+      "version": 42
+    }
+  ]
+}

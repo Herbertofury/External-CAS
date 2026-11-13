@@ -25,6 +25,12 @@ original authors is implied.
 - Installed GFX/UI format adapter references and boundaries are documented
   in `fidelity/`. Game resources are separate local inputs, not licensed by
   this project's source license.
+- Ruffle LLC and contributors: Rust AVM/display-list/SWF/GPU implementation,
+  MIT OR Apache-2.0. The source UI adapter pins a source-only compatibility fork
+  based on upstream `1d7cf3b68281a3b857bdac8e247d346e76aba685`.
+  Full notices, exact fork revision and compatibility boundaries are retained
+  in `source_ui/RUFFLE-LICENSE.md` and `source_ui/PROVENANCE.md`. Its small test
+  movies are compiled from the accompanying original test source.
 
 Game and creator resources, private Sims, extracted fonts/atlases, textures,
 meshes, portraits and reference frames are not included or sublicensed. The
