@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //! Native unshifted compressed image-job arithmetic on an explicitly prepared
 //! destination. This does not select resources, flags, mips, masks or canvases.
-use crate::{check,Result,native_blend::native_image_opacity_weight,native_cpu_bc1::{decode_native_cpu_skin_bgra_block,decode_native_four_color_bgra_block}};
+use crate::{check,Result,native_blend::{native_image_opacity_weight,NativeBlendAlpha},native_cpu_bc1::{decode_native_cpu_skin_bgra_block,decode_native_four_color_bgra_block}};
 use std::sync::atomic::AtomicBool;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -21,6 +21,11 @@ fn alpha_weights(block:&[u8;16],weight:u16)->[u16;16]{
 /// toward255 for BC3; partial BC1 keeps its native transparent-color branch.
 /// At full opacity native BC1 is canonicalized into an opaque four-color block.
 pub fn blend_native_compressed_bgra_block(base:&[[u8;4];16],block:&NativeCompressedImageBlock,opacity:f32,cancel:&AtomicBool)->Result<[[u8;4];16]>{
+    blend_native_compressed_bgra_block_with_alpha(base,block,opacity,NativeBlendAlpha::InterpolateSourceAlpha,cancel)
+}
+/// Explicit native ordinary/context-bit1 alpha behavior. The source alpha
+/// still determines BC3 blend weights even when output blends toward opaque.
+pub fn blend_native_compressed_bgra_block_with_alpha(base:&[[u8;4];16],block:&NativeCompressedImageBlock,opacity:f32,alpha:NativeBlendAlpha,cancel:&AtomicBool)->Result<[[u8;4];16]>{
     check(cancel)?;let weight=native_image_opacity_weight(opacity)?;
     if weight==0||matches!(block,NativeCompressedImageBlock::Skip){return Ok(*base)}
     let(colors,weights)=match block {
@@ -31,7 +36,7 @@ pub fn blend_native_compressed_bgra_block(base:&[[u8;4];16],block:&NativeCompres
         },
         NativeCompressedImageBlock::Bc3(block)=>(decode_native_four_color_bgra_block(block[8..16].try_into().unwrap(),cancel)?,alpha_weights(block,weight)),
     };
-    let output=std::array::from_fn(|i|std::array::from_fn(|c|{let old=base[i][c]as i32;let new=colors[i][c]as i32;(old+(((new-old)*weights[i]as i32+128)>>8))as u8}));
+    let output=std::array::from_fn(|i|std::array::from_fn(|c|{let old=base[i][c]as i32;let new=if c==3&&alpha==NativeBlendAlpha::ForceSourceAlphaOpaque{255}else{colors[i][c]as i32};(old+(((new-old)*weights[i]as i32+128)>>8))as u8}));
     check(cancel)?;Ok(output)
 }
 #[cfg(test)]mod tests{

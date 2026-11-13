@@ -411,6 +411,203 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     drop(mapped);
     readback.unmap();
+    let shared_depth_texture = device.create_texture(&wgpu::TextureDescriptor {
+        label: Some("Shared room and original-stage depth qualification"),
+        size: texture.size(),
+        mip_level_count: 1,
+        sample_count: 1,
+        dimension: wgpu::TextureDimension::D2,
+        format: wgpu::TextureFormat::Depth32Float,
+        usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+        view_formats: &[],
+    });
+    let shared_depth = bridge.wrap_depth_target(&shared_depth_texture)?;
+    let color_view = texture.create_view(&Default::default());
+    let depth_view = shared_depth_texture.create_view(&Default::default());
+    // A wgpu draw behind the source triangle must fail the source-written
+    // depth. Its conspicuous color makes stale/cleared ownership observable.
+    let poison_shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
+        label: Some("Qualification-only farther wgpu triangle"),
+        source: wgpu::ShaderSource::Wgsl(
+            r#"
+            @vertex fn vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f {
+                let p = array<vec2f,3>(vec2f(-1,-1),vec2f(-1,3),vec2f(3,-1));
+                return vec4f(p[i], 0.5, 1);
+            }
+            @fragment fn fs() -> @location(0) vec4f { return vec4f(1,0,1,1); }
+        "#
+            .into(),
+        ),
+    });
+    let poison_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
+        label: Some("Qualification-only wgpu depth consumer"),
+        layout: None,
+        vertex: wgpu::VertexState {
+            module: &poison_shader,
+            entry_point: Some("vs"),
+            compilation_options: Default::default(),
+            buffers: &[],
+        },
+        primitive: wgpu::PrimitiveState {
+            cull_mode: None,
+            ..Default::default()
+        },
+        depth_stencil: Some(wgpu::DepthStencilState {
+            format: wgpu::TextureFormat::Depth32Float,
+            depth_write_enabled: Some(true),
+            depth_compare: Some(wgpu::CompareFunction::Less),
+            stencil: Default::default(),
+            bias: Default::default(),
+        }),
+        multisample: Default::default(),
+        fragment: Some(wgpu::FragmentState {
+            module: &poison_shader,
+            entry_point: Some("fs"),
+            compilation_options: Default::default(),
+            targets: &[Some(wgpu::ColorTargetState {
+                format: texture.format(),
+                blend: None,
+                write_mask: wgpu::ColorWrites::ALL,
+            })],
+        }),
+        multiview_mask: None,
+        cache: None,
+    });
+    write(&mut farther, 108, &[0.25]);
+    bridge.update_constants(
+        vertex_buffers.iter().find(|cb| cb.slot == 0).unwrap(),
+        &farther,
+    )?;
+    let mut shared_maximum = 0.0f32;
+    for initial_depth in [0.125, 1.] {
+        let mut encoder = device.create_command_encoder(&Default::default());
+        {
+            let _pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("wgpu initializes shared occlusion history"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: &color_view,
+                    depth_slice: None,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(wgpu::Color {
+                            r: 0.3,
+                            g: 0.3,
+                            b: 0.3,
+                            a: 1.,
+                        }),
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: &depth_view,
+                    depth_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(initial_depth),
+                        store: wgpu::StoreOp::Store,
+                    }),
+                    stencil_ops: None,
+                }),
+                ..Default::default()
+            });
+        }
+        queue.submit([encoder.finish()]);
+        unsafe {
+            bridge.draw_scene_with_shared_depth(
+                &target,
+                &state,
+                &shared_depth,
+                &[OriginalDraw {
+                    program: &program,
+                    mesh: &mesh,
+                    vertex_constants: &vertex_refs,
+                    pixel_constants: &pixel_refs,
+                    textures: &textures,
+                    samplers: &samplers,
+                }],
+                OriginalClear::default(),
+                [0.; 4],
+                0,
+            )
+        }?;
+        let mut encoder = device.create_command_encoder(&Default::default());
+        {
+            let mut pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("wgpu consumes original-stage depth"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: &color_view,
+                    depth_slice: None,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        load: wgpu::LoadOp::Load,
+                        store: wgpu::StoreOp::Store,
+                    },
+                })],
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: &depth_view,
+                    depth_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Load,
+                        store: wgpu::StoreOp::Store,
+                    }),
+                    stencil_ops: None,
+                }),
+                ..Default::default()
+            });
+            pass.set_pipeline(&poison_pipeline);
+            pass.draw(0..3, 0..1);
+        }
+        queue.submit([encoder.finish()]);
+        shared_maximum = shared_maximum.max(check_pixels(
+            &device,
+            &queue,
+            &texture,
+            &readback,
+            if initial_depth < 0.25 {
+                [0.3, 0.3, 0.3, 1.]
+            } else {
+                expected
+            },
+        )?);
+    }
+    // Failures and unwinding must release BOTH wrapped resources before reuse.
+    if unsafe {
+        bridge.draw_shared_target_and_depth(&target, &shared_depth, |_, _, _, _| {
+            Err("interrupted shared draw".into())
+        })
+    }
+    .is_ok()
+    {
+        return Err("Interrupted shared draw was swallowed".into());
+    }
+    unsafe { bridge.draw_shared_target_and_depth(&target, &shared_depth, |_, _, _, _| Ok(())) }?;
+    let other_bridge = OriginalShaderBridge::new(&device, &queue)?;
+    let foreign_depth = other_bridge.wrap_depth_target(&shared_depth_texture)?;
+    if unsafe { bridge.draw_shared_target_and_depth(&target, &foreign_depth, |_, _, _, _| Ok(())) }
+        .is_ok()
+    {
+        return Err("Shared depth from another context accepted".into());
+    }
+    let small_depth = device.create_texture(&wgpu::TextureDescriptor {
+        label: Some("Qualification-only mismatched depth extent"),
+        size: wgpu::Extent3d {
+            width: 8,
+            height: 16,
+            depth_or_array_layers: 1,
+        },
+        mip_level_count: 1,
+        sample_count: 1,
+        dimension: wgpu::TextureDimension::D2,
+        format: wgpu::TextureFormat::Depth32Float,
+        usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+        view_formats: &[],
+    });
+    let small_depth = bridge.wrap_depth_target(&small_depth)?;
+    if unsafe { bridge.draw_shared_target_and_depth(&target, &small_depth, |_, _, _, _| Ok(())) }
+        .is_ok()
+    {
+        return Err("Mismatched shared depth extent accepted".into());
+    }
+    if bridge.wrap_depth_target(&texture).is_ok() {
+        return Err("Color texture accepted as shared depth".into());
+    }
     println!(
         "{}",
         serde_json::to_string_pretty(&serde_json::json!({"adapter":adapter.get_info().name,
@@ -418,12 +615,71 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "production_draw_api_executed":true,"controlled_pixels":256,"maximum_absolute_error":maximum,
         "invalid_indices_refused":true,"incomplete_constant_and_texture_bindings_refused":true,
         "ordered_pass_depth_preserved":true,"native_attribute_packet_executed":true,"source_decode_scales":mesh.decode_scales(),
+        "wgpu_to_native_depth_preserved":true,"native_to_wgpu_depth_preserved":true,
+        "shared_depth_controlled_pixels":512,"shared_depth_maximum_absolute_error":shared_maximum,
+        "foreign_depth_context_refused":true,"interrupted_shared_depth_callback_recovered":true,
+        "mismatched_depth_extent_refused":true,"color_texture_as_depth_refused":true,
         "source_sampler_references":sampler_references,"controlled_sampler_context":{"knob_a":false,"knob_b":false,"anisotropy_floor":1},
         "actual_renderer_setting_selection_qualified":false,
         "source_alpha_retained":0,"native_geom_packing_qualified":false,"native_material_construction_qualified":false,
         "game_contacted":false,"complete_cas_render_qualified":false}))?
     );
     Ok(())
+}
+#[cfg(windows)]
+fn check_pixels(
+    device: &wgpu::Device,
+    queue: &wgpu::Queue,
+    texture: &wgpu::Texture,
+    readback: &wgpu::Buffer,
+    expected: [f32; 4],
+) -> Result<f32, Box<dyn std::error::Error>> {
+    use std::{sync::mpsc, time::Duration};
+    let mut encoder = device.create_command_encoder(&Default::default());
+    encoder.copy_texture_to_buffer(
+        wgpu::TexelCopyTextureInfo {
+            texture,
+            mip_level: 0,
+            origin: wgpu::Origin3d::ZERO,
+            aspect: wgpu::TextureAspect::All,
+        },
+        wgpu::TexelCopyBufferInfo {
+            buffer: readback,
+            layout: wgpu::TexelCopyBufferLayout {
+                offset: 0,
+                bytes_per_row: Some(256),
+                rows_per_image: Some(16),
+            },
+        },
+        texture.size(),
+    );
+    let submission = queue.submit([encoder.finish()]);
+    let (tx, rx) = mpsc::channel();
+    readback.slice(..).map_async(wgpu::MapMode::Read, move |r| {
+        let _ = tx.send(r);
+    });
+    device.poll(wgpu::PollType::Wait {
+        submission_index: Some(submission),
+        timeout: Some(Duration::from_secs(10)),
+    })?;
+    rx.recv_timeout(Duration::from_secs(10))??;
+    let mapped = readback.slice(..).get_mapped_range()?;
+    let mut maximum = 0.0f32;
+    for (i, raw) in mapped.chunks_exact(4).enumerate() {
+        let value = f32::from_le_bytes(raw.try_into()?);
+        let error = (value - expected[i % 4]).abs();
+        if !value.is_finite() || error > 1e-6 {
+            return Err(format!(
+                "Shared-depth pixel channel{i}: {value}, expected{}",
+                expected[i % 4]
+            )
+            .into());
+        }
+        maximum = maximum.max(error);
+    }
+    drop(mapped);
+    readback.unmap();
+    Ok(maximum)
 }
 #[cfg(not(windows))]
 fn main() {

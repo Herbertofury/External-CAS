@@ -1405,6 +1405,7 @@ dependencies = [
  "encoding_rs",
  "external-cas-assets",
  "external-cas-fidelity",
+ "external-cas-room",
  "flate2",
  "futures",
  "image",

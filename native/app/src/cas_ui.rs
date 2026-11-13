@@ -396,10 +396,12 @@ pub fn show(studio: &mut Studio, root_ui: &mut egui::Ui) {
         .show(root_ui, |ui| {
             canvas = ui.max_rect();
             let pixels = ui.ctx().pixels_per_point();
-            studio.viewport.render([
+            if let Err(error)=studio.viewport.render([
                 (canvas.width() * pixels) as u32,
                 (canvas.height() * pixels) as u32,
-            ]);
+            ]) {
+                if studio.errors.last()!=Some(&error) { studio.errors.push(error); }
+            }
             let response = ui.allocate_rect(canvas, Sense::drag());
             ui.painter().image(
                 studio.viewport.texture_id,

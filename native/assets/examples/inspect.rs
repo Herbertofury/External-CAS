@@ -9,9 +9,13 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args().skip(1);
     let mut paths = Vec::new();
     let mut key = None;
+    let mut instance = None;
     while let Some(a) = args.next() {
         if a == "--key" {
             key = Some(args.next().ok_or("missing TGI")?.parse::<ResourceKey>()?);
+        } else if a == "--instance" {
+            let value=args.next().ok_or("missing hexadecimal instance")?;
+            instance=Some(u64::from_str_radix(value.strip_prefix("0x").unwrap_or(&value),16)?);
         } else {
             paths.push(a);
         }
@@ -19,6 +23,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     if paths.is_empty() {
         return Err("pass explicit package paths and optional --key TGI".into());
     }
+    if key.is_some() && instance.is_some() {return Err("choose either --key or --instance".into());}
     for path in paths {
         let index = PackageIndex::open(&path)?;
         let name = index.path.file_name().unwrap_or_default().to_string_lossy();
@@ -44,8 +49,8 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         let selected = index
             .entries
             .iter()
-            .filter(|e| key.map(|k| e.key == k).unwrap_or(e.key.type_id == CASP))
-            .take(if key.is_some() { usize::MAX } else { 3 });
+            .filter(|e| key.map(|k| e.key == k).unwrap_or_else(||instance.map(|id|e.key.instance_id==id).unwrap_or(e.key.type_id==CASP)))
+            .take(if key.is_some() || instance.is_some() { usize::MAX } else { 3 });
         let mut reader = index.reader()?;
         for entry in selected {
             let raw = reader.read_resource(entry, ReadLimits::default())?;

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "cases": 96,
+  "records_compared": 624,
+  "native_sort_rva": "019EB6E0",
+  "native_region_presence_rva": "019FBE30",
+  "native_region_priority_rva": "019FA300",
+  "native_instructions_interpreted": 1171723,
+  "native_functions": [
+    "019EB6E0",
+    "019FA300",
+    "019FBE30"
+  ],
+  "exact_order": true,
+  "emulation_boundary": "Explicit typed CASP/RMAP numeric fields and resource handles. Registry copy/release and CASP handle lookup are controlled no-I/O stubs. Native insertion comparison, regional tree lookups and record moves execute unchanged. No scope/load-order policy is inferred.",
+  "originals_unchanged": true,
+  "game_contacted": false,
+  "complete_native_composition_qualified": false,
+  "date": "2026-11-13",
+  "native_client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "descriptor_offset_source_join_qualified": false,
+  "rmap_repeated_region_rule": "Native parser1A32D70 stores each block layer when it has meshes, else-1; later blocks overwrite earlier region values. Overrides are separate, ordered and last duplicate wins."
+}

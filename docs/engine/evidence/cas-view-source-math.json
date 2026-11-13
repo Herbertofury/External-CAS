@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "qualification": "isolated original-instruction comparison with compiled Rust implementation",
+  "installed_client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "implementation": "native/scene/src/cas_view.rs",
+  "test": "native/scene/tests/cas_view.rs",
+  "native_rvas": {
+    "message_handler": "004390E0",
+    "press": "004815D0",
+    "release": "00481640",
+    "held_tick": "00481690",
+    "held_callback": "0043A8E0",
+    "preset_loop": "004897AB..0048987F",
+    "preset_target": "004898B0"
+  },
+  "preset_cases": 2964,
+  "controller_sessions": 64,
+  "controller_events": 731,
+  "preset_index_mismatches": 0,
+  "degree_output_bit_mismatches": 0,
+  "active_speed_bit_mismatches": 0,
+  "original_instructions": 411705,
+  "original_instruction_addresses": 214,
+  "bounded_interceptions": {
+    "clock": 368,
+    "callback": 427,
+    "context_accessor": 822,
+    "context_fields": 822,
+    "resolved_tuning_pointer": 411
+  },
+  "time_limit_milliseconds": 300,
+  "strictly_after_deadline": true,
+  "private_receipt_environment": "EXTERNAL_CAS_VIEW_RECEIPT",
+  "not_qualified": [
+    "native update cadence",
+    "active Sim or form tuning selector",
+    "source actor quaternion and heading extraction",
+    "camera or model world basis",
+    "finished app behavior or game synchronization"
+  ],
+  "original_assets_or_programs_included": false,
+  "running_game_contact": false
+}

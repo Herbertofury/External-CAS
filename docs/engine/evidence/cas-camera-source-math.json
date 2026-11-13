@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "installed_client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "implementation": "native/scene/src/cas_camera.rs",
+  "test": "native/scene/tests/cas_camera.rs",
+  "qualification": "compiled Rust compared to isolated original instructions with explicit profile/aspect/clips",
+  "native_rvas": {
+    "source_camera_frame": "00235370",
+    "spherical_offset": "00230890",
+    "camera_basis": "0120A020",
+    "fov_span": "01209730",
+    "span_setter": "0120A630",
+    "rational_tangent": "01442120",
+    "projection": "01208EF0",
+    "general_inverse_reference_only": "00992FB0",
+    "world_up_initializer": "0000C9A0",
+    "xyz_mask_initializer": "0004C330"
+  },
+  "cases": 129,
+  "original_instructions": 129140,
+  "original_instruction_addresses": 1012,
+  "bounded_interceptions": { "matrix_state_rebuild01209760": 258 },
+  "eye_max_absolute_error": 0,
+  "fov_span_bit_mismatches": 0,
+  "projection_max_absolute_error": 0,
+  "world_basis_max_absolute_error": 1.1920928955078125e-7,
+  "rigid_inverse_vs_native_general_inverse_max_absolute_error": 0.00006103515625,
+  "matrix_abi": "row vectors; world rows right/up/backward/eye; D3D depth0..1",
+  "private_receipt_environment": "EXTERNAL_CAS_CAMERA_RECEIPT",
+  "not_qualified": [
+    "native active camera/profile selector",
+    "actor/model world anchor",
+    "native general-inverse operation order",
+    "near/far policy and render overrides",
+    "shifted or partial viewport",
+    "camera transitions",
+    "light producer caller matrix identity",
+    "visible app fidelity"
+  ],
+  "original_assets_or_programs_included": false,
+  "running_game_contact": false
+}

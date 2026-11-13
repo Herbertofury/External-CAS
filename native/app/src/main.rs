@@ -855,6 +855,7 @@ impl Studio {
             "fov_degrees".into(),
             serde_json::json!(self.viewport.camera.fov_degrees),
         );
+        state.camera.extra.insert("source_cas".into(),serde_json::json!(self.viewport.camera.source_cas));
         state.extra.insert(
             "model_yaw".into(),
             serde_json::json!(self.viewport.model_yaw),
@@ -933,6 +934,7 @@ impl Studio {
             return;
         }
         if let Some(camera) = self.session.restore_camera.take() {
+            self.viewport.camera.source_cas=camera.extra.get("source_cas").and_then(|v|v.as_bool()).unwrap_or(false);
             self.viewport.camera.yaw = camera.yaw;
             self.viewport.camera.pitch = camera.pitch;
             self.viewport.camera.distance = camera.distance;
@@ -1799,7 +1801,13 @@ impl Studio {
                     match self.viewport.set_parts(prepared.parts) {
                         Ok(()) => {
                             self.viewport.camera = if first_view {
-                                viewport::Camera::default()
+                                match self.room.default_source_camera(prepared.receipt.age,prepared.receipt.species) {
+                                    Ok(camera)=>camera,
+                                    Err(error)=> {
+                                        self.room.issues.push(format!("Original camera context not applied: {error}"));
+                                        viewport::Camera::default()
+                                    }
+                                }
                             } else {
                                 camera
                             };
@@ -2756,6 +2764,16 @@ impl Studio {
             report["installed_cas_lighting_profiles"] =
                 serde_json::json!(self.room.tuning.as_ref().map(|t| &t.lighting));
             report["installed_cas_active_lighting"] = serde_json::json!(self.room.active_lighting);
+            report["source_cas_camera"] = serde_json::json!({
+                "source_orbital_and_fov_equations":self.viewport.camera.source_cas,
+                "fov_degrees":self.viewport.camera.fov_degrees,
+                "source_fov_semantics":"horizontal at4:3 reference aspect",
+                "explicit_preview_clips":[0.01,200.],
+                "coordinate_origin":"first room object used by the room mesh renderer",
+                "native_sim_world_anchor_qualified":false,
+                "native_clip_policy_qualified":false,
+                "complete_camera_behavior_qualified":false
+            });
             report["native_room_issues"] = serde_json::json!(self.room.issues);
             report["native_room_meshes"] =
                 serde_json::json!(self.room.source.as_ref().map(|s| s.meshes.len()));
@@ -2850,7 +2868,20 @@ impl eframe::App for Studio {
             self.start_search();
         }
         if let Some(source_ui) = &mut self.source_ui {
-            source_ui.surface(ui, &mut self.viewport, self.draft.is_some());
+            source_ui.update_editor(self.draft.as_ref(),self.slot,self.working_project);
+            source_ui.surface(ui, &mut self.viewport);
+            let actions=source_ui.take_actions();
+            for request in actions {
+                if self.working_project || !self.source_ui.as_ref().is_some_and(|s|s.accepts(&request)) {
+                    self.errors.push(format!("Original UI action {} is stale or unavailable; native draft preserved",request.request_id));
+                    continue;
+                }
+                match request.action {
+                    external_cas_source_ui::actor::EditorAction::Undo=>self.start_draft_change(library::DraftChange::Undo),
+                    external_cas_source_ui::actor::EditorAction::Redo=>self.start_draft_change(library::DraftChange::Redo),
+                    _=>self.errors.push(format!("Original UI action {} has no qualified native implementation",request.original.name)),
+                }
+            }
         } else {
             cas_ui::show(self, ui);
         }

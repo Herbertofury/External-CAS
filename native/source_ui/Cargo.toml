@@ -12,6 +12,7 @@ ruffle_render_wgpu = { git = "https://github.com/Herbertofury/ruffle-external-ca
 swf = { git = "https://github.com/Herbertofury/ruffle-external-cas", rev = "86f1fc8e1425edeec9e79328d3d867d1490d713b" }
 external-cas-assets = { path = "../assets" }
 external-cas-fidelity = { path = "../fidelity" }
+external-cas-room = { path = "../room" }
 serde_json = "=1.0.154"
 sha2 = "=0.10.9"
 url = "=2.5.8"

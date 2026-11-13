@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "cases": 768,
+  "pixels_compared": 12288,
+  "bytes_compared": 49152,
+  "exact_bytes": true,
+  "native_entry_rva": "01356D20",
+  "native_instructions_interpreted": 485196,
+  "native_functions": [
+    "0134C260",
+    "01356D20",
+    "0135BDE0",
+    "013D5740"
+  ],
+  "prepared_base_pixels": true,
+  "native_blend_factory_hash": "E96B3B72",
+  "originals_unchanged": true,
+  "game_contacted": false,
+  "external_io": false,
+  "complete_native_composition_qualified": false,
+  "native_client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "native_context_flags": 2,
+  "date": "2026-11-13"
+}

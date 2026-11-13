@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "binary_sha256": "f9e05762fd4abf2002f7bfb47794f6458ccf8717855ce96051af628b31d3d954",
+  "actual_native_application": true,
+  "actor_owns_interpreter": true,
+  "observed_sim_present": true,
+  "source_movie_ticks": 827,
+  "editor_snapshot_revision": 2,
+  "real_imported_meshes": 16,
+  "original_room_meshes": 3,
+  "source_camera_equations_applied": true,
+  "original_sources_pinned": true,
+  "originals_unchanged": true,
+  "remaining_vm_errors": 1,
+  "original_host_global_class_imports_resolved": true,
+  "remaining_vm_error": "Randomization filter packet unavailable; original typed-array sentinel retained",
+  "remaining_widget_initialize_error": "ConnectionManager.IsOnlineAccessDisabled requires source singleton lifecycle",
+  "unavailable_services": ["CasGetRandomizationFiltersData", "CasIsFullEditingEnabled", "GetDisabledTutorialElements", "MarkElementVisibility"],
+  "incomplete_ui_diagnostic_exit": 1,
+  "game_contacted": false,
+  "full_ui_qualified": false,
+  "full_cas_qualified": false
+}

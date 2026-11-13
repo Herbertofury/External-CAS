@@ -1,11 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //! Experimental original-source UI interpreter host. No game or network access.
 //! The original Scaleform/native-service capability gates remain explicit.
+pub mod actor;
+pub mod bootstrap;
 mod gpu;
+pub mod menus;
 mod navigator;
 mod source;
 mod source_assets;
 mod source_fonts;
+pub mod static_data;
+pub mod static_images;
 pub use gpu::{SharedGpu, UiFrame};
 pub use ruffle_core::events::{
     KeyCode, KeyDescriptor, MouseButton, MouseWheelDelta, PlayerEvent as UiInput,
@@ -25,11 +30,12 @@ pub use source::{
     PreparedResource, PreparedUiBundle, locale_aliases, prepare_cas_bundle, prepare_movie_bundle,
     prepare_movie_bundle_with_aliases,
 };
+pub use static_images::{ResolvedStaticImage, StaticImageRequest, StaticImageResolver};
 use std::{
-    collections::{BTreeSet, VecDeque},
+    collections::{BTreeMap, BTreeSet, VecDeque},
     sync::{
         Arc, Mutex,
-        atomic::{AtomicU64, Ordering},
+        atomic::{AtomicBool, AtomicU64, Ordering},
     },
     time::Duration,
 };
@@ -107,6 +113,11 @@ pub enum RuntimeEvent {
     Denied(String),
     VmError(String),
     EventsDropped(u64),
+    ImageResolved {
+        request: StaticImageRequest,
+        pins: Vec<external_cas_fidelity::installed::SourcePin>,
+        encoded_png_sha256: String,
+    },
 }
 #[derive(Clone)]
 pub(crate) struct Audit(Arc<Mutex<AuditState>>);
@@ -116,6 +127,11 @@ struct AuditState {
     vm_errors: u64,
     unavailable: BTreeSet<String>,
     dropped: u64,
+    initial_pins: Vec<external_cas_fidelity::installed::SourcePin>,
+    image_pins: BTreeMap<
+        (std::path::PathBuf, external_cas_assets::ResourceKey, u32),
+        external_cas_fidelity::installed::SourcePin,
+    >,
 }
 #[derive(Clone, Debug)]
 pub struct RuntimeStatus {
@@ -127,6 +143,42 @@ pub struct RuntimeStatus {
 impl Audit {
     pub(crate) fn new() -> Self {
         Self(Arc::new(Mutex::new(AuditState::default())))
+    }
+    pub(crate) fn accept_image_pins(
+        &self,
+        pins: &[external_cas_fidelity::installed::SourcePin],
+    ) -> Result<(), String> {
+        let mut state = self.0.lock().map_err(|_| "Image provenance lock failed")?;
+        let provider_key = |path: &std::path::Path| {
+            path.to_string_lossy()
+                .trim_start_matches("\\\\?\\")
+                .replace('/', "\\")
+                .to_ascii_lowercase()
+        };
+        for pin in pins {
+            for accepted in state.initial_pins.iter().chain(state.image_pins.values()) {
+                if provider_key(&accepted.provider_path) == provider_key(&pin.provider_path)
+                    && accepted.index_sha256 != pin.index_sha256
+                {
+                    return Err(
+                        "Original image provider index changed since source preparation".into(),
+                    );
+                }
+            }
+            let key = (pin.provider_path.clone(), pin.key, pin.ordinal);
+            if let Some(previous) = state.image_pins.get(&key) {
+                if previous != pin {
+                    return Err("Original static image source changed within this runtime".into());
+                }
+            }
+        }
+        for pin in pins {
+            state.image_pins.insert(
+                (pin.provider_path.clone(), pin.key, pin.ordinal),
+                pin.clone(),
+            );
+        }
+        Ok(())
     }
     pub(crate) fn push(&self, s: String) {
         self.event(RuntimeEvent::Warning(s));
@@ -222,6 +274,7 @@ pub struct SourceUiRuntime {
     dimensions: [u32; 2],
     dpi: f64,
     limits: RuntimeLimits,
+    image_cancel: Arc<AtomicBool>,
     pub source_pins: Vec<external_cas_fidelity::installed::SourcePin>,
 }
 impl SourceUiRuntime {
@@ -244,6 +297,47 @@ impl SourceUiRuntime {
         dpi: f64,
         limits: RuntimeLimits,
     ) -> Result<Self, String> {
+        Self::new_configured(
+            gpu,
+            bundle,
+            host,
+            dimensions,
+            dpi,
+            limits,
+            None,
+            Arc::new(AtomicBool::new(false)),
+        )
+    }
+    pub fn new_with_static_images(
+        gpu: SharedGpu,
+        bundle: PreparedUiBundle,
+        host: Arc<dyn UiHost>,
+        dimensions: [u32; 2],
+        dpi: f64,
+        resolver: Option<Arc<dyn StaticImageResolver>>,
+        cancel: Arc<AtomicBool>,
+    ) -> Result<Self, String> {
+        Self::new_configured(
+            gpu,
+            bundle,
+            host,
+            dimensions,
+            dpi,
+            RuntimeLimits::default(),
+            resolver,
+            cancel,
+        )
+    }
+    fn new_configured(
+        gpu: SharedGpu,
+        bundle: PreparedUiBundle,
+        host: Arc<dyn UiHost>,
+        dimensions: [u32; 2],
+        dpi: f64,
+        limits: RuntimeLimits,
+        resolver: Option<Arc<dyn StaticImageResolver>>,
+        image_cancel: Arc<AtomicBool>,
+    ) -> Result<Self, String> {
         if limits.script_timeout.is_zero()
             || limits.preload_ops == 0
             || limits.preload_slice.is_zero()
@@ -261,6 +355,11 @@ impl SourceUiRuntime {
             .map_err(|e| e.to_string())?;
         let executor = NullExecutor::new();
         let audit = Audit::new();
+        audit
+            .0
+            .lock()
+            .map_err(|_| "Source audit lock failed")?
+            .initial_pins = bundle.source_pins.clone();
         let renderer = gpu::renderer(gpu, dimensions)?;
         let ui = source_fonts::Ui {
             fonts: bundle.device_fonts,
@@ -276,6 +375,8 @@ impl SourceUiRuntime {
                 bundle.resources,
                 executor.spawner(),
                 audit.clone(),
+                resolver,
+                image_cancel.clone(),
             ))
             .with_log(audit.clone())
             .with_external_interface(Box::new(Bridge {
@@ -297,6 +398,7 @@ impl SourceUiRuntime {
             dimensions,
             dpi,
             limits,
+            image_cancel,
             source_pins: bundle.source_pins,
         })
     }
@@ -387,6 +489,18 @@ impl SourceUiRuntime {
             .unwrap()
             .call_retained_avm2_method(id, name, args)
     }
+    /// Trusted native host/qualification seam. Never call from UiHost itself;
+    /// the original VM must not be reentered during a synchronous host request.
+    pub fn configure_player(
+        &mut self,
+        configure: impl FnOnce(&mut Player) -> Result<(), String>,
+    ) -> Result<(), String> {
+        let mut player = self
+            .player
+            .lock()
+            .map_err(|_| "Original player lock failed")?;
+        configure(&mut player)
+    }
     pub fn input(&mut self, input: UiInput) -> bool {
         self.player.lock().unwrap().handle_event(input)
     }
@@ -454,6 +568,16 @@ impl SourceUiRuntime {
             events
         }
     }
+    pub fn resolved_image_pins(&self) -> Vec<external_cas_fidelity::installed::SourcePin> {
+        self.audit
+            .0
+            .lock()
+            .unwrap()
+            .image_pins
+            .values()
+            .cloned()
+            .collect()
+    }
     pub fn status(&self) -> RuntimeStatus {
         let s = self.audit.0.lock().unwrap();
         RuntimeStatus {
@@ -468,5 +592,11 @@ impl SourceUiRuntime {
     }
     pub fn movie_frame(&self) -> Option<u16> {
         self.player.lock().unwrap().current_frame()
+    }
+}
+
+impl Drop for SourceUiRuntime {
+    fn drop(&mut self) {
+        self.image_cancel.store(true, Ordering::Relaxed);
     }
 }

@@ -46,6 +46,19 @@ and pixel textures must be present. Missing vertex inputs, foreign owners,
 duplicate bindings and changed source revisions are refused. Depth/color/stencil
 clears are explicit so ordered passes can preserve earlier depth.
 
+`wrap_depth_target` and `draw_scene_with_shared_depth` also share the actual
+wgpu `Depth32Float` allocation. The ownership pass transitions color and depth
+together, then releases both even after a failed native callback. It preserves
+the wgpu allocation until native references are released. Unsupported formats,
+foreign contexts and mismatched extents are refused before acquisition.
+
+The original paired-stage GPU qualification now checks both directions:
+wgpu's nearer depth blocks the original shader draw, and the original draw's
+depth blocks a later wgpu triangle. All 512 additional pixels matched within
+7.5e-9. This is the production room/Sim occlusion boundary, with no per-frame
+CPU copy or wait; it does not qualify the app's complete material/frame binding.
+See [the sanitized receipt](evidence/shared-depth-qualification.json).
+
 An additional controlled GPU case executes the original normal/skinned CAS
 VS924 + PS3051 through this API. All 256 pixels match expected encoded-channel
 values within 7.5e-9, including the source alpha output of zero. The latest case

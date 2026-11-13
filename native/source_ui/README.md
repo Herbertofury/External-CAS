@@ -92,8 +92,9 @@ standalone commerce context, and contains no simulated Sims/catalog responses.
 
 - Actual original CASNavigation alone renders original artwork/font resources
   on a single shared RTX 4090/DX12 device with transparent pixels. It avoids the
-  GameplayStateData initialization path. LocKey's native localization Function
-  and the GalleryInfo CommunicationManager context are still unbound there.
+  GameplayStateData initialization path. The original LocKey Function is now
+  bound before first frame to exact installed STBL literal resolution; original
+  CommunicationManager construction supplies the GalleryInfo context.
 - The complete explicit English CAS dependency graph prepares 71 original
   movies, nine fonts and 2,038 source sub-images. This does not mean every widget
   initializes or every source control has a native backend.
@@ -113,3 +114,78 @@ to the caller's explicit diagnostic destination. Keep those assets/evidence
 outside Git. Build with debug info and incremental compilation disabled to keep
 the private runtime build bounded; cleanup requires the user's current approval
 workflow and is not part of this adapter.
+
+## Verified editor actor
+
+`actor::Actor::spawn(gpu, config, initial_snapshot, wake)` owns package reads,
+original VM, and GPU overlay on its worker. Keep the production Ruffle core pin
+unchanged unless a separately qualified compatibility patch is accepted.
+`HostConfig.configure_runtime` is an explicit private qualification seam; normal
+production configuration uses `None`.
+
+The app calls `publish(EditorSnapshot)` after an observed native context change.
+A snapshot has `revision`, `ready`, optional `ObservedSimInfo`, exact
+`service_replies`, and explicitly available `action_services`. Changed contents
+require a newer revision. Sim IDs remain decimal strings with all 64 bits; absent
+appearance/household fields stay absent. A CASGetSimInfo request for another Sim
+is refused. No placeholder household or default pregnancy/species data is added.
+Snapshots reject VM identities, nonfinite numeric values, conflicting read/action
+names, excessive nesting, and payloads above 64 MiB. They contain no path-count
+limit. The app remains responsible for the validity of its observed values.
+
+`try_send(Command::Frame(FrameRequest {size,dpi,input}))` drives the original
+movie. `ActorEvent::Frame` returns its transparent texture, source pins, source
+status, lifecycle status, and exact latched snapshot revision. A single VM
+command sees one immutable snapshot even if the app publishes concurrently.
+`WaitingForEditor` acknowledges the frame and lists missing required source
+packets; the app must clear its in-flight flag, hide stale interactive source
+content, and show that waiting state. This gate also applies after startup when
+the native editor becomes unavailable. `Failed` terminates the worker.
+
+`Action(ActionRequest)` retains original request arguments, correlation ID and
+snapshot revision. The app rejects stale actions, executes its real operation,
+waits for verified recovery acceptance, and publishes a fresh snapshot. Undefined
+is returned only as queue admission, never a fabricated mutation result.
+`SetSimView` is strictly Boolean `{left,button_down}`; expose it only after the
+source heading/motion contract is available. Original `CasNavigationUndo` and
+`CasNavigationRedo` require `Null,true`. After accepted native operations, send
+`Command::SendMessage` with `CasUndoEnabled` / `CasRedoEnabled` and bare Boolean
+payloads. The original Navigation initializes both buttons disabled. A refreshed
+observed Sim packet uses original message `CASSetSimInfo`; source listeners
+construct their actual SimInfo type. No invented per-request success callback is
+required. Other actions remain raw original requests and must be explicitly
+advertised by an actual backend implementation.
+
+`required_before_first_frame` is caller-selected and must include any editor
+packets needed by the chosen original root. Static replies and editor replies
+cannot claim the same service. `static_data::TropesSnapshot` projects original
+GetTropesTuning metadata from explicit, ambiguity-checked provider choices and
+retains every original byte and parsed unknown field. It is qualified against
+the independent decoder and original native marshaller; provider precedence and
+active pack eligibility remain caller-owned. The source menu/filter projection
+is qualified separately below; unresolved capabilities remain visible.
+
+
+`menus::CasMenuSnapshot` supplies the three source menu/filter packets from one
+explicitly resolved SimData provider. `HostConfig.menu_provider` loads it on the
+worker; `EditorSnapshot.menu_context` supplies current observed eligibility facts.
+Missing facts remain unavailable. The native packets match both independent
+S4TK and original native marshalling/filter instructions in 12 contexts; see
+`evidence/static-menu-qualification.json` and the source menu host-data document.
+This replaces the previous open menu-data projection gate; provider precedence,
+pack capabilities and complete original UI behavior remain separate gates.
+
+
+`HostConfig.static_images` optionally supplies `Arc<dyn StaticImageResolver>`.
+The source Navigator accepts only the qualified GET `img://0x<instance>?rid=<id>`
+shape. `rid` is correlation, not an alternate resource identity. Each resolver
+call runs on a separate bounded background worker, with shared cancellation;
+there is no VM re-entry or default filesystem/network transport. The resolver
+must choose one supported full TGI/provider within the caller's explicit scope,
+return bounded PNG bytes and actual source pins, and maintain its own bounded
+cache. Missing/ambiguous/unsupported resources fail visibly. The adapter checks
+PNG extents, pin hashes, cancellation and consistency with the already loaded
+source provider index. `RuntimeEvent::ImageResolved` reports the accepted pins
+and encoded PNG digest. Accepted image pins join subsequent actor frames for
+session persistence. Generated Sim portraits and other URI schemes are not
+covered by this static original-resource contract.

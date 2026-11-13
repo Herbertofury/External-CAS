@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "source_resources": 18,
+  "whole_selected_mip_operations": 54,
+  "pixels_compared": 27648,
+  "bytes_compared": 110592,
+  "exact_bytes": true,
+  "native_instructions_interpreted": 190920,
+  "native_functions": [
+    "0134A670",
+    "0134D7C0",
+    "0135DF30",
+    "013D5740"
+  ],
+  "originals_unchanged": true,
+  "game_contacted": false,
+  "external_io": false,
+  "explicit_synthetic_prepared_destination": true,
+  "complete_native_composition_qualified": false,
+  "date": "2026-11-12",
+  "native_client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "diffuse_resources": 12,
+  "shadow_resources": 6,
+  "opacity_values": [
+    0.017,
+    0.144,
+    0.85,
+    1
+  ],
+  "mip_dimensions": [
+    16,
+    32
+  ],
+  "scope": "Actual installed full source payloads and original selected split-stream bytes; isolated whole-mip execution against an explicit controlled prepared destination. Native canvas, source stack and complete appearance are not claimed."
+}

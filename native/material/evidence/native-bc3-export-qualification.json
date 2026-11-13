@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "prepared_block_entry_rva": "019C0C00",
+  "export_wrapper_entry_rva": "0135C140",
+  "prepared_synthetic_blocks": 599,
+  "prepared_real_texture_pixel_blocks": 320,
+  "private_decoded_source_textures": 5,
+  "constant_luminance_blocks": 64,
+  "unprepared_synthetic_blocks": 64,
+  "encoded_bytes_compared": 15728,
+  "color_preparation_state_bytes_compared": 279376,
+  "exact_bytes": true,
+  "native_instructions_interpreted": 1540568,
+  "approximate_instructions": "RCPSS/RSQRTSS/RSQRTPS use own-source Rust host SSE semantics; Unicorn's full-precision approximation is not a native oracle for these instructions",
+  "platform_scope": "qualified x86_64 host; native approximation instructions can vary by CPU",
+  "preserves_unprepared_compressed_color": true,
+  "source_pixels_unchanged": true,
+  "game_contacted": false,
+  "proprietary_native_code_executed": false,
+  "originals_unchanged": true,
+  "complete_native_material_qualified": false,
+  "complete_cas_render_qualified": false
+}

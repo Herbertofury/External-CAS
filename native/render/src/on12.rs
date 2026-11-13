@@ -161,6 +161,17 @@ pub struct SharedTarget {
     // Drop this LAST, after the native views/resources release their references.
     texture: wgpu::Texture,
 }
+/// A depth allocation shared by wgpu and the original-stage renderer. Its
+/// contents survive ownership changes; clearing is always a caller decision.
+pub struct SharedDepthTarget {
+    resource: ID3D11Resource,
+    view: ID3D11DepthStencilView,
+    raw_device: ID3D12Device,
+    _ui_thread: PhantomData<Rc<()>>,
+    bridge_id: u64,
+    // Keep the allocator's ownership until all external COM references drop.
+    texture: wgpu::Texture,
+}
 impl OriginalShaderBridge {
     pub fn new(device: &wgpu::Device, queue: &wgpu::Queue) -> Result<Self> {
         // Guards are borrowed only long enough to clone COM ownership. No HAL
@@ -338,6 +349,65 @@ impl OriginalShaderBridge {
             bridge_id: self.bridge_id,
         })
     }
+    pub fn wrap_depth_target(&self, texture: &wgpu::Texture) -> Result<SharedDepthTarget> {
+        if texture.format() != wgpu::TextureFormat::Depth32Float
+            || !texture
+                .usage()
+                .contains(wgpu::TextureUsages::RENDER_ATTACHMENT)
+            || texture.sample_count() != 1
+            || texture.mip_level_count() != 1
+            || texture.dimension() != wgpu::TextureDimension::D2
+            || texture.size().depth_or_array_layers != 1
+        {
+            return Err("Shared depth must be a single-sample, single-mip Depth32Float 2D render attachment".into());
+        }
+        let hal = unsafe { texture.as_hal::<wgpu::hal::api::Dx12>() }
+            .ok_or("Shared depth is not from the DX12 backend")?;
+        let raw = unsafe { hal.raw_resource() };
+        let mut resource_device: Option<ID3D12Device> = None;
+        unsafe { raw.GetDevice(&mut resource_device) }.map_err(error)?;
+        if resource_device.as_ref().map(Interface::as_raw) != Some(self.raw_device.as_raw()) {
+            return Err("Shared depth belongs to a different D3D12 device".into());
+        }
+        let flags = D3D11_RESOURCE_FLAGS {
+            BindFlags: D3D11_BIND_DEPTH_STENCIL.0 as u32,
+            ..Default::default()
+        };
+        let mut resource: Option<ID3D11Resource> = None;
+        unsafe {
+            self.on12.CreateWrappedResource(
+                raw,
+                &flags,
+                D3D12_RESOURCE_STATE_DEPTH_WRITE,
+                D3D12_RESOURCE_STATE_DEPTH_WRITE,
+                &mut resource,
+            )
+        }
+        .map_err(error)?;
+        let resource = resource.ok_or("D3D11 returned no wrapped depth")?;
+        let description = D3D11_DEPTH_STENCIL_VIEW_DESC {
+            Format: DXGI_FORMAT_D32_FLOAT,
+            ViewDimension: D3D11_DSV_DIMENSION_TEXTURE2D,
+            Anonymous: D3D11_DEPTH_STENCIL_VIEW_DESC_0 {
+                Texture2D: D3D11_TEX2D_DSV { MipSlice: 0 },
+            },
+            ..Default::default()
+        };
+        let mut view = None;
+        unsafe {
+            self.device
+                .CreateDepthStencilView(&resource, Some(&description), Some(&mut view))
+        }
+        .map_err(error)?;
+        Ok(SharedDepthTarget {
+            resource,
+            view: view.ok_or("D3D11 returned no shared depth view")?,
+            raw_device: self.raw_device.clone(),
+            _ui_thread: PhantomData,
+            bridge_id: self.bridge_id,
+            texture: texture.clone(),
+        })
+    }
     /// Submits an otherwise empty wgpu attachment pass to establish the exact
     /// tracked/driver RENDER_TARGET state, then acquires and releases the same
     /// resource on the same queue. There is no CPU readback or per-frame wait.
@@ -352,13 +422,68 @@ impl OriginalShaderBridge {
         target: &SharedTarget,
         draw: impl FnOnce(&ID3D11Device, &ID3D11DeviceContext, &ID3D11RenderTargetView) -> Result<()>,
     ) -> Result<()> {
+        unsafe {
+            self.draw_shared_attachments(target, None, |device, context, view, _| {
+                draw(device, context, view)
+            })
+        }
+    }
+    /// Acquires color and depth together on the same queue, preserving both.
+    /// This lets room and original Sim passes use the same occlusion history.
+    ///
+    /// # Safety
+    /// Requires exclusive frame access to BOTH attachments and the queue, with
+    /// the same callback restrictions as `draw_shared_target`.
+    pub unsafe fn draw_shared_target_and_depth(
+        &mut self,
+        target: &SharedTarget,
+        depth: &SharedDepthTarget,
+        draw: impl FnOnce(
+            &ID3D11Device,
+            &ID3D11DeviceContext,
+            &ID3D11RenderTargetView,
+            &ID3D11DepthStencilView,
+        ) -> Result<()>,
+    ) -> Result<()> {
+        unsafe {
+            self.draw_shared_attachments(target, Some(depth), |device, context, view, depth| {
+                draw(
+                    device,
+                    context,
+                    view,
+                    depth.expect("validated shared depth"),
+                )
+            })
+        }
+    }
+    unsafe fn draw_shared_attachments(
+        &mut self,
+        target: &SharedTarget,
+        depth: Option<&SharedDepthTarget>,
+        draw: impl FnOnce(
+            &ID3D11Device,
+            &ID3D11DeviceContext,
+            &ID3D11RenderTargetView,
+            Option<&ID3D11DepthStencilView>,
+        ) -> Result<()>,
+    ) -> Result<()> {
         if self.bridge_id != target.bridge_id
             || self.raw_device.as_raw() != target.raw_device.as_raw()
         {
             return Err("Shared target belongs to another bridge/context".into());
         }
+        if depth.is_some_and(|d| {
+            d.bridge_id != self.bridge_id
+                || d.raw_device.as_raw() != self.raw_device.as_raw()
+                || d.texture.size() != target.texture.size()
+        }) {
+            return Err(
+                "Shared depth belongs to another bridge/context or differs in extent".into(),
+            );
+        }
         unsafe { self.device.GetDeviceRemovedReason() }.map_err(error)?;
         let view = target.texture.create_view(&Default::default());
+        let depth_view = depth.map(|d| d.texture.create_view(&Default::default()));
         let mut encoder =
             self._wgpu_device
                 .create_command_encoder(&wgpu::CommandEncoderDescriptor {
@@ -376,34 +501,50 @@ impl OriginalShaderBridge {
                         store: wgpu::StoreOp::Store,
                     },
                 })],
+                depth_stencil_attachment: depth_view.as_ref().map(|view| {
+                    wgpu::RenderPassDepthStencilAttachment {
+                        view,
+                        depth_ops: Some(wgpu::Operations {
+                            load: wgpu::LoadOp::Load,
+                            store: wgpu::StoreOp::Store,
+                        }),
+                        stencil_ops: None,
+                    }
+                }),
                 ..Default::default()
             });
         }
         self._wgpu_queue.submit([encoder.finish()]);
         struct Acquired<'a> {
             bridge: &'a OriginalShaderBridge,
-            resource: ID3D11Resource,
+            resources: Vec<Option<ID3D11Resource>>,
         }
         impl Drop for Acquired<'_> {
             fn drop(&mut self) {
                 unsafe {
                     self.bridge.context.OMSetRenderTargets(None, None);
-                    self.bridge
-                        .on12
-                        .ReleaseWrappedResources(&[Some(self.resource.clone())]);
+                    self.bridge.on12.ReleaseWrappedResources(&self.resources);
                     self.bridge.context.Flush();
                 }
             }
         }
+        let mut resources = vec![Some(target.resource.clone())];
+        if let Some(depth) = depth {
+            resources.push(Some(depth.resource.clone()));
+        }
         unsafe {
-            self.on12
-                .AcquireWrappedResources(&[Some(target.resource.clone())]);
+            self.on12.AcquireWrappedResources(&resources);
         }
         let acquired = Acquired {
             bridge: self,
-            resource: target.resource.clone(),
+            resources,
         };
-        let result = draw(&self.device, &self.context, &target.view);
+        let result = draw(
+            &self.device,
+            &self.context,
+            &target.view,
+            depth.map(|d| &d.view),
+        );
         drop(acquired);
         result?;
         unsafe { self.device.GetDeviceRemovedReason() }.map_err(error)
