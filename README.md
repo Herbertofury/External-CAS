@@ -64,6 +64,10 @@ remaining work and distinguish actual source evidence from unresolved behavior.
 ## Build and run
 
 Windows, Rust 1.99.0, Cargo and the MSVC build toolchain are required.
+The pinned interpreter dependency includes long upstream test paths. Windows
+builds need Git long-path support and a short Cargo cache directory (for example
+`C:\ec-cargo`); CI configures both explicitly. This cache is build data and is
+not included in the portable application.
 
 ```powershell
 pwsh -File scripts/build-native.ps1
