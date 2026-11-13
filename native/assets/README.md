@@ -40,6 +40,15 @@ never silently choose a group, source or load priority.
 ordered unknown/duplicate tags, appearance category fields, colors, complete
 reference table and role-bearing LOD/texture references. It exposes convenient
 `lod0_meshes` and `diffuse` fields without choosing a provider.
+`shared_uv_space` preserves the separate v27+ u32 SharedUVSpace/UVoverride,
+including raw zero and unknown high codes. It is distinct from the earlier
+u8 `texture_space`. `effective_shared_uv_body_type()` follows the native reader's
+zero→BodyType rule. Missing v27+ cache metadata remains unknown and reparses;
+pre-v27 has no stored override.17 real installed CC CASPs across six body types
+and versions42/44/46 agree with the unchanged pinned GPL TS4CAS Tools C# reader.
+The [sanitized qualification](evidence/casp-shared-uv-qualification.json) records
+payload hashes and source provenance. The source normal-UV helper's two codes
+are actual BodyType and this effective shared-UV BodyType.
 Its `compatibility` metadata retains every raw part-exclusion word (including
 the variable v51+ list), modifier exclusions, version-present opposite-gender
 and fallback instance IDs, and LOD descriptor count. Older cached metadata is
@@ -213,6 +222,37 @@ research retains these authoritative bases and pinned comparison oracles:
   full-instance thumbnail lookup and gender model groups; its `CASP.cs`
   identifies OutfitId as the design grouping field. No undocumented game
   precedence was inferred from a tool's package iteration order.
+
+Initial native GPU attribute primitives are available in `gpu_vertex`:
+`pack_initial_position`, `pack_initial_normal`, `pack_initial_tangent` and
+`pack_initial_uv`. They retain the installed producer's separate float32
+operations, wrapping low bits, UV1 absolute-U rule and rounding modes. Position
+returns only three words and normal only three bytes because the corresponding
+original helpers leave the fourth component untouched. Non-finite values and
+out-of-domain native conversions are refused. These are not a mesh/palette/tag
+builder or replacements for later deformation updates. See
+[sanitized qualification](evidence/initial-geom-packing.json) and
+[original vertex contracts](../../docs/engine/ORIGINAL_VERTEX_CONTRACTS_20261112.md).
+The optional ignored test consumes an explicit
+`EXTERNAL_CAS_INITIAL_GEOM_RECEIPT` private original-instruction receipt;
+2,613 cases pass against the compiled Rust primitives without game contact.
+
+The separate `pack_post_deformation_position`, `pack_post_deformation_normal`
+and `pack_seam_average_tangent` primitives retain their distinct native output
+rounding/saturation. They require the actual resolved source-stage inputs and
+never normalize or select a profile automatically. An additional 1,565 original
+instruction cases match every output byte; the optional updated receipt uses
+`EXTERNAL_CAS_UPDATED_GEOM_RECEIPT`. See
+[updated-profile evidence](evidence/updated-geom-packing.json).
+
+RefPack accepts the original signature rule `(header & 0x1FFF) == 0x10FB`,
+including installed `0x50FB` STBL streams, and refuses the unsupported doubled
+header. Size-width, output-extent, backreference, cancellation, completion and
+trailing-data checks remain strict. The real 4,307,230-byte STBL matches both
+unchanged Gibbed.RefPack and independently observed S4TK output. The opt-in
+test uses explicit `EXTERNAL_CAS_REFPACK_SOURCE` and
+`EXTERNAL_CAS_REFPACK_ORACLE`; no localization text is shipped.
+See [header qualification](evidence/refpack-header-qualification.json).
 
 `flate2` is MIT/Apache-2.0; `sha2` is MIT/Apache-2.0. `image` is MIT/Apache-2.0
 with JPEG/PNG codecs only; transitive licenses belong in app notices. Test-only `tempfile` is

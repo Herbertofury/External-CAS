@@ -76,6 +76,53 @@ pub fn decode_bc5(bytes: &[u8]) -> Result<Vec<u8>, String> {
     }
     Ok(rgba)
 }
+
+/// Standard uncompressed 32-bit DDS with four complete, distinct 8-bit masks.
+/// Preserve literal channels; do not infer normal, luminance or alpha swizzles.
+pub fn decode_rgba8(bytes: &[u8]) -> Result<Vec<u8>, String> {
+    let h = header(bytes)?;
+    let word = |at| u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap());
+    if h.four_cc != [0; 4] || word(80) != 0x41 || word(88) != 32 || word(8) & 8 == 0 {
+        return Err("DDS is not an explicit pitched 32-bit RGB/alpha image".into());
+    }
+    let masks = [word(92), word(96), word(100), word(104)];
+    let mut seen = 0u32;
+    for mask in masks {
+        if !matches!(mask, 0xff | 0xff00 | 0xff0000 | 0xff000000) || mask & seen != 0 {
+            return Err("unsupported or overlapping DDS RGBA8 masks".into());
+        }
+        seen |= mask;
+    }
+    let [width, height] = h.dimensions.map(|v| v as usize);
+    let pitch = word(20) as usize;
+    if pitch < width * 4 || pitch > width * 4 + 65536 {
+        return Err("DDS pitch outside pixel budget".into());
+    }
+    if h.mip_levels > 1 && pitch != width * 4 {
+        return Err("noncanonical pitched RGBA8 mip layout is preserved but unsupported".into());
+    }
+    let mut needed = 128usize
+        .checked_add(pitch.checked_mul(height).ok_or("DDS row extent overflow")?)
+        .ok_or("DDS image extent overflow")?;
+    for mip in 1..h.mip_levels {
+        needed = needed
+            .checked_add((width >> mip).max(1) * (height >> mip).max(1) * 4)
+            .ok_or("DDS mip extent overflow")?;
+    }
+    if needed > bytes.len() {
+        return Err("truncated RGBA8 DDS mip stream".into());
+    }
+    let shifts = masks.map(u32::trailing_zeros);
+    let mut rgba = Vec::with_capacity(width * height * 4);
+    for y in 0..height {
+        for x in 0..width {
+            let at = 128 + y * pitch + x * 4;
+            let pixel = u32::from_le_bytes(bytes[at..at + 4].try_into().unwrap());
+            rgba.extend(shifts.map(|shift| ((pixel >> shift) & 255) as u8));
+        }
+    }
+    Ok(rgba)
+}
 fn channel(block: &[u8]) -> [u8; 16] {
     let a = u16::from(block[0]);
     let b = u16::from(block[1]);
@@ -142,6 +189,39 @@ mod tests {
             &red_luminance_green_alpha(&pixels).unwrap()[..4],
             &[255, 255, 255, 80]
         );
+    }
+    #[test]
+    fn raw_dds_masks_pitch_alpha_and_truncation_are_exact() {
+        let mut b = vec![0; 152];
+        b[..4].copy_from_slice(b"DDS ");
+        for (at, value) in [
+            (4, 124u32),
+            (8, 8),
+            (12, 2),
+            (16, 2),
+            (20, 12),
+            (28, 1),
+            (76, 32),
+            (80, 0x41),
+            (88, 32),
+            (92, 0xff0000),
+            (96, 0xff00),
+            (100, 0xff),
+            (104, 0xff000000),
+        ] {
+            b[at..at + 4].copy_from_slice(&value.to_le_bytes());
+        }
+        b[128..136].copy_from_slice(&[1, 2, 3, 4, 5, 6, 7, 8]);
+        b[140..148].copy_from_slice(&[9, 10, 11, 12, 13, 14, 15, 16]);
+        assert_eq!(
+            decode_rgba8(&b).unwrap(),
+            [3, 2, 1, 4, 7, 6, 5, 8, 11, 10, 9, 12, 15, 14, 13, 16]
+        );
+        for n in 0..b.len() {
+            assert!(decode_rgba8(&b[..n]).is_err());
+        }
+        b[96..100].copy_from_slice(&0xff0000u32.to_le_bytes());
+        assert!(decode_rgba8(&b).is_err());
     }
     #[test]
     fn both_interpolation_branches_and_indices() {

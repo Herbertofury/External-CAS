@@ -29,6 +29,44 @@ pub fn cas_family_alias_for_source(shader: u32) -> Option<u32> {
     }
 }
 
+/// Exact installed normal-UV default selector, RVA01A2C150. The two part codes
+/// are fields of the source38-byte mesh record (+1C/+20): actual CASP BodyType
+/// and effective SharedUVSpace (raw zero replaced by BodyType). The native CASP
+/// reader and separately named native BodyType API independently prove domains.
+/// `None` means the source routine leaves the caller's existing value intact.
+/// This is NOT an identity fallback. The native builder first checks GEOM
+/// `NormalMapTransformOverride` (0x5844E532), then publishes its selected vector
+/// as the distinct shader binding `NormalMapUVxform`.
+pub fn normal_uv_default_for_source_context(
+    species_code: u32,
+    primary_part_code: i32,
+    secondary_part_code: u32,
+) -> Option<[f32; 4]> {
+    if species_code == 1 {
+        match secondary_part_code {
+            1 | 0x73 => Some([0.5, 0.125, 2.0, 8.0]),
+            5 | 6 | 7 | 9 | 0x3d => Some([0.0, 0.5, 1.0, 2.0]),
+            8 => Some([0.0, 0.75, 1.0, 4.0]),
+            2 => Some([0.0, 0.0, 1.0, 2.0]),
+            0x4b => Some(if matches!(primary_part_code, 1 | 0x73) {
+                [0.0, 0.0, 1.0, 2.0]
+            } else {
+                [0.0, 0.0, 1.0, 1.0]
+            }),
+            _ => None,
+        }
+    } else if (2..=6).contains(&species_code) {
+        match primary_part_code {
+            1 => Some([0.75, 0.01953125, 4.0, 4.0]),
+            5 => Some([0.75, 0.0, 4.0, 1.0]),
+            0xc => Some([0.75, 0.0, 4.0, 8.0]),
+            _ => None,
+        }
+    } else {
+        None
+    }
+}
+
 /// Values sampled in the shader's input space. SkinDetailHSL is sampled at
 /// `(overlay[1], 0)`, not at the Sim's main UV; the caller must preserve this.
 #[derive(Clone, Copy, Debug, Serialize, Deserialize)]
@@ -274,6 +312,72 @@ pub fn simskin_cas_candidate_lighting(
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn source_uv_defaults_keep_unwritten_cases_and_two_codes_distinct() {
+        assert_eq!(
+            normal_uv_default_for_source_context(1, 0, 1),
+            Some([0.5, 0.125, 2., 8.])
+        );
+        assert_eq!(
+            normal_uv_default_for_source_context(1, 1, 0x4b),
+            Some([0., 0., 1., 2.])
+        );
+        assert_eq!(
+            normal_uv_default_for_source_context(1, 5, 0x4b),
+            Some([0., 0., 1., 1.])
+        );
+        assert_eq!(
+            normal_uv_default_for_source_context(2, 1, 8),
+            Some([0.75, 0.01953125, 4., 4.])
+        );
+        assert_eq!(normal_uv_default_for_source_context(2, 8, 1), None);
+        assert_eq!(normal_uv_default_for_source_context(0, 1, 1), None);
+        assert_eq!(normal_uv_default_for_source_context(1, 0, 999), None);
+    }
+    #[test]
+    #[ignore = "Requires explicit private isolated-original normal-UV routine receipt"]
+    fn source_uv_defaults_match_original_machine_routine() {
+        #[derive(Deserialize)]
+        struct Case {
+            species_code: u32,
+            primary_part_code: i32,
+            secondary_part_code: u32,
+            expected: Option<[f32; 4]>,
+        }
+        #[derive(Deserialize)]
+        struct Receipt {
+            client_sha256: String,
+            cases: Vec<Case>,
+            game_contact: bool,
+            native_io: bool,
+            intercepted_calls: u32,
+        }
+        let path = std::env::var_os("EXTERNAL_CAS_NORMAL_UV_RECEIPT")
+            .expect("Explicit private original-routine receipt required");
+        assert!(std::fs::metadata(&path).unwrap().len() <= 8 * 1024 * 1024);
+        let r: Receipt = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+        assert_eq!(
+            r.client_sha256,
+            "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b"
+        );
+        assert!(!r.game_contact && !r.native_io);
+        assert_eq!(r.intercepted_calls, 0);
+        for c in &r.cases {
+            let actual = normal_uv_default_for_source_context(
+                c.species_code,
+                c.primary_part_code,
+                c.secondary_part_code,
+            );
+            assert_eq!(
+                actual.map(|v| v.map(f32::to_bits)),
+                c.expected.map(|v| v.map(f32::to_bits))
+            );
+        }
+        eprintln!(
+            "Original normal-UV selector parity: {} bit-exact cases including untouched outputs",
+            r.cases.len()
+        );
+    }
     #[test]
     fn cas_family_override_is_explicit_and_preserves_unknown_families() {
         for (source, cas) in [

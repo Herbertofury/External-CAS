@@ -8,6 +8,10 @@ Sim IDs are distinct. See [PROVENANCE.md](PROVENANCE.md).
 
 Public entry points:
 
+- `OutfitAppearance::native_layer_ids`: lossless read-only projection of the
+  schema-proven parallel uint32 layer IDs. Missing wrappers remain absent;
+  malformed, duplicate, overflowing or misaligned data fails explicitly.
+
 - `scan_library` / `scan_library_with_cancel`: associate a household's files
   through its exact metadata ID and metadata Sim IDs; report broken and
   ambiguous sources rather than choosing a provider silently.

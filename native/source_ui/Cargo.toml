@@ -1,0 +1,26 @@
+[package]
+name = "external-cas-source-ui"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+publish = false
+
+[dependencies]
+ruffle_core = { git = "https://github.com/Herbertofury/ruffle-external-cas", rev = "86f1fc8e1425edeec9e79328d3d867d1490d713b", default-features = false }
+ruffle_render = { git = "https://github.com/Herbertofury/ruffle-external-cas", rev = "86f1fc8e1425edeec9e79328d3d867d1490d713b", default-features = false }
+ruffle_render_wgpu = { git = "https://github.com/Herbertofury/ruffle-external-cas", rev = "86f1fc8e1425edeec9e79328d3d867d1490d713b" }
+swf = { git = "https://github.com/Herbertofury/ruffle-external-cas", rev = "86f1fc8e1425edeec9e79328d3d867d1490d713b" }
+external-cas-assets = { path = "../assets" }
+external-cas-fidelity = { path = "../fidelity" }
+serde_json = "=1.0.154"
+sha2 = "=0.10.9"
+url = "=2.5.8"
+async-channel = "=2.5.0"
+indexmap = "=2.14.2"
+encoding_rs = "=0.8.35"
+flate2 = "=1.1.10"
+
+[dev-dependencies]
+image = { version = "=0.25.10", default-features = false, features = ["png"] }
+tracing-subscriber = { version = "=0.3.23", features = ["env-filter"] }
+futures = "=0.3.34"

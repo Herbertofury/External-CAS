@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "game_version": "1.129.39.1030",
+  "client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "analysis_section_sha256": "829377024c3e7970214cd1af1765994364402a28ed96761a7afb568f8e3c98fa",
+  "game_contact": false,
+  "precomp_sha256": "62ffab0f85c3af8ace5a375c968216d1ada2b1c9c2d18f32aa4b25d250a0b101",
+  "wrapper_rva": "01372260",
+  "evaluator_rva": "013724B0",
+  "named_sets": 173,
+  "distinct_program_arrays": 137,
+  "controlled_comparisons": 1384,
+  "exact_masks": 854,
+  "matched_native_rejections": 530,
+  "emulated_instructions": 793080,
+  "distinct_instruction_addresses": 185,
+  "intercepted_intrinsic": "bounded stack-array memset only",
+  "compiled_rust_parity": true,
+  "live_caller_inputs_qualified": false,
+  "raw_programs_distributed": false,
+  "renderer_id_producer_rva": "01372700",
+  "vertex_usage_to_feature_id": {
+    "0": 0,
+    "1": 1,
+    "2": 6,
+    "3": 3,
+    "4": 4,
+    "5": 2,
+    "6": 5
+  },
+  "renderer_id_usage_index_shift": 8,
+  "renderer_input_element_cap": 20
+}

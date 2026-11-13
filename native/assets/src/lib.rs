@@ -3,6 +3,7 @@
 pub mod casp;
 pub mod dbpf;
 pub mod geom;
+pub mod gpu_vertex;
 pub mod lrle;
 pub mod rig;
 pub mod scan;

@@ -1,0 +1,19 @@
+{
+  "schema":1,
+  "date":"2026-11-12",
+  "native_client_sha256":"95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "entry_rva":"01A3D680",
+  "oracle":"Unicorn2.1.4, bounded actual x86_64 compressed preparation and numeric routines in isolated virtual memory",
+  "cases":256,
+  "pixels_compared":4096,
+  "bytes_compared":36864,
+  "exact_bytes":true,
+  "native_instructions_interpreted":729805,
+  "details_checked":["RGB565 endpoint expansion","171/85 weighted palette rounding","rounded-up midpoint","both endpoint orderings and equality","zero transparent selector","all selector positions","prepared detail-green bytes","prepared skin BGRA pixels","complete composed block output"],
+  "input_blocks_unchanged":true,
+  "originals_unchanged":true,
+  "game_process_contacted":false,
+  "external_io":false,
+  "cache_and_presence_policy_qualified":false,
+  "full_native_composition_qualified":false
+}

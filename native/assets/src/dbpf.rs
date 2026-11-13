@@ -452,8 +452,15 @@ pub fn decode_refpack(
     limits.check(expected as u64)?;
     let mut r = Bytes::new(input);
     let flags = r.u8()?;
-    if flags & 0x7e != 0x10 || r.u8()? != 0xfb {
-        return Err(Error::unsupported("RefPack header"));
+    let marker = r.u8()?;
+    // Original Gibbed.RefPack checks (big_endian_header & 0x1FFF)==0x10FB.
+    // Bits 0x20/0x40 are not signature bits; installed STBLs use 0x50FB.
+    // Bit0 denotes an unsupported doubled header and must not be ignored.
+    // Bit0x80 still selects the four-byte rather than three-byte size.
+    if flags & 0x1f != 0x10 || marker != 0xfb {
+        return Err(Error::unsupported(format!(
+            "RefPack header 0x{flags:02x}{marker:02x}"
+        )));
     }
     let mut declared = 0u64;
     for _ in 0..if flags & 0x80 != 0 { 4 } else { 3 } {

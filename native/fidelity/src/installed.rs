@@ -2,7 +2,7 @@
 //! Read actual installed movie/atlas bytes through the existing pinned DBPF
 //! reader. The caller selects the package provider; no global override guessing,
 //! source writes, ActionScript execution, or extracted-asset disk cache occurs.
-use crate::{fnv1_resource_name, ExternalImage, GfxMovie};
+use crate::{ExternalImage, GfxMovie, fnv1_resource_name};
 use external_cas_assets::{PackageIndex, ReadLimits, ResourceKey};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -156,10 +156,26 @@ pub fn load_atlas(index: &PackageIndex, image: &ExternalImage) -> Result<Install
         }
     }
     if selected.len() != 1 {
-        return Err(format!("external image {:?} has {} name-derived DDS candidates matching source target dimensions {:?}; explicit resolution required",image.file_name,selected.len(),image.target_size));
+        return Err(format!(
+            "external image {:?} has {} name-derived DDS candidates matching source target dimensions {:?}; explicit resolution required",
+            image.file_name,
+            selected.len(),
+            image.target_size
+        ));
     }
     let (resolved_name, pin, source_bytes) = selected.pop().unwrap();
     let header = crate::dds::header(&source_bytes)?;
+    if header.four_cc == [0; 4] {
+        let rgba = crate::dds::decode_rgba8(&source_bytes)?;
+        return Ok(InstalledAtlas {
+            pin,
+            resolved_name,
+            dimensions: header.dimensions,
+            pixel_encoding: "rgba8".into(),
+            rgba,
+            source_bytes,
+        });
+    }
     if matches!(&header.four_cc, b"ATI2" | b"BC5U") {
         let rgba = crate::dds::decode_bc5(&source_bytes)?;
         return Ok(InstalledAtlas {

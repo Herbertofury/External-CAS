@@ -2,8 +2,8 @@
 //! Diagnostic GPU readback exists only here; production interop has none.
 #[cfg(windows)]
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    use external_cas_render::OriginalShaderBridge;
-    use external_cas_shader::{Limits, ShaderLibrary, Stage};
+    use external_cas_render::{NativeVertexElement, OriginalShaderBridge};
+    use external_cas_shader::{Limits, ShaderLibrary, Stage, VertexSemantic};
     use std::{
         path::PathBuf,
         sync::{atomic::AtomicBool, mpsc},
@@ -29,6 +29,53 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         3038,
         &AtomicBool::new(false),
     )?)?;
+    let vertex_code = library.shader(Stage::Vertex, 924, &AtomicBool::new(false))?;
+    let vertex_bindings = library.vertex_bindings(924, &AtomicBool::new(false))?;
+    let original_vertex = bridge.create_vertex_shader(&vertex_code)?;
+    let paired_pixel = bridge.create_pixel_shader(&library.shader(
+        Stage::Pixel,
+        3051,
+        &AtomicBool::new(false),
+    )?)?;
+    // Explicit float storage is only a controlled input-layout qualification.
+    // This does not claim the native game's quantized GEOM buffer production.
+    let elements = [
+        (VertexSemantic::Position, 0, 3, 0),
+        (VertexSemantic::Normal, 0, 2, 16),
+        (VertexSemantic::TexCoord, 0, 1, 28),
+        (VertexSemantic::TexCoord, 1, 1, 36),
+        (VertexSemantic::Color, 1, 3, 44),
+        (VertexSemantic::BlendIndices, 0, 4, 60),
+        (VertexSemantic::BlendWeight, 0, 3, 64),
+        (VertexSemantic::Tangent, 0, 3, 80),
+    ]
+    .map(
+        |(semantic, semantic_index, native_format, byte_offset)| NativeVertexElement {
+            semantic,
+            semantic_index,
+            native_format,
+            slot: 0,
+            byte_offset,
+        },
+    );
+    let original_layout = bridge.create_input_layout(&vertex_code, &vertex_bindings, &elements)?;
+    if original_layout.decode_scales != [1.; 4] {
+        return Err("Float declaration acquired nonnative decode scales".into());
+    }
+    if bridge
+        .create_input_layout(&vertex_code, &vertex_bindings, &elements[..7])
+        .is_ok()
+    {
+        return Err("Missing original tangent input was silently substituted".into());
+    }
+    let mut foreign_bindings = vertex_bindings.clone();
+    foreign_bindings.source_file_sha256.push('0');
+    if bridge
+        .create_input_layout(&vertex_code, &foreign_bindings, &elements)
+        .is_ok()
+    {
+        return Err("Foreign vertex binding source was accepted".into());
+    }
     let mut observations = Vec::new();
     let mut other_bridge = OriginalShaderBridge::new(&device, &queue)?;
     let mut rejected_foreign_contexts = 0;
@@ -216,7 +263,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!(
         "{}",
         serde_json::to_string_pretty(
-            &serde_json::json!({"adapter":adapter.get_info().name,"backend":"D3D12 + D3D11On12","original_pixel_shader_reference":original.source_reference,"original_pixel_shader_sha256":original.source_sha256,"source_pin":library.pin,"shared_target_observations":observations,"foreign_contexts_refused":rejected_foreign_contexts,"interrupted_frames_recovered":recovered_callback_errors,"cpu_readback_in_production":false,"game_contacted":false,"complete_cas_render_qualified":false})
+            &serde_json::json!({"adapter":adapter.get_info().name,"backend":"D3D12 + D3D11On12","original_pixel_shader_reference":original.source_reference,"original_pixel_shader_sha256":original.source_sha256,"original_vertex_reference":original_vertex.source_reference,"original_vertex_sha256":original_vertex.source_sha256,"paired_pixel_reference":paired_pixel.source_reference,"paired_pixel_sha256":paired_pixel.source_sha256,"original_input_layout_created":true,"input_decode_scales":original_layout.decode_scales,"missing_vertex_input_refused":true,"foreign_vertex_bindings_refused":true,"native_geom_packing_qualified":false,"source_pin":library.pin,"shared_target_observations":observations,"foreign_contexts_refused":rejected_foreign_contexts,"interrupted_frames_recovered":recovered_callback_errors,"cpu_readback_in_production":false,"game_contacted":false,"complete_cas_render_qualified":false})
         )?
     );
     Ok(())

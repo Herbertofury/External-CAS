@@ -1,4 +1,4 @@
-use external_cas_shader::{ShaderCode, Stage};
+use external_cas_shader::{ShaderCode, Stage, VertexBindings, VertexSemantic};
 use std::{
     marker::PhantomData,
     rc::Rc,
@@ -9,8 +9,14 @@ use windows::{
         Direct3D::D3D_FEATURE_LEVEL_11_0, Direct3D11::*, Direct3D11on12::*, Direct3D12::*,
         Dxgi::Common::*,
     },
-    core::Interface,
+    core::{Interface, PCSTR},
 };
+mod frame;
+pub use frame::*;
+mod sampler;
+pub use sampler::*;
+mod geometry;
+pub use geometry::*;
 pub type Result<T> = std::result::Result<T, String>;
 fn error(e: windows::core::Error) -> String {
     e.to_string()
@@ -33,6 +39,116 @@ pub struct OriginalPixelShader {
     pub shader: ID3D11PixelShader,
     pub source_sha256: String,
     pub source_reference: u32,
+}
+pub struct OriginalVertexShader {
+    pub shader: ID3D11VertexShader,
+    pub source_sha256: String,
+    pub source_reference: u32,
+}
+pub struct OriginalInputLayout {
+    pub layout: ID3D11InputLayout,
+    pub source_sha256: String,
+    pub source_reference: u32,
+    pub decode_scales: [f32; 4],
+}
+/// An explicitly supplied native declaration. Missing semantics are refused;
+/// the engine-owned fallback/default vertex stream is not reproduced here.
+#[derive(Clone, Copy, Debug)]
+pub struct NativeVertexElement {
+    pub semantic: VertexSemantic,
+    pub semantic_index: u32,
+    pub native_format: u8,
+    pub slot: u32,
+    pub byte_offset: u32,
+}
+/// Exact current native declaration table; zero/unknown formats remain errors.
+/// Byte sizes describe storage, not a promise that arbitrary GEOM floats have
+/// already been encoded for the original shader's decode instructions.
+pub fn native_vertex_format(format: u8) -> Result<(DXGI_FORMAT, u32)> {
+    let (dxgi, bytes) = match format {
+        0 => (41, 4),
+        1 => (16, 8),
+        2 => (6, 12),
+        3 => (2, 16),
+        4 => (30, 4),
+        5 | 8 => (28, 4),
+        6 | 9 => (37, 4),
+        7 | 10 => (13, 8),
+        11 => (35, 4),
+        12 => (11, 8),
+        15 => (34, 4),
+        16 => (10, 8),
+        _ => return Err(format!("Unsupported native vertex format {format}")),
+    };
+    Ok((DXGI_FORMAT(dxgi), bytes))
+}
+fn semantic_name(semantic: VertexSemantic) -> PCSTR {
+    PCSTR(match semantic {
+        VertexSemantic::Position => c"POSITION".as_ptr().cast(),
+        VertexSemantic::Normal => c"NORMAL".as_ptr().cast(),
+        VertexSemantic::TexCoord => c"TEXCOORD".as_ptr().cast(),
+        VertexSemantic::BlendIndices => c"BLENDINDICES".as_ptr().cast(),
+        VertexSemantic::BlendWeight => c"BLENDWEIGHT".as_ptr().cast(),
+        VertexSemantic::Tangent => c"TANGENT".as_ptr().cast(),
+        VertexSemantic::Color => c"COLOR".as_ptr().cast(),
+    })
+}
+fn input_declaration(
+    elements: &[NativeVertexElement],
+    bindings: &VertexBindings,
+) -> Result<(Vec<D3D11_INPUT_ELEMENT_DESC>, [f32; 4])> {
+    if elements.len() > 32 {
+        return Err("Native vertex element count exceeds D3D11 limit".into());
+    }
+    let mut seen = std::collections::HashSet::new();
+    let mut scales = [1.; 4];
+    let mut descriptions = Vec::with_capacity(elements.len());
+    for element in elements {
+        if !seen.insert((element.semantic, element.semantic_index)) {
+            return Err("Duplicate native vertex semantic".into());
+        }
+        let (format, bytes) = native_vertex_format(element.native_format)?;
+        if element.slot > 31
+            || element
+                .byte_offset
+                .checked_add(bytes)
+                .is_none_or(|end| end > 2048)
+        {
+            return Err("Native vertex input slot/extent exceeds D3D11 limit".into());
+        }
+        // The source constructor changes only these four roles for Short2/4.
+        if matches!(element.native_format, 6 | 7) {
+            let component = match element.semantic {
+                VertexSemantic::Position => Some(0),
+                VertexSemantic::Normal => Some(1),
+                VertexSemantic::Tangent => Some(2),
+                VertexSemantic::TexCoord => Some(3),
+                _ => None,
+            };
+            if let Some(component) = component {
+                scales[component] = 32767.;
+            }
+        }
+        descriptions.push(D3D11_INPUT_ELEMENT_DESC {
+            SemanticName: semantic_name(element.semantic),
+            SemanticIndex: element.semantic_index,
+            Format: format,
+            InputSlot: element.slot,
+            AlignedByteOffset: element.byte_offset,
+            InputSlotClass: D3D11_INPUT_PER_VERTEX_DATA,
+            InstanceDataStepRate: 0,
+        });
+    }
+    for input in &bindings.inputs {
+        if !seen.contains(&(input.semantic()?, input.semantic_index as u32)) {
+            return Err(format!(
+                "Missing original vertex input {}{}; no implicit default stream",
+                input.semantic()?.name(),
+                input.semantic_index
+            ));
+        }
+    }
+    Ok((descriptions, scales))
 }
 pub struct SharedTarget {
     // A COM reference alone does not pin wgpu's suballocation. Keep the wgpu
@@ -108,6 +224,52 @@ impl OriginalShaderBridge {
             shader: shader.ok_or("D3D11 returned no original pixel shader")?,
             source_sha256: code.sha256.clone(),
             source_reference: code.reference,
+        })
+    }
+    pub fn create_vertex_shader(&self, code: &ShaderCode) -> Result<OriginalVertexShader> {
+        if code.stage != Stage::Vertex {
+            return Err("A nonvertex shader cannot be bound as a vertex stage".into());
+        }
+        code.verify()?;
+        let mut shader = None;
+        unsafe {
+            self.device
+                .CreateVertexShader(&code.dxbc, None, Some(&mut shader))
+        }
+        .map_err(error)?;
+        Ok(OriginalVertexShader {
+            shader: shader.ok_or("D3D11 returned no original vertex shader")?,
+            source_sha256: code.sha256.clone(),
+            source_reference: code.reference,
+        })
+    }
+    pub fn create_input_layout(
+        &self,
+        code: &ShaderCode,
+        bindings: &VertexBindings,
+        elements: &[NativeVertexElement],
+    ) -> Result<OriginalInputLayout> {
+        if code.stage != Stage::Vertex
+            || code.reference != bindings.vertex_ref
+            || code.source_file_sha256 != bindings.source_file_sha256
+        {
+            return Err(
+                "Original vertex bindings and program belong to different sources/stages".into(),
+            );
+        }
+        code.verify()?;
+        let (descriptions, decode_scales) = input_declaration(elements, bindings)?;
+        let mut layout = None;
+        unsafe {
+            self.device
+                .CreateInputLayout(&descriptions, &code.dxbc, Some(&mut layout))
+        }
+        .map_err(error)?;
+        Ok(OriginalInputLayout {
+            layout: layout.ok_or("D3D11 returned no original input layout")?,
+            source_sha256: code.sha256.clone(),
+            source_reference: code.reference,
+            decode_scales,
         })
     }
     pub fn wrap_target(&self, texture: &wgpu::Texture) -> Result<SharedTarget> {

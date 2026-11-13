@@ -24,7 +24,9 @@ Schema facts were checked against CmarNYC-Tools/TS4SimRipper revision
   `1c447b2093a051af7dffbd1de71fbd4e9ea775411b73d2b0a06ba6b1b1e56774`:
   OutfitList repeats OutfitData at field 1; OutfitData outfit_id/category,
   parts/body_types_list/part_shifts are 1/2, 5/7/12. BodyTypesList field 1
-  repeats uint32 and ColorShiftList field 1 repeats uint64.
+  repeats uint32 and ColorShiftList field 1 repeats uint64. OutfitData field15
+  contains LayerIdsList, whose field1 repeats uint32; native_layer_ids reads
+  this wrapper without synthesizing absent values and retains unknown bytes.
 - `src/Proto/S4Common.cs`, SHA256
   `8bc900d52aee2bd74d8311ec9e8c4277da8d322dc14db17a40c9294ea12a71e0`:
   EA.Sims4.IdList field 1 repeats fixed64. Both packed and unpacked wire

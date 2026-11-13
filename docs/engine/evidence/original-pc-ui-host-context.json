@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "service": "IsGameClient",
+  "service_literal_rva": "01FB27C0",
+  "registrar_rva": "00DA0270",
+  "callback_registration_rva": "00DA0533",
+  "callback_rva": "00DA3460",
+  "boolean_setter_rva": "00DA6EE0",
+  "source_fields": {
+    "isClient": true,
+    "isDebug": false,
+    "usingController": false,
+    "usingMouseKeyboard": false,
+    "razerEnabledPC": true,
+    "swapJPControls": false,
+    "graphicsAPI": "DX11",
+    "isFeaturePreviewBuild": false
+  },
+  "distributionPlatform": {"type": "integer", "runtime_value_qualified": false, "native_interface_getter_rva": "00BB6CE0", "virtual_method_offset": 80},
+  "physical_device_presence_is_input_mode_evidence": false,
+  "game_contact": false,
+  "native_handler_executed": false,
+  "source_mutations": false,
+  "original_code_redistributed": false
+}

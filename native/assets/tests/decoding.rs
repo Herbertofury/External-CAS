@@ -318,6 +318,17 @@ fn casp_with_slider_block(
     parent: Option<ResourceKey>,
     slider_block: Option<[u8; 44]>,
 ) -> Vec<u8> {
+    casp_with_retained_fields(version,parent,slider_block,0)
+}
+fn casp_with_retained_fields(
+    version:u32,parent:Option<ResourceKey>,slider_block:Option<[u8;44]>,shared_uv_space:u32,
+) -> Vec<u8> {
+    casp_with_region_overrides(version,parent,slider_block,shared_uv_space,&[])
+}
+fn casp_with_region_overrides(
+    version:u32,parent:Option<ResourceKey>,slider_block:Option<[u8;44]>,shared_uv_space:u32,
+    overrides:&[(u8,u32)],
+) -> Vec<u8> {
     let mut b = Vec::new();
     for n in [version, 0, 0] {
         u32b(&mut b, n);
@@ -406,9 +417,12 @@ fn casp_with_slider_block(
     u32b(&mut b, 0);
     b.extend([1, 0]);
     u32b(&mut b, 0);
-    b.extend([0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0]);
+    b.extend([0, 1, 1, 0, 2, 0, 0, 0]);
+    b.push(overrides.len().try_into().unwrap());
+    for (region,bits) in overrides { b.push(*region);u32b(&mut b,*bits); }
+    b.extend([0,0]);
     if version >= 27 {
-        u32b(&mut b, 0);
+        u32b(&mut b, shared_uv_space);
     }
     if version >= 29 {
         b.push(0);
@@ -447,6 +461,9 @@ fn casp_versions_preserve_labels_tgi_roles_and_reject_unsupported_or_truncated()
         assert_eq!(c.lod0_meshes, [ResourceKey::new(GEOM, 0x22, 0x11)]);
         assert_eq!(c.diffuse, Some(ResourceKey::new(0x2f7d0004, 0x44, 0x33)));
         assert_eq!(c.color_sliders.is_some(), version >= 44);
+        assert_eq!(c.shared_uv_space, if version>=27 {Some(0)}else{None});
+        assert_eq!(c.effective_shared_uv_body_type(),Some(c.body_type));
+        assert_eq!(c.region_overrides.as_ref().unwrap().len(),0);
         assert!(c.disallow_opposite_gender());
         assert_eq!(
             c.disallow_opposite_frame(),
@@ -496,6 +513,40 @@ fn casp_versions_preserve_labels_tgi_roles_and_reject_unsupported_or_truncated()
     let mut b = casp(52);
     b[..4].copy_from_slice(&99u32.to_le_bytes());
     assert!(matches!(CasPart::parse(&b), Err(Error::Unsupported(_))));
+}
+#[test]
+fn shared_uv_raw_zero_override_unknown_and_version_boundary_are_distinct() {
+    for version in [26,27,44,52] {
+        for raw in [0,2,5,0x80000000,u32::MAX] {
+            let bytes=casp_with_retained_fields(version,None,None,raw);
+            let part=CasPart::parse(&bytes).unwrap();
+            assert_eq!(part.shared_uv_space,if version>=27 {Some(raw)}else{None});
+            assert_eq!(part.effective_shared_uv_body_type(),Some(if version<27||raw==0{5}else{raw}));
+            let mut encoded=serde_json::to_value(&part).unwrap();
+            let restored:CasPart=serde_json::from_value(encoded.clone()).unwrap();
+            assert_eq!(restored.shared_uv_space,part.shared_uv_space);
+            encoded.as_object_mut().unwrap().remove("shared_uv_space");
+            let older:CasPart=serde_json::from_value(encoded).unwrap();
+            assert_eq!(older.effective_shared_uv_body_type(),if version<27{Some(5)}else{None});
+        }
+    }
+}
+
+#[test]
+fn region_overrides_preserve_order_duplicates_raw_float_bits_and_unknown_old_cache() {
+    let expected=[(7,0x80000000),(7,0x7fc01234),(255,0x7f800000),(0,0xbf800000)];
+    for version in 26..=52 {
+        let bytes=casp_with_region_overrides(version,None,None,0,&expected);
+        let part=CasPart::parse(&bytes).unwrap();
+        let actual=part.region_overrides.as_ref().unwrap().iter().map(|r|(r.region,r.layer_bits)).collect::<Vec<_>>();
+        assert_eq!(actual,expected,"version{version}");
+        let json=serde_json::to_value(&part).unwrap();
+        let restored:CasPart=serde_json::from_value(json.clone()).unwrap();
+        assert_eq!(restored.region_overrides.unwrap().iter().map(|r|(r.region,r.layer_bits)).collect::<Vec<_>>(),expected);
+        let mut older=json;older.as_object_mut().unwrap().remove("region_overrides");
+        let unknown:CasPart=serde_json::from_value(older).unwrap();assert!(unknown.region_overrides.is_none());
+        assert_eq!(part.diffuse,Some(ResourceKey::new(0x2f7d0004,0x44,0x33)));
+    }
 }
 #[test]
 fn exact_casp_color_slider_bits_survive_invalid_values_cache_serde_and_version_boundaries() {

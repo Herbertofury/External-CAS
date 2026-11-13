@@ -2,6 +2,7 @@
 //! Actual combined CAS tuning. Missing class defaults and projection/shader
 //! conventions are not invented; the complete resolved record remains available.
 use crate::*;
+use external_cas_assets::ResourceKey;
 use external_cas_character::{ResolvedTuningNode, ResolvedTuningRecord};
 use serde::Serialize;
 use std::sync::Arc;
@@ -150,6 +151,132 @@ pub struct CasTuningScene {
     pub issues: Vec<RoomIssue>,
     pub simdata: Vec<CasDataResource>,
     pub logical_decisions: Vec<LogicalTuningDecision>,
+}
+
+/// Source Client_CASTuning.PresetRotation, separate from camera orbital tuning.
+/// Values are data only; the native selector/easing and angle conventions must
+/// be independently qualified before a host applies them to a scene.
+#[derive(Debug, Clone, Serialize)]
+pub struct PresetRotationTuning {
+    pub instance: u64,
+    pub name: String,
+    pub source_pin: RoomSourcePin,
+    pub simdata_pin: Option<RoomSourcePin>,
+    pub view_angles: Option<[TuningFloat; 6]>,
+    pub lerp_speed_mult: Option<TuningFloat>,
+    pub rotate_key_speed: Option<TuningFloat>,
+    pub rotate_key_speed_fast: Option<TuningFloat>,
+    pub rotate_continuous_speed: Option<TuningFloat>,
+    pub rotate_continuous_ease_in: Option<TuningFloat>,
+}
+
+fn preset_rotation(
+    record: &ResolvedTuningRecord,
+    pin: &RoomSourcePin,
+    data: Option<&CasDataResource>,
+) -> Result<PresetRotationTuning> {
+    let node = field(&record.root, "PresetRotation")?;
+    let mut result = PresetRotationTuning {
+        instance: record.instance,
+        name: record.root.attrs.get("n").cloned().unwrap_or_default(),
+        source_pin: pin.clone(),
+        simdata_pin: None,
+        view_angles: None,
+        lerp_speed_mult: None,
+        rotate_key_speed: None,
+        rotate_key_speed_fast: None,
+        rotate_continuous_speed: None,
+        rotate_continuous_ease_in: None,
+    };
+    if let Some(node) = node {
+        if let Some(angles) = field(node, "ViewAngles")? {
+            let values = angles
+                .children
+                .iter()
+                .map(number)
+                .collect::<Result<Vec<_>>>()?;
+            result.view_angles = Some(
+                values
+                    .try_into()
+                    .map_err(|_| "source PresetRotation ViewAngles does not contain six values")?,
+            );
+        }
+        result.lerp_speed_mult = float(node, "LerpSpeedMult")?;
+        result.rotate_key_speed = float(node, "RotateKeySpeed")?;
+        result.rotate_key_speed_fast = float(node, "RotateKeySpeedFast")?;
+        result.rotate_continuous_speed = float(node, "RotateContinuousSpeed")?;
+        result.rotate_continuous_ease_in = float(node, "RotateContinuousEaseIn")?;
+    }
+    if let Some(data) = data {
+        let root = instance(&data.document, &result.name, "Client_CASTuning")?;
+        let node = root
+            .field("PresetRotation")?
+            .ok_or("source SimData PresetRotation absent")?;
+        let Some(DataValue::Vector(values)) = node.field("ViewAngles")? else {
+            return Err("source SimData ViewAngles vector absent".into());
+        };
+        let bits = values
+            .iter()
+            .map(DataValue::float_bits)
+            .collect::<Result<Vec<_>>>()?;
+        let bits: [u32; 6] = bits
+            .try_into()
+            .map_err(|_| "source SimData ViewAngles does not contain six values")?;
+        if result
+            .view_angles
+            .as_ref()
+            .is_some_and(|v| v.iter().zip(bits).any(|(a, b)| a.bits != b))
+        {
+            return Err("explicit XML/SimData PresetRotation ViewAngles mismatch".into());
+        }
+        result.view_angles = Some(std::array::from_fn(|i| TuningFloat {
+            bits: bits[i],
+            lexical: f32::from_bits(bits[i]).to_string(),
+        }));
+        bind_float(&mut result.lerp_speed_mult, node, "LerpSpeedMult")?;
+        bind_float(&mut result.rotate_key_speed, node, "RotateKeySpeed")?;
+        bind_float(
+            &mut result.rotate_key_speed_fast,
+            node,
+            "RotateKeySpeedFast",
+        )?;
+        bind_float(
+            &mut result.rotate_continuous_speed,
+            node,
+            "RotateContinuousSpeed",
+        )?;
+        bind_float(
+            &mut result.rotate_continuous_ease_in,
+            node,
+            "RotateContinuousEaseIn",
+        )?;
+        result.simdata_pin = Some(data.source.pin.clone());
+    }
+    Ok(result)
+}
+
+/// Read each already selected logical Client_CASTuning record. No Human/species
+/// fallback is selected here. A missing partner leaves omitted values unknown;
+/// duplicate or mismatched source partners refuse rather than invent defaults.
+pub fn preset_rotations(scene: &CasTuningScene) -> Result<Vec<PresetRotationTuning>> {
+    scene
+        .other_records
+        .iter()
+        .filter(|(_, record)| record.class == "Client_CASTuning")
+        .map(|(pin, record)| {
+            let partners = scene
+                .simdata
+                .iter()
+                .filter(|d| {
+                    d.source.pin.key == ResourceKey::new(0x545ac67a, 0x004b5265, record.instance)
+                })
+                .collect::<Vec<_>>();
+            if partners.len() > 1 {
+                return Err("ambiguous Client_CASTuning SimData partner".into());
+            }
+            preset_rotation(record, pin, partners.first().copied())
+        })
+        .collect()
 }
 fn field<'a>(node: &'a ResolvedTuningNode, name: &str) -> Result<Option<&'a ResolvedTuningNode>> {
     let found: Vec<_> = node
@@ -571,5 +698,57 @@ mod tests {
             [0., 1., 0.]
         );
         assert!(camera.target_relative_to([f32::NAN, 0., 0.]).is_err());
+    }
+    #[test]
+    fn preset_rotation_keeps_source_angles_and_omitted_values_unknown() {
+        let root = n(
+            "I",
+            "OwnSource",
+            "",
+            vec![n(
+                "U",
+                "PresetRotation",
+                "",
+                vec![
+                    n(
+                        "L",
+                        "ViewAngles",
+                        "",
+                        ["270", "310", "0", "50", "90", "180"]
+                            .into_iter()
+                            .map(|v| n("T", "", v, vec![]))
+                            .collect(),
+                    ),
+                    n("T", "RotateContinuousEaseIn", "0.1", vec![]),
+                ],
+            )],
+        );
+        let record = ResolvedTuningRecord {
+            instance: 7,
+            class: "Client_CASTuning".into(),
+            resource_namespace: "castuning".into(),
+            root,
+        };
+        let pin = RoomSourcePin {
+            provider_path: "explicit-own-fixture.package".into(),
+            key: ResourceKey::new(0, 0, 7),
+            ordinal: 0,
+            index_sha256: "00".repeat(32),
+            payload_sha256: "11".repeat(32),
+        };
+        let value = preset_rotation(&record, &pin, None).unwrap();
+        assert_eq!(
+            value.view_angles.unwrap().map(|v| v.value()),
+            [270., 310., 0., 50., 90., 180.]
+        );
+        assert_eq!(
+            value.rotate_continuous_ease_in.unwrap().bits,
+            0.1f32.to_bits()
+        );
+        assert!(value.rotate_key_speed.is_none());
+        assert!(value.simdata_pin.is_none());
+        let mut invalid = record;
+        invalid.root.children[0].children[0].children.pop();
+        assert!(preset_rotation(&invalid, &pin, None).is_err());
     }
 }

@@ -15,8 +15,10 @@ movies/atlases/fonts, model/rig/texture/tuning resources and original compiled
 shaders can be resolved from the selected installation rather than shipped.
 No generic backdrop, body, gallery art or random pose is a completion substitute.
 
-Original pixel shaders now execute successfully in an offscreen D3D11 harness
-outside the game. [Native shader loading](../../native/shader) reads the actual
+Original paired vertex/pixel shaders now execute successfully through the
+Rust-owned D3D11On12/shared-wgpu boundary outside the game. This establishes
+controlled stage execution and target ownership, not accepted CAS appearance.
+[Native shader loading](../../native/shader) reads the actual
 PRECOMP/DXBC boundary in Rust. The
 [shader record](SIMSKIN_DX11_20261112.md) identifies exact source families,
 resources, register contracts, normal conventions and verified CAS equations.
@@ -72,16 +74,24 @@ The retained CASLibrary ActionScript research exposes the Olympus boundary:
 `SendGameMessage(name,args)`, `CallGameService(name,args,async)` and
 `ObjectSendMessage(target,name,args)`. Inbound callbacks route to UI messages
 and services. Widget initialization/name registration and on-demand stored
-messages participate in initialization order. This retained export came from
-the owner's supplied UI baseline and must be checked against the original
-installed movie before claiming an untouched EA command map.
+messages participate in initialization order. The initial retained export came
+from the owner's supplied UI baseline. Eight subsequently exported original
+installed shared classes match that research byte for byte: UIManager,
+LayoutManager, WidgetList, WidgetLoader, CommunicationManager, GameStates,
+Extensions and TextFieldEx. This qualifies those shared classes, not every
+modified control in the supplied baseline.
 
 Scaleform extension classes are an important root cause: their decompiled
 ActionScript bodies can be intentional native stubs. For example text/GFX
 extension APIs may appear to run but return false/empty values or perform no
 work without their native bindings. A generic ActionScript VM alone is
 insufficient. The ongoing Rust Ruffle experiment must qualify import loading,
-ExternalInterface, FSCommand and each actually used GFX extension. The service
+ExternalInterface, FSCommand and each actually used GFX extension. Original
+CASNavigation now executes its imports in the isolated experiment and requests
+`CasGetCASEditMode`; the request is observed, not sent to the game. Localization
+also needs the actual native function callback
+`olympus.localization.LocKey.sGetLocalizedStringFunc`, connected to the selected
+STBL/token context. ExternalInterface alone does not supply it. The service
 boundary then needs typed Rust handlers and response/state messages connected
 to the real native draft. Unimplemented commands must remain explicit; drawing
 the source button while ignoring its request is not source-native behavior.
@@ -148,6 +158,15 @@ testing. Source LOD thresholds and camera context determine LOD selection, not
 an unconditional LOD0 render. Deformation and pose resets must restore the same
 native rest data and preserve parts that the app cannot yet evaluate.
 
+The original initial GEOM GPU producer is now identified, and independent
+[native attribute packers](../../native/assets/src/gpu_vertex.rs) match 2,613
+controlled original-instruction cases. Position flooring, normal/tangent
+quantization, signed-short UV wrapping and UV1 absolute-U behavior are distinct
+source rules. The [original vertex contract](ORIGINAL_VERTEX_CONTRACTS_20261112.md)
+also identifies the paired normal/skinning VS924/PS3051, source input semantics,
+stage-specific constants and 60-entry three-row skin palette. Rig palette/tag
+context and later deformation updates remain separate from these primitives.
+
 ## The full material construction is an immediate fidelity blocker
 
 The source-named CAS family requires independent OverlayTexture,
@@ -163,11 +182,28 @@ TONE, age/sex/physique detail overlays, sculpt overlays, CASP texture-space and
 composition/layer ordering, shadow/makeup/tattoo/skin details, tan/pelt/custom
 painting and packed color shifts. Installed shader parameter names identify
 bound **variables**, not necessarily existing single-file texture resources.
-No verified resource selector for a global lookup/ambient plane means the app
-must not invent one or use a neutral image while claiming native fidelity.
+Actual native species-context writers now qualify the ambient resource mapping.
+The source TONE reader and native creators qualify the 256-entry SkinDetailHSL
+lookup, including packed-zero's different initialized grayscale resource and
+native BGRA format. Missing species/TONE context still refuses selection.
+These facts close the earlier unknown selector; they do not supply missing
+CPU/GPU plane layers or order. See
+[native material construction](CAS_MATERIAL_CONSTRUCTION_20261112.md).
 Per-mesh normal/specular transforms and UV1 ambient addressing must remain
 separate. Sampling space/texture formats, alpha masks, blending, pass selection,
 sheen/reflection and output color still need actual evidence.
+
+Normal UV defaults are native context-dependent values, not a universal identity.
+The producer's primary code is CASP BodyType and its secondary code is effective
+SharedUVSpace: raw zero falls back to BodyType. CASP's earlier u8 texture-space
+field is a separate domain. Explicit GEOM `NormalMapTransformOverride`
+(`5844E532`) wins; its selected result is later injected into the separately
+named shader binding `NormalMapUVxform`.
+The native default selector matches 7,168 controlled original-instruction cases.
+The original [sampler contract](SOURCE_SAMPLERS_20261112.md) is also traced from
+PRECOMP u16 references through state creation to actual PSSetSamplers, with 1,152
+descriptor cases matching all 52 output bytes. Skin-detail point sampling and
+settings-sensitive normal sampling cannot be replaced by generic linear defaults.
 
 Use original local shaders or independently verified Rust/WGSL ports with the
 same qualified inputs. The [shader record](SIMSKIN_DX11_20261112.md) explains

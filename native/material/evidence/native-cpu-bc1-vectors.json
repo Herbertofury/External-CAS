@@ -1,0 +1,7429 @@
+{
+  "schema": 1,
+  "vectors": [
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "30ed3ec439496434bde012c0a287d50d416cd3a85800369aba4802b4b1d1b0bb",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          55,
+          99,
+          35,
+          172
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          75,
+          217,
+          101,
+          3
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "ebb6d14e1d8c900ebb13fad2c2fc8542193e7d9a2428f8a6f5f9e829bb8a9396",
+      "skin_bgra_sha256": "a9c412f51591e053d066a2d23b72a1cc49c7d36ef1d9a1c057fb79df6d7a3f6e",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          65,
+          252,
+          114,
+          72
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          170,
+          145,
+          24,
+          135
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "73fbeed7ff212359ebc372808ec0527b2fde902835c3a2db3ed41e7406293baa",
+      "skin_bgra_sha256": "4ce57a4759c0bb3a5f446c18f62ed40cceaf64126d1ad9ff7e416e0efef6c52e",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          83,
+          149,
+          67,
+          174
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          184,
+          6,
+          217,
+          98
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "0a8a1d77dc936ce4bc547a95efe7c95c539385572fb7cbf3e9ee3c2082c146e7",
+      "skin_bgra_sha256": "1e7bbe9125d0ba0828a4d0f78362c747144b391e91ed0271380603bf781f35c6",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "30ed3ec439496434bde012c0a287d50d416cd3a85800369aba4802b4b1d1b0bb",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          68,
+          94,
+          36,
+          8
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          143,
+          28,
+          135,
+          248
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "9c2c15b2575dc121fb3ecc8c0245ac4d85bb77ec8801600d2a07199ee350ac71",
+      "skin_bgra_sha256": "e3c2cc7f537eef3522095a798a2917e3ff9a3b398f3e00a8b43797073deefaa6",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          105,
+          179,
+          191,
+          134
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          46,
+          253,
+          49,
+          205
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "0fa9f4cb2e97f955e8877c59b4a9e816910dabc2d9240124b8c163d91062946a",
+      "skin_bgra_sha256": "3ab04391b433f84a5f0e51c0bf6c75ad0427fcf3517727038536388e83106f70",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          178,
+          187,
+          238,
+          20
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          0,
+          197,
+          110,
+          197,
+          73
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "f0d464055c651d55e9f4b1e2834ca6851df538f97afab2ebeb36ca96b6207bc6",
+      "skin_bgra_sha256": "22d78e4d88b9e1d78e53d7687e3fcc5f8005fac1b04aae58e65e70a8e106752e",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "7c840a556ed8d2a901068b48f8ada61c49e20c7ba90194e8b637586fbfb257fe",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          147,
+          214,
+          103,
+          138
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          118,
+          14,
+          119,
+          72
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "d23f9b379b59e78cc567e9fcb4f4c90cee11a8381c2f5366c485a4cb7eeb2ff8",
+      "skin_bgra_sha256": "b67c3c22d6b6b894fd0456b29451f298b330e24c6b8e58b485b932c96486ff5c",
+      "composed_bgra_sha256": "5e7361e23944a2d66562957c1a6c59742b9739a64858dc1392dcb8d99f8d8929"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          106,
+          242,
+          31,
+          154
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          180,
+          157,
+          114,
+          57
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "ef27eb8d9a865e1ce4642e6d24df78d02c71c5f6fd3c9c2a2f80e8201ed70233",
+      "skin_bgra_sha256": "16596dabdc084886bc4793dadbbc28fe2849dbde3e432f9811fb98417d72bc1f",
+      "composed_bgra_sha256": "3b8c339de1ae352ac8386dd38354b76378d5af32cf484cbd81dd5e0b509fd5b5"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          123,
+          44,
+          2,
+          238
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          220,
+          138,
+          196,
+          3
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "a589d77d8e065e3068b786eb4e3c4399f8a45b5c30a9e2dd3f0d890817b4eef2",
+      "skin_bgra_sha256": "a0f97b0b8cd6b99501bab5de43ced3820f058f2a382f2bdefbb27a69590da1a1",
+      "composed_bgra_sha256": "4439b74de0cbfdcdf6f98b9502a7ff6b12be0482c8a1437f41280847ffb6c8fc"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "7c840a556ed8d2a901068b48f8ada61c49e20c7ba90194e8b637586fbfb257fe",
+      "composed_bgra_sha256": "2f665f21db750946f898bfd795e6273cd64af1de7037ebba955fdb8ffcb13b66"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          53,
+          112,
+          35,
+          241
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          119,
+          237,
+          80,
+          219
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "4065e9b2526bec0673041a4c4e86ffd18172a9f33a8075141509b238c084e2c2",
+      "skin_bgra_sha256": "393ae7ccb8a6bd5e0257ca4309ca65835dbb1e924681d24b86ddcef73d17ae10",
+      "composed_bgra_sha256": "0a9cd7fa97284ff23e192f73314c69311047bd9e3db860de085d3e5c16ecf625"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          173,
+          127,
+          3,
+          129
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          65,
+          240,
+          245,
+          143
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "d609dcd1453d1430a4edb0eb4acf54152982580f087ba2d9f1437ae2834ffe51",
+      "skin_bgra_sha256": "5cf701b810487f93bf27f422afc6838605064a0312c750e4bf4c8fb446b7b9b9",
+      "composed_bgra_sha256": "4889895ff5ce138b4b52d15ce8e7c6b4649c495433ead9aadb6ba23b16eedeec"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          48,
+          57,
+          98,
+          109
+        ],
+        "skin": [
+          0,
+          0,
+          255,
+          255,
+          90,
+          187,
+          144,
+          240
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "e9802f7b3f8efae547e39c8ccdb2bece4493436db5907bf0216417db25f7b377",
+      "skin_bgra_sha256": "38a1323cd836b3a06c673fed9b872c4cbbf4064b82b63dee51da353ec254ccd2",
+      "composed_bgra_sha256": "58cd9e2754ab49aa116156718255644d55b786dbe964a4c94611698ce69ed571"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "86588a7bd28a1a6a9ce0675db13a49d98f89f8f2224d6321adfbad9e8e8fe700",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          235,
+          211,
+          110,
+          196
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          51,
+          213,
+          215,
+          64
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "fdc28cf926d0636fda9a17b20fb7938a8b4b1c973b11c4f533df58245f668b46",
+      "skin_bgra_sha256": "0813be117b93a7a5e27225e1c1d9f8a7a6c4ea8d70c3275ac97b221e1c19da82",
+      "composed_bgra_sha256": "385f861a5469f0d3d6da76cccfcf7d44db80fe0fcbbdfa9bd2cf5756f770262c"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          122,
+          57,
+          17,
+          239
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          121,
+          143,
+          125,
+          246
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "56dcaaa6fbc0d7bf356dbb99a7eb9ee06e72f3322cc6ac9a4dac9b9e6e078289",
+      "skin_bgra_sha256": "92e720d4b023928ef4cd381d029a3004b585f22d436ab0f83d58d5916131c90f",
+      "composed_bgra_sha256": "e8aa1687fa7716f529e25828726728ec8391bb8a3a510b8850bbfc11979baf61"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          250,
+          123,
+          18,
+          109
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          88,
+          123,
+          244,
+          56
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "082e4d49ae1de6b778c69d310e55e96240376fac30ed7dc5029a76233be83a84",
+      "skin_bgra_sha256": "2d53f3e6c8ac922b17fcf917582ecdf1d84c9f3a5a0bc09b4c375946e923da64",
+      "composed_bgra_sha256": "3583a3ab1480c8fda869d2bb7d45836fc97e2c3533867bdddc7e9f1e51830682"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "86588a7bd28a1a6a9ce0675db13a49d98f89f8f2224d6321adfbad9e8e8fe700",
+      "composed_bgra_sha256": "c28d221a13b230842863991474e60f3b13854cda242c79a7f537d03fd2ab349a"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          233,
+          7,
+          120,
+          120
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          206,
+          87,
+          220,
+          249
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "a19c207f6b2d4aab4b5c446134aa7cfde904e248d531a0d7769cf9939372c93e",
+      "skin_bgra_sha256": "c37de4f3f169ce9474372ccf211196cd0e5d7bff76a4650650f24478e73bb7de",
+      "composed_bgra_sha256": "568d1adb6b68e8cb9d13e2b5a76584889c32973b145ad712ff5f9992b2257e04"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          99,
+          17,
+          171,
+          157
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          178,
+          74,
+          110,
+          109
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "37190b04b38008683f0fa42dc352ed1cc2e185630a2143af823e74dd23dbaa24",
+      "skin_bgra_sha256": "8dbf58bb7289f992faf2326cdc7434e9d1c5b0d3e98df5732be97fd5f24a245a",
+      "composed_bgra_sha256": "0fb4eadaf348903b8c5aded448a18531c5ae887f6716d8a099679b417f49aca3"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          12,
+          249,
+          212,
+          225
+        ],
+        "skin": [
+          255,
+          255,
+          0,
+          0,
+          214,
+          138,
+          204,
+          53
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "66287a6327eea531e3aa5ff21cfcd8db6eb09c9fef70cfe8fccdf9da40682072",
+      "skin_bgra_sha256": "f4508cde3b74b2641981cc4c21fea56397cd7cfc1cbe0455e71577e51a29cca7",
+      "composed_bgra_sha256": "c15f5978c5b7b1fa9ad28361ace3a8df32fa0ac396cddcaa2b5a7a1543d1929e"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "ed8175c88b40ecd9a1a04e27e6057da86ecfd2010cd61339c6801e37e2cae031",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          101,
+          193,
+          227,
+          147
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          251,
+          196,
+          220,
+          45
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "ce96ce07cae799b82ed4c89f64e266dff09ba23bdef7aca160769f54b033cb9d",
+      "skin_bgra_sha256": "99a64dbc8591a6b24e5cc537c56cd10c52c5827b7ede0030b6f7dcfcdb2794c9",
+      "composed_bgra_sha256": "fa6fd0e966395bb6c1b32236e64ea2eefd5f2a36d33cc8f8c360057f93463989"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          7,
+          37,
+          100,
+          60
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          19,
+          157,
+          57,
+          142
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "575972f88f192e95c3734439e2615e6979be5fbda32cea7b751a0ad016d472ea",
+      "skin_bgra_sha256": "7c560a813f790b9b57bb22381357f6391cc686546b81bccf9cc41006310c6915",
+      "composed_bgra_sha256": "cde987a25e6dafae3703964fc20c595e69ee83930574f43d58f0c8a91fc79801"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          189,
+          174,
+          151,
+          159
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          214,
+          17,
+          200,
+          106
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "ae1b8901b2ec549e922910d486b9b10180801b8eaac7019e9f4df70cd810a245",
+      "skin_bgra_sha256": "d7c3c245fb74bcf8e55e3122922b05551524fe4cf57a332ecde45f1fc3ee9f83",
+      "composed_bgra_sha256": "195b0ed70bc91e04ccb52f7340a99965d6eeda4f7b0415930f0d81dcab177f11"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "ed8175c88b40ecd9a1a04e27e6057da86ecfd2010cd61339c6801e37e2cae031",
+      "composed_bgra_sha256": "328917f68ff99622fc1e9fdb8edf712e63c739693f3af475f65496d806899ddb"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          223,
+          24,
+          114,
+          87
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          213,
+          143,
+          112,
+          92
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "236d194f6163a2233d0fba3eb59d1f3a500c0e8ce0d86c01e1f464cbac2d7972",
+      "skin_bgra_sha256": "34d59b97c117f86cce27cf0720c3f7ad4ea5e7efdd3a3b2be5fef677f6d02db5",
+      "composed_bgra_sha256": "c7216b2617bb43748a3b689f2b2aaa9abeb5e2d3599468e2db2d2de14cf9925d"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          180,
+          194,
+          117,
+          250
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          86,
+          46,
+          105,
+          109
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "accdd43590c4d2834da6fd88bc9d5b8c16821f2d6eb8e0f49112da9a531a3b03",
+      "skin_bgra_sha256": "68360e7b15fda85ff4e378f72fad2c3ab76b214085bcd493e7831b2afbadecf2",
+      "composed_bgra_sha256": "d5059f275348ffdce7df5676bfac33667e7469bab3df3c5f341ec9d70b83ff61"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          4,
+          241,
+          225,
+          82
+        ],
+        "skin": [
+          0,
+          2,
+          0,
+          0,
+          16,
+          112,
+          79,
+          242
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "43c4c6693911d9815c808b8a224eef37783d49cbc32dacfc765ccccf936d09e1",
+      "skin_bgra_sha256": "448d639e9a0f132a748aae0a4577e673eb0af660751402f35f4a08abe8946fde",
+      "composed_bgra_sha256": "24379784e26184d2843895a01824c36557bd36dc95d719746f986f64b8bd5e9a"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "efac5992d8513d3ac350c066b41344b2297f720643a82bbf8bf64895d34d7ae0",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          238,
+          205,
+          93,
+          88
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          250,
+          35,
+          85,
+          211
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "b346b213086656bd315c0a98fd5d95fd8e001e450fad9cb1727bcc2719225474",
+      "skin_bgra_sha256": "9ead324843ded43f6f89c7b712df9dbad13e480359fbb22c4aa3d64ab5cb3dd2",
+      "composed_bgra_sha256": "24f830de30e3d814e63f5cdd132eec2a4e3b4d1276670b16591ddc32cc2874f2"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          172,
+          166,
+          49,
+          120
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          244,
+          71,
+          42,
+          229
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "3723ef22f693b9bd7d9a60e8c9b2833d06cea8429b453dc5a0214e7f465b1d84",
+      "skin_bgra_sha256": "312eb8d430847171570bc3f656aa5a5a9af0724626feba3bf64d61cffc1720fe",
+      "composed_bgra_sha256": "3aa87d31bed2dfd779c77fd8a5f37c5bcb324eb51c7706ae0d7870e98ab764f8"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          4,
+          18,
+          14,
+          159
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          165,
+          77,
+          86,
+          105
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "4f4866c7ad2121b0202aba137f01259138e02ed9461725400f0e0ce0bf66b319",
+      "skin_bgra_sha256": "ff06e93bd8d6a93fe21c8c86b340c8c895f4d8b80e51cdbaabc2c8d81cd52315",
+      "composed_bgra_sha256": "75db83bc8d7194fc94d1df4b276815962984ac222406abce7637ba65ad5776d7"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "efac5992d8513d3ac350c066b41344b2297f720643a82bbf8bf64895d34d7ae0",
+      "composed_bgra_sha256": "b0a68f5b82fb0fef023110d46bafaf324068fa2efc4b81853f7e49c16d14ae28"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          53,
+          68,
+          157,
+          220
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          101,
+          213,
+          123,
+          134
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "e3a9ac044b72d75536698213e770228974f4479cdfd2d1212d50636e4c6e8ae9",
+      "skin_bgra_sha256": "c5644b25c98ea47d7c487e08263706c503a6c745236fe5a32f6426357c832449",
+      "composed_bgra_sha256": "7b2ec98d972029e95abe4d898de189d65c752d5f204bf6c5f4acf52a2b322e9f"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          75,
+          109,
+          236,
+          129
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          121,
+          105,
+          199,
+          241
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "32c175df0c2930abe3de3ab92d9ae2366afa01924245cfbdc15b2650c5b8e0b7",
+      "skin_bgra_sha256": "26ea909f29302728d9ee2dbc875c6d4f445559ed69c4933f415692ee53c94959",
+      "composed_bgra_sha256": "1e2fce153afe8cc78c228bd93f910e808427130e88faec9d8837e4304c6c9bf5"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          44,
+          132,
+          207,
+          177
+        ],
+        "skin": [
+          0,
+          0,
+          0,
+          2,
+          141,
+          45,
+          159,
+          122
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "27f37e4999b50bc320c4baf1d91f4025cdb3804122bf8198af9231e1c62305ec",
+      "skin_bgra_sha256": "5c09d55f48145a684f3f7f59aa0a93a099ce8f89eb190cfd5cb6d34cd3f9c482",
+      "composed_bgra_sha256": "0bb0a1ec9ae5132d048cd19068f62acbcd51f240db52891bad1b1d217b1afe83"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "6f56820a4b7c83bec63b21c2b3dcd3fea793dd4af80f92eb191427ed235c5d62",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          113,
+          146,
+          233,
+          120
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          29,
+          201,
+          112,
+          231
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "9c09f599ee22a6da7f9eb0d9286fbdcfc8c81020df9e264f1fdd678f3c656af9",
+      "skin_bgra_sha256": "d71c04ef2c50aa82f0e7e89a1b033cef337aeb05c98cc650615ad6b30db21129",
+      "composed_bgra_sha256": "283e6fa559038c9af0f6d762e423c9aacf4883217abc8cf4db30f74671d4f178"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          115,
+          196,
+          253,
+          98
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          227,
+          128,
+          203,
+          113
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "e13d5b23f5f3be75b270cdd5165cb9bbfe08d442a6a98a9173f1572f0a9f4334",
+      "skin_bgra_sha256": "e2ef5ec6a875a049198d3ec266a43231407b9d3033c4099ae86039ea76ce3e09",
+      "composed_bgra_sha256": "be3e5e786531a094804902c01484faebdc30d9e14f77198ca5ed3784b5c92b83"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          71,
+          228,
+          91,
+          248
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          110,
+          176,
+          40,
+          131
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "f91f0b09104fd003bf3268ad86a34a8db9d66c44909950ee4064f134e08363d8",
+      "skin_bgra_sha256": "50bcb9cdcd96a604f4ad9752aa4f3536eb2d690608fa4c0e4b8d2ee110fb67d0",
+      "composed_bgra_sha256": "b5ff1b1201262eff8a2cf1acdbda0fd6f916a99bca3271ef271ae5f8956264a8"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "6f56820a4b7c83bec63b21c2b3dcd3fea793dd4af80f92eb191427ed235c5d62",
+      "composed_bgra_sha256": "348e91dd09204e779142fc1148d5f4665efd336832163875677335380313a3f6"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          196,
+          52,
+          120,
+          112
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          202,
+          125,
+          220,
+          171
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "f300ef9e432d92b291d52c5357607baf610919c6b07433ac7c8e1532b3eb8aff",
+      "skin_bgra_sha256": "218062bd2679fe4890eff20988506f54b38d93b7998cd24eab4d9c0718f716d4",
+      "composed_bgra_sha256": "695038763df4450726ca5ab0d9177839541903aea0cbed534bf5b68822533f37"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          191,
+          114,
+          0,
+          84
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          102,
+          221,
+          169,
+          134
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "0f94650f5a4e5dcd82e01851d9f6a29c9f53d31b1ed675f379dbc8a1da07371e",
+      "skin_bgra_sha256": "7da057d8bd5a00b3dd0a7b414e11a8118a44c2f3ec2d3e845c8d89922e8e568f",
+      "composed_bgra_sha256": "542b0c7c8dbd27322352c1a03c9a977fe5dd4f7eebc375254dd61f425e636bf8"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          49,
+          169,
+          245,
+          59
+        ],
+        "skin": [
+          224,
+          7,
+          0,
+          248,
+          235,
+          165,
+          209,
+          11
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "f49f3c11a20f166ca57abc7646975999be1b57dd08c72b47a995896b32d66ece",
+      "skin_bgra_sha256": "906cf8c462acb24c91f72b8e5fec6d66f5bc11d3fdd934515556423cb09d560a",
+      "composed_bgra_sha256": "04dabed26c6ca2891c1894546d8728ac500e0da202ca5a81756599fde88f0652"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "d7b6ee6902dce9ecb91781f176c696f94588f34829ae617db5e888c5972bd3c2",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          189,
+          29,
+          99,
+          71
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          8,
+          88,
+          41,
+          14
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "57a09d33c12a035295f0fd5d21a3238dff370759733f7029b55f63be23e69859",
+      "skin_bgra_sha256": "4a518ae91f9f0ef901d4915a5ed65ad144e3a2cefd1393aaa148cfc9e2707497",
+      "composed_bgra_sha256": "d2decac3333ad30ccc0ba51a7f8bb21b7e1f32f6d89b0c4f17f00694efb6a191"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          245,
+          157,
+          176,
+          113
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          174,
+          148,
+          180,
+          67
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "46e87e71fb5e6a9bea47a9438f76df0491c1f0e3fcd768f23fef1d777020d76f",
+      "skin_bgra_sha256": "2d143bbf5cf6f5cd61ad0a00914cb06f8c42e8143f5a40c3b0526ba87062d213",
+      "composed_bgra_sha256": "a34b5291157ec4eb5329b5d7ff1a6135b8ba1c33f27d8edd161d792e252fe568"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          254,
+          42,
+          120,
+          155
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          243,
+          166,
+          77,
+          48
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "63d383b5101ead05af902cc9eed017f89539edbb56f313e849177ad515c6ffef",
+      "skin_bgra_sha256": "5c33dc84c9700547bc2471937f76caccb506679a42fe5a1d6487fc7176833e9e",
+      "composed_bgra_sha256": "7782a6ad9e5e5a367a063804eb506b2667c9f58011f7a828fa8bbe68b0eaf165"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "d7b6ee6902dce9ecb91781f176c696f94588f34829ae617db5e888c5972bd3c2",
+      "composed_bgra_sha256": "d5e875a1111619908e01f1f6365b8d677afcd8cc2c5f8a2e77c0f01aec2f9722"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          179,
+          203,
+          202,
+          90
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          135,
+          212,
+          210,
+          59
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "46e4dd338c5743bd090c0f2cf1827ea99f47a314a59143b6b4a05c12a802bf2a",
+      "skin_bgra_sha256": "070b051ec8f859ea80f1d828c0e1e9b84916ae21b35f880a0a1daafe89f3be93",
+      "composed_bgra_sha256": "cea29de59d17a6122d267f02c1ff9aeef225c44404f5d1cef3ae28349d011910"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          54,
+          113,
+          60,
+          131
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          204,
+          213,
+          208,
+          53
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "0a84b8093051929700a4785acb4c783671398737da8d9e84d018f32dc090182f",
+      "skin_bgra_sha256": "197a6316d053c96a43fc9e35eada7484bc011d00edd1fb248e88e9b66a935483",
+      "composed_bgra_sha256": "4c7e56012fd4f6256985b9011019f449e030bb52992fd3320bd4c6e4f477442d"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          151,
+          133,
+          100,
+          55
+        ],
+        "skin": [
+          31,
+          0,
+          224,
+          7,
+          112,
+          111,
+          78,
+          231
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "27ecd20ab78aeee3c1faad0ae396c87f25e64b1968a91264762883477e467979",
+      "skin_bgra_sha256": "77db479c03f8deacc59e83ab359c75bd57b55f9fed75bae6ca728905ebd8f416",
+      "composed_bgra_sha256": "d90bb62df2b38e119c008652c79fcdf6455660c0aaf5bbc2def23a330c09c916"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+      "skin_bgra_sha256": "94aafacbd48febfad2f1202a442ccbb348110653d7aa47b974761bae3a3e752f",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          255,
+          255,
+          115,
+          120,
+          112,
+          35
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          104,
+          252,
+          64,
+          187
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "bdd303018052dd711cf2f6a6b72e10db0840e0c110e5056f1f66d181d7ce4aca",
+      "skin_bgra_sha256": "5159f735d852e01d556bd2109cb71c8cd2f13ee7c99f8253dd8735dae7d390bd",
+      "composed_bgra_sha256": "bc85beb82c4ed32aefcdb561aff66092a43177a236c10d80cb667dd7ca041a3d"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          255,
+          0,
+          0,
+          155,
+          228,
+          246,
+          167
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          9,
+          12,
+          100,
+          97
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "a2ab3af5341c8169b8069690a9d989f0312b3bc26133acf08d1cfb8135293c16",
+      "skin_bgra_sha256": "603a62f3ca1361e124c07b95ba32531aac5a884bc7c72ef57e3691137daec069",
+      "composed_bgra_sha256": "4433f0c324adfdf826cdc6d228e514b99645220a04e7e2c99a58a16c7aaa5f80"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          2,
+          0,
+          0,
+          176,
+          159,
+          231,
+          71
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          212,
+          206,
+          128,
+          9
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "a3d900121240b3f87117d152a9a62910a6116ea39a3657344726e309b488f825",
+      "skin_bgra_sha256": "c0a8566f2dcb10e4c999193963c7c7bf43efcb18f19991898597f40ea461f287",
+      "composed_bgra_sha256": "5aba6676efc2617db787c45fc2430d1c30262913fcd2500f92738180b5a47638"
+    },
+    {
+      "input": {
+        "detail": [
+          0,
+          0,
+          0,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "062402bcc572d2c003678a0552bfe45c79367605801c9a6dcf4d44a4c681d1fc",
+      "skin_bgra_sha256": "94aafacbd48febfad2f1202a442ccbb348110653d7aa47b974761bae3a3e752f",
+      "composed_bgra_sha256": "7bf9dcef84dc8a80e04363651ef07b9e4b438a861e360df14c051970b6ad8fde"
+    },
+    {
+      "input": {
+        "detail": [
+          224,
+          7,
+          0,
+          248,
+          84,
+          239,
+          206,
+          159
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          157,
+          33,
+          104,
+          92
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "eac2a4cf30920555e01b92ba2f143c1bf02bdae9cdaa877abc1a501b95847c88",
+      "skin_bgra_sha256": "6918a30e34ba3ad2e76e1d937a079100a5ae99939d304f361219e494be0826e3",
+      "composed_bgra_sha256": "53f64834884b00cf47416d6f807c71b8b6c23a31436e67207a89da8778822b09"
+    },
+    {
+      "input": {
+        "detail": [
+          31,
+          0,
+          224,
+          7,
+          83,
+          102,
+          16,
+          151
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          24,
+          90,
+          54,
+          178
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "d7cf1be833661377843eb67e20d3c92c10f20624b18d55dee13b9db181c7b447",
+      "skin_bgra_sha256": "9daf7e87b0057e6806d72aa0da9309c1c45066e55153681a3888bac33d1bd26b",
+      "composed_bgra_sha256": "2d84baa1d807e396057aa1430b8c4c4d086497231e90561a4cf94b3beece7450"
+    },
+    {
+      "input": {
+        "detail": [
+          16,
+          132,
+          8,
+          66,
+          155,
+          53,
+          182,
+          93
+        ],
+        "skin": [
+          16,
+          132,
+          8,
+          66,
+          174,
+          190,
+          98,
+          123
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "1996d28331a7311042d43e85298d6029ed93e7d60cdb65d75bdefba130ee99d1",
+      "skin_bgra_sha256": "9aeb31a65176e47e0c5964cb289004677969afc5fd7b5a3bc433a881ff3efc01",
+      "composed_bgra_sha256": "0d0756b6eda2958aa9f4432748fcc9e5e74c27e38e633538c82e61c287a14b81"
+    },
+    {
+      "input": {
+        "detail": [
+          161,
+          147,
+          79,
+          4,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          102,
+          58,
+          103,
+          143,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "80459e0251fe03392fadcafa481571f1e9cc8c42a701264b28f0fb38f62ce0ef",
+      "skin_bgra_sha256": "c11499eba16370250d98c305b3c0b39da9ff740038a7933c7669dd250b1e2a39",
+      "composed_bgra_sha256": "cc760068acab64b45b7af93730b669d6451defce12c30524031d8211403a32b9"
+    },
+    {
+      "input": {
+        "detail": [
+          67,
+          198,
+          85,
+          85,
+          216,
+          66,
+          57,
+          86
+        ],
+        "skin": [
+          62,
+          231,
+          105,
+          240,
+          232,
+          179,
+          185,
+          147
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "cf083a8fd3a75a59a590241a8e48a09b25dac58facb62c3209fd5ada970652cd",
+      "skin_bgra_sha256": "d6424319e6f7ddace34b316849b0e11f31bc20858a2302c3302d5f0bb8f07404",
+      "composed_bgra_sha256": "97733c83275256c93ad6002ac2613ccfd9aa83123abb5b93ccff5dc70d74f171"
+    },
+    {
+      "input": {
+        "detail": [
+          21,
+          9,
+          5,
+          236,
+          140,
+          192,
+          116,
+          129
+        ],
+        "skin": [
+          100,
+          85,
+          59,
+          10,
+          84,
+          238,
+          127,
+          214
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "1eb6fd593a411e46c0961479476de66559ecc72c7b727a94245152567e0df7f7",
+      "skin_bgra_sha256": "5823caf4b128de6632da02552cba94e52445f872c5f68367a6412eebf39b807e",
+      "composed_bgra_sha256": "a1472db954e2f4069dc1eb589c211d910ea269bbac7821888e912e0a78fff599"
+    },
+    {
+      "input": {
+        "detail": [
+          141,
+          143,
+          153,
+          2,
+          89,
+          134,
+          193,
+          110
+        ],
+        "skin": [
+          41,
+          215,
+          132,
+          179,
+          131,
+          213,
+          232,
+          47
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "a071ffd8a9c1701d14258f8e34307016dc7a55e4e098165754581979344a4c3c",
+      "skin_bgra_sha256": "ce9b34a47d080890c910bf239a5788f2de3b4542e3d8accd67b0e03d9effcb0f",
+      "composed_bgra_sha256": "f2c3cac329bfb73c19c03f7e3eeba8aa917c4a1bee09d6a321ae489d1f5e40a5"
+    },
+    {
+      "input": {
+        "detail": [
+          7,
+          113,
+          190,
+          149,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          77,
+          70,
+          61,
+          57,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "f72311e56fe2ee4b7788b8fb7a82364441aea87cd0bb6a1cad75e2311cf81907",
+      "skin_bgra_sha256": "3afcbfdf15acbb5235a6afb5e03b9e4db843f76145d4be49ff264b9dc5d8cb0a",
+      "composed_bgra_sha256": "27b3542efeee4932b8f96cc9c449a7d5765f2abfadd4b78ffc185811a0901e7a"
+    },
+    {
+      "input": {
+        "detail": [
+          253,
+          84,
+          72,
+          73,
+          56,
+          44,
+          34,
+          105
+        ],
+        "skin": [
+          156,
+          212,
+          119,
+          163,
+          222,
+          25,
+          71,
+          147
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "e5042118ca6cb148413429582f7ca7cf0982258d0389c88635c33c04ca0cd187",
+      "skin_bgra_sha256": "127517a21576135c94dbf6265ef996044861f5e1078da185577b473a54449468",
+      "composed_bgra_sha256": "14f34015707fc9f1e4e10cf4be409cf71628ececdb62c6d2f0f83e26adba1167"
+    },
+    {
+      "input": {
+        "detail": [
+          20,
+          223,
+          213,
+          22,
+          143,
+          231,
+          134,
+          109
+        ],
+        "skin": [
+          228,
+          238,
+          96,
+          179,
+          100,
+          164,
+          64,
+          187
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "afcc002389e69a2c6795d12f9617486875cd0d6b573de18f4fe13011a5b44fa1",
+      "skin_bgra_sha256": "a0b5997fb8663cf37fd3b1cf0135ca29cef13a537f2f499e13a45022537b7aba",
+      "composed_bgra_sha256": "e9762a76962d766d9c7d3704055b7aa269584ff09a2b0a02e59c810a552f5b1a"
+    },
+    {
+      "input": {
+        "detail": [
+          203,
+          10,
+          13,
+          146,
+          98,
+          60,
+          211,
+          14
+        ],
+        "skin": [
+          228,
+          97,
+          255,
+          118,
+          61,
+          253,
+          112,
+          227
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "8e619fd21b2979ceebbc3aeba1cc00f873f5f1d692227c5a67bcf4ce1a6a4497",
+      "skin_bgra_sha256": "799f988752fa54a7e7a712f73a9d14b4c1f7f287dcd54487351b6fca115e5c7d",
+      "composed_bgra_sha256": "0f8d897d5abd034b1f204b1edccb7ccfc51ce95eef87c4523b3df20123793b3b"
+    },
+    {
+      "input": {
+        "detail": [
+          109,
+          30,
+          159,
+          1,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          51,
+          68,
+          56,
+          230,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "ba825998dea69ef53b922febc06e4fe55ce73aebe13d70dd66fc7095d20f9546",
+      "skin_bgra_sha256": "c61f03f5ced6de4cf4a270adc1a7f600e0c730896a9587aff080b170d13d9951",
+      "composed_bgra_sha256": "b93620c11a044006d9a3870e580b5aab72fccd25d9f66e67f34a1c2f14fdade4"
+    },
+    {
+      "input": {
+        "detail": [
+          63,
+          18,
+          112,
+          74,
+          110,
+          159,
+          253,
+          158
+        ],
+        "skin": [
+          100,
+          237,
+          128,
+          227,
+          175,
+          140,
+          43,
+          107
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "6af1f228d795acceb239e488096f4271f02051f872ff5b1f8a7186c320b339f7",
+      "skin_bgra_sha256": "31add8e51c052d86275e597e45d38e56fd24b077da68e30eed3eb75e4340693a",
+      "composed_bgra_sha256": "26c428484aa238ad9a1e8e30aed426180123601ae7fea0d0588655a333883691"
+    },
+    {
+      "input": {
+        "detail": [
+          113,
+          86,
+          115,
+          237,
+          228,
+          64,
+          10,
+          141
+        ],
+        "skin": [
+          96,
+          218,
+          41,
+          114,
+          101,
+          211,
+          199,
+          220
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "89aa5f16255f8e876aaeb6392312cc0c37a07d506df26eb89b70f38b679ec43a",
+      "skin_bgra_sha256": "c4a8859e3f74ab5a221f74aa00db68212449dd9a9270565edec8759c83aa3ffe",
+      "composed_bgra_sha256": "3731ab27529ee5801753e1f8a55bafffd38eb5938d9f198f0c94ab5037a53471"
+    },
+    {
+      "input": {
+        "detail": [
+          110,
+          200,
+          134,
+          130,
+          26,
+          193,
+          216,
+          169
+        ],
+        "skin": [
+          224,
+          14,
+          245,
+          217,
+          246,
+          216,
+          82,
+          87
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "a909bb53c0d6ae86e8594937b48cd72a120173cbe282986680f34e09fc26d833",
+      "skin_bgra_sha256": "1e567fb2db1cecff79985cdeb04f590ccf1e82d100519bc291c6154bebf08db7",
+      "composed_bgra_sha256": "961b4d12483f9744ba12d317bdc0e1c4fefe61fe85428aa46fef1a907c566ab7"
+    },
+    {
+      "input": {
+        "detail": [
+          205,
+          198,
+          30,
+          31,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          74,
+          195,
+          240,
+          56,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "163bc55b7ae27bca98f9b7823fb1a3ea7b6c6c129ba68c6cd1125214b084356e",
+      "skin_bgra_sha256": "7cd3e11e9b93ad2a15cff1a5579930c8069736a4c9435aea49c7735b7a4467c9",
+      "composed_bgra_sha256": "c5deeafc55ddf29b2a6c03ecfffb93d2f8804e7ba2aeab5066cc6ec1945caab3"
+    },
+    {
+      "input": {
+        "detail": [
+          225,
+          234,
+          228,
+          218,
+          254,
+          157,
+          209,
+          18
+        ],
+        "skin": [
+          179,
+          14,
+          232,
+          195,
+          124,
+          51,
+          32,
+          41
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "04ac8382eafa4206f0efb4994479c2ea862539d70211fdd21e83fd8e09a36087",
+      "skin_bgra_sha256": "45a0913f2899fec5c494b91aa03afff97e2162ff34057c51abc9624171ba25c6",
+      "composed_bgra_sha256": "42c9f5016ed44f33542b8d4f5da521f5cd91a93ac2f0320a201e28f9e1478e09"
+    },
+    {
+      "input": {
+        "detail": [
+          71,
+          49,
+          152,
+          170,
+          48,
+          85,
+          112,
+          66
+        ],
+        "skin": [
+          28,
+          104,
+          33,
+          143,
+          110,
+          109,
+          54,
+          32
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "59b4046d97532371d5d965f230b2c06c3024e8573359c22b1b577e306c4bcb03",
+      "skin_bgra_sha256": "9d9f854afdc37f401ea29469a53a628b3a3649d633800e066d077d326e610ac0",
+      "composed_bgra_sha256": "da462ab28b7880c2cb3c7c5f1c6b80809b50ad5b585d07490e0e808a07588d3f"
+    },
+    {
+      "input": {
+        "detail": [
+          61,
+          60,
+          36,
+          187,
+          201,
+          44,
+          240,
+          213
+        ],
+        "skin": [
+          117,
+          21,
+          202,
+          152,
+          188,
+          70,
+          160,
+          120
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "59af4f3c702f38e5ca89c79f0bdda2c54363569a153ae8752e2f65a70cc5dfcf",
+      "skin_bgra_sha256": "36ec007a6737820998dda9b14063ba4c5e7667476ca3d6743a8dc8c860268463",
+      "composed_bgra_sha256": "480b34447f12d6b20996dcb105d50974a472573fae9f0f84102ee1204a436063"
+    },
+    {
+      "input": {
+        "detail": [
+          47,
+          153,
+          72,
+          248,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          147,
+          194,
+          161,
+          96,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "1049382d371386de3f77380d437b91829f26e73d89e0da8407ae89cae483610e",
+      "skin_bgra_sha256": "dbaf74334c883e829794d2b1cb16e2afca188b6d00844831149e4f78df9de0e9",
+      "composed_bgra_sha256": "04f3ba2d690bda258619a34eb55b068d22b66a30d759cac5281888a71e0a7f6d"
+    },
+    {
+      "input": {
+        "detail": [
+          51,
+          231,
+          57,
+          218,
+          52,
+          99,
+          234,
+          178
+        ],
+        "skin": [
+          185,
+          180,
+          34,
+          186,
+          109,
+          41,
+          198,
+          253
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "d93118590c352f86fbf17b2468170bcd4576185cf427b0325d14deca7ac7fe02",
+      "skin_bgra_sha256": "9e81e8d39968a7c3f6860e083303f05e1527bddbb0d75774189fc46e23c5c0aa",
+      "composed_bgra_sha256": "1a203494a44fb8c113b8739f0adb2e46c1e1a005431695d459547ecd69da67af"
+    },
+    {
+      "input": {
+        "detail": [
+          158,
+          116,
+          214,
+          83,
+          113,
+          73,
+          60,
+          111
+        ],
+        "skin": [
+          53,
+          31,
+          23,
+          105,
+          193,
+          133,
+          218,
+          212
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "1e79735e50eb48a1efaa36f5e57d6a3fe5c40c57493749eaeaa4a5b64a3e125f",
+      "skin_bgra_sha256": "6e1ec3f43a44d3861f81cdaa3a1a0ab817f2c4f9e1378a1a8c54ae5d39aab138",
+      "composed_bgra_sha256": "75600292f2f7f133e43c43fc817996e35a1b965c075fc4282636975c0d744df2"
+    },
+    {
+      "input": {
+        "detail": [
+          165,
+          120,
+          136,
+          7,
+          55,
+          163,
+          220,
+          180
+        ],
+        "skin": [
+          29,
+          170,
+          149,
+          60,
+          61,
+          97,
+          144,
+          99
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "8631fdeb1401903389a4507eec2fd7fc342b9c69254992baa19d02e72d21aea0",
+      "skin_bgra_sha256": "a7aa5df47cc4b77d9d9ccc2e72524092c62e4d5ea2744b819853849ce3c914cc",
+      "composed_bgra_sha256": "de367173d716338687943b0cdf5694e89b7644666b63961dacfa50f24b5c0e4f"
+    },
+    {
+      "input": {
+        "detail": [
+          223,
+          221,
+          60,
+          107,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          138,
+          47,
+          126,
+          238,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "ec87154474d251d4ad1859da29b196859f963087e006604c5bce04a06a211f52",
+      "skin_bgra_sha256": "86fe1d2cd8e1cea86242e66a8195fcc00105566a59c99982dc03373d7d03edce",
+      "composed_bgra_sha256": "24243b06706a5babcb65b3516e414d4642c97458d05b2fc6ba898e985a6efc5a"
+    },
+    {
+      "input": {
+        "detail": [
+          186,
+          80,
+          81,
+          40,
+          21,
+          201,
+          29,
+          72
+        ],
+        "skin": [
+          255,
+          118,
+          90,
+          31,
+          226,
+          119,
+          153,
+          0
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "e60471c444302d1af1435c04a147cab7990ac443760f227174177d4d9dd93180",
+      "skin_bgra_sha256": "eadf11af6cc791c8fe3c87fe22b40dd02f1c59590e8267e2d839b4c179145466",
+      "composed_bgra_sha256": "ebaadead94685289d3ee0d64b262969b4707ce791cf2b16e3a73ad0ba1cda529"
+    },
+    {
+      "input": {
+        "detail": [
+          206,
+          53,
+          213,
+          156,
+          58,
+          49,
+          40,
+          193
+        ],
+        "skin": [
+          247,
+          134,
+          8,
+          156,
+          109,
+          11,
+          27,
+          154
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "e3cb2d930e8c4bee2311615d5cea03aab0df12b0bedfdf0d834877b66e346a9a",
+      "skin_bgra_sha256": "21257cc47bece8f7c140f9ee47e533bd5fc25153323ccf53be49a40e7cb4f4be",
+      "composed_bgra_sha256": "d4b7eab15c3731918dd52d20ba9b2112bfb61b38b245bdeee9f00044faaf0734"
+    },
+    {
+      "input": {
+        "detail": [
+          217,
+          255,
+          254,
+          147,
+          47,
+          242,
+          187,
+          219
+        ],
+        "skin": [
+          226,
+          107,
+          173,
+          253,
+          108,
+          162,
+          248,
+          234
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "4df5898f6ac7d24cac048bd598aa1757be238a701ecf9e041ac227b04efa3126",
+      "skin_bgra_sha256": "64271d287517399082531160b86f78bcae6d5c9385e0a7b1e8ef1d02436229e7",
+      "composed_bgra_sha256": "800364a51303730d43282d7e7abb89b9d6f8d15e0fca746c312cdd6d1a6d6976"
+    },
+    {
+      "input": {
+        "detail": [
+          84,
+          63,
+          131,
+          189,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          184,
+          84,
+          130,
+          146,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "71b8f06fba37115df973ded5f1f921abfe87f068479580cc3c0a7969ddfd4754",
+      "skin_bgra_sha256": "3f9df266d6b94f991dee608a9dea9daee407cf42ed34d0e6e6f9b9332bb6b938",
+      "composed_bgra_sha256": "80f1fdc315cbda8f0d0514290b83a319c174f315ce20712c33fd3df5a03b5b69"
+    },
+    {
+      "input": {
+        "detail": [
+          54,
+          9,
+          108,
+          7,
+          215,
+          204,
+          78,
+          241
+        ],
+        "skin": [
+          176,
+          81,
+          96,
+          179,
+          124,
+          53,
+          80,
+          26
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "6eb41bd449e1c00deb66343fd76c1836b93b10e6e223503eac7fbaff1fc120f1",
+      "skin_bgra_sha256": "74c0a399b313aa3b3ce97b5cc5625accab213ad4d2fad4603a6326817d281f04",
+      "composed_bgra_sha256": "03f39e520112b923ea01e3350a97eba81056a7b051cec9c99b5fa3a29788919d"
+    },
+    {
+      "input": {
+        "detail": [
+          134,
+          32,
+          205,
+          64,
+          100,
+          75,
+          224,
+          36
+        ],
+        "skin": [
+          67,
+          112,
+          149,
+          163,
+          34,
+          199,
+          139,
+          120
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "4716fa3a399d4dc7f511e37def29bd492e8fc60321f9d83a577a99a7ba40245a",
+      "skin_bgra_sha256": "5e0f66af1b2c07095d5d43b47cca168ea86182345cdf8b6005930ae788143694",
+      "composed_bgra_sha256": "3cfcf8c7123281fb85257b0192c721c72beb9074dbd43190be29b5db36ab7e1d"
+    },
+    {
+      "input": {
+        "detail": [
+          15,
+          26,
+          134,
+          221,
+          135,
+          120,
+          114,
+          244
+        ],
+        "skin": [
+          173,
+          170,
+          150,
+          253,
+          116,
+          124,
+          106,
+          214
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "28789892c7dc83b42482b25f814df96cf99298f61e692fc415405ff1e54c654f",
+      "skin_bgra_sha256": "0774d2a18148824028b3ddf56d0704f662b231385416e1d66b477324980f97a0",
+      "composed_bgra_sha256": "e10268d387329b2f7c2d62f1b0a3d51469cb3613f7789076459f2e832306811f"
+    },
+    {
+      "input": {
+        "detail": [
+          232,
+          207,
+          44,
+          190,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          237,
+          196,
+          251,
+          75,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "6c26ea652f02c8f036e2e709f9bd627faf53c202a59b7dca1eaf6dd7838e1eb4",
+      "skin_bgra_sha256": "6ccecff6c2c7ebca57ab798b3b8cab2fbd40258145ace6951c3e80c5dc21d913",
+      "composed_bgra_sha256": "3cd0b1311dda8b5bbea9d3b503bb220023d9193fc18d64dc487579dfe5506f3e"
+    },
+    {
+      "input": {
+        "detail": [
+          24,
+          65,
+          173,
+          75,
+          49,
+          234,
+          231,
+          42
+        ],
+        "skin": [
+          131,
+          125,
+          144,
+          105,
+          42,
+          73,
+          196,
+          203
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "aec40493e2ea8fbeb0563224bd1214bf21870bf2d033e5d6bed759ba4007156a",
+      "skin_bgra_sha256": "39d72f98be37578e9c0784ce53081c1e43014917dd718ad4c2a1653638e8e220",
+      "composed_bgra_sha256": "c2c8a9906e5a3989b92e6e3b8d80445dbce1e40c5bdd1bf46ede7ab2504fc8a7"
+    },
+    {
+      "input": {
+        "detail": [
+          179,
+          173,
+          209,
+          108,
+          43,
+          155,
+          197,
+          68
+        ],
+        "skin": [
+          3,
+          171,
+          70,
+          254,
+          39,
+          73,
+          28,
+          30
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "b70f53dab3b3abbf3b92a8fdf3ca197514ef76580cc5c064e1cc5a5f91edfa99",
+      "skin_bgra_sha256": "9bb02bec74469a9528a5cb82499bf69a164d2713671138da7dc0248fd12b4a41",
+      "composed_bgra_sha256": "f8cba84ad4330a60b3f3822b10df1164319a57b3ccec81427b9f81d298a62a4d"
+    },
+    {
+      "input": {
+        "detail": [
+          135,
+          97,
+          181,
+          36,
+          62,
+          113,
+          139,
+          234
+        ],
+        "skin": [
+          92,
+          124,
+          98,
+          26,
+          187,
+          42,
+          34,
+          96
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "82fdc9650db1dd1c28417fb4e19a062993c2d6c4d83cc811b4db1817c4615515",
+      "skin_bgra_sha256": "863b826a5c5061b6ba4bfdf4b7f9047b95c365da9f8c108259bc75f7515db65b",
+      "composed_bgra_sha256": "db49742d277b862cb2ff7a0daa6b915c4c4f97315e5adc62ffbc6f90c2639a31"
+    },
+    {
+      "input": {
+        "detail": [
+          105,
+          73,
+          198,
+          205,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          111,
+          126,
+          183,
+          56,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "ecb88832b611de3bcc75e16506dfa59a0e2fdfd126b1e39aeba7730a6b404304",
+      "skin_bgra_sha256": "b0bfa549cf625ec776178fc61e33ad5c56a1adba0fdce2b2678cd6b201d112f6",
+      "composed_bgra_sha256": "010c004ac3836a5ca4725d90797afd123cdada8e5b1f4cadd4e546dd69b1ed05"
+    },
+    {
+      "input": {
+        "detail": [
+          38,
+          138,
+          118,
+          39,
+          104,
+          172,
+          71,
+          55
+        ],
+        "skin": [
+          175,
+          192,
+          170,
+          47,
+          169,
+          87,
+          127,
+          107
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "41e3d5714c95d20d02162e657e6060510b0fbd26790d9f7ddb85b25569b7766a",
+      "skin_bgra_sha256": "b0b137c230889762f2803dbfac746e08139277a6df7884479f324b37e59eb017",
+      "composed_bgra_sha256": "55152b275b1b21b9c9877f406322e1936b246d23a35a4c66cda54bf63b42b71a"
+    },
+    {
+      "input": {
+        "detail": [
+          34,
+          252,
+          56,
+          171,
+          134,
+          139,
+          119,
+          88
+        ],
+        "skin": [
+          118,
+          215,
+          204,
+          224,
+          31,
+          0,
+          246,
+          92
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "11c8347b1d8f630f626aa81fae03c2b85d88e77c596e413b98b7f0f9cd5331a0",
+      "skin_bgra_sha256": "1f9756c31326fabbedf0acaded5344e58557aebbc2e1a594b67e836f4a744522",
+      "composed_bgra_sha256": "b05d169e0e23caab4e2ae794d5e6dc22220f341fe960771387a17eaae1fe651d"
+    },
+    {
+      "input": {
+        "detail": [
+          114,
+          67,
+          207,
+          202,
+          30,
+          179,
+          115,
+          245
+        ],
+        "skin": [
+          215,
+          3,
+          55,
+          103,
+          122,
+          58,
+          69,
+          192
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "1f577cfb74932a73de3702f9f9b4d59892a1a7d7b677803291d5292c99935370",
+      "skin_bgra_sha256": "0f76eaa00e2cc977d50117af455b01d85e5b1ee2a69988b7723fdd3d9e46f02d",
+      "composed_bgra_sha256": "1a3b1e72b02eb8dc4ed5ff1841e4de77b71ac9ea33eec3c73fadcc1a105e26ef"
+    },
+    {
+      "input": {
+        "detail": [
+          77,
+          14,
+          189,
+          33,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          136,
+          11,
+          107,
+          249,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "d1ae54fb9f9b94853d0dc384ec28e0cd9e7798dfb40f2c039975835db1d6db50",
+      "skin_bgra_sha256": "f63ab89eed23ea209795a498c6d345780779812f6a5fe7158a236e59b1aaf3c8",
+      "composed_bgra_sha256": "92dd2ec50ec820c5b3dedde84ae205b1e76ee6460a48642e3af6e2b8428c0541"
+    },
+    {
+      "input": {
+        "detail": [
+          145,
+          133,
+          36,
+          234,
+          176,
+          207,
+          241,
+          137
+        ],
+        "skin": [
+          6,
+          207,
+          173,
+          74,
+          75,
+          222,
+          123,
+          170
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "c767112a0034e40f351266526b8f5517c63ba570204005bfc23d0aa832847ed1",
+      "skin_bgra_sha256": "467d4af925795458daf6e13d593c41c8a91db1fd728ce30c381c0ecee1477338",
+      "composed_bgra_sha256": "3b83036c9099847133aa24cae2cccced033a6b94c3cf599a817e6aa861368b90"
+    },
+    {
+      "input": {
+        "detail": [
+          241,
+          170,
+          103,
+          54,
+          19,
+          252,
+          225,
+          37
+        ],
+        "skin": [
+          168,
+          121,
+          64,
+          96,
+          219,
+          254,
+          27,
+          83
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "bde8f51b87de247d7f8abd92a16cb76d751a917d613d79307bf5f8144e907a73",
+      "skin_bgra_sha256": "347848bf50ed69cc7e2897d377d2b863f75100b7676388747517ae0103dbdcc5",
+      "composed_bgra_sha256": "826cf74965f391c5180be8c9d3e42dbf24ebd220d4135010b7962bebec3791f1"
+    },
+    {
+      "input": {
+        "detail": [
+          14,
+          114,
+          78,
+          160,
+          143,
+          32,
+          58,
+          246
+        ],
+        "skin": [
+          49,
+          186,
+          47,
+          133,
+          235,
+          249,
+          186,
+          131
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "1d6b80cfd2dd63b76bcec1521a65d6cb7f580ebbcd0be7f8dacd0dd77e1256d2",
+      "skin_bgra_sha256": "90ee7c045fda05cd9c78783564861d27934987a3723aa278e216b8c935423962",
+      "composed_bgra_sha256": "f07ee57b09c4faf91217a5fd255f5d378571266654c02e748774490867806800"
+    },
+    {
+      "input": {
+        "detail": [
+          203,
+          226,
+          155,
+          0,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          89,
+          254,
+          253,
+          21,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "0b34c2f9c5c70f67162d6aee2a390fe4ef1322c5d7da8e78deb19fd263bbb20b",
+      "skin_bgra_sha256": "fd68553337420f358261e920cbb561eeb189b252ea70af26ffc027b98dba7f94",
+      "composed_bgra_sha256": "c9cac8a0b1bfc6601980f8626cfa30145c014e75bf54799f059a6740a09cb59d"
+    },
+    {
+      "input": {
+        "detail": [
+          35,
+          90,
+          160,
+          196,
+          129,
+          112,
+          29,
+          190
+        ],
+        "skin": [
+          164,
+          83,
+          101,
+          90,
+          241,
+          150,
+          237,
+          131
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "f7258297548ae9c349efb3219cce45bdb01bf04152a57551901147e5aa71e45a",
+      "skin_bgra_sha256": "ed3297507540931479a904f6c8308c638d5bcea6508c25351681d82ca67d44b0",
+      "composed_bgra_sha256": "2ffa4f4a68d6b6245d1746b48279fdbdc56edc128c69312c881978eeb15bfbaa"
+    },
+    {
+      "input": {
+        "detail": [
+          122,
+          92,
+          105,
+          105,
+          73,
+          230,
+          231,
+          18
+        ],
+        "skin": [
+          162,
+          2,
+          183,
+          254,
+          106,
+          245,
+          26,
+          187
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "abad0d90a4c57270cb93ea1e8806699af1d8cdb53bfa4c818352d39f8ade5d4c",
+      "skin_bgra_sha256": "d3d40a0bfb5c8d7081ee6c1e88224f8348acfe897b01f9e007ff268fa9552bfe",
+      "composed_bgra_sha256": "72c2315666c25d8b10975f4c2046aea930f68de3ee81eedb75adb5d001649349"
+    },
+    {
+      "input": {
+        "detail": [
+          148,
+          245,
+          213,
+          64,
+          4,
+          83,
+          152,
+          137
+        ],
+        "skin": [
+          120,
+          208,
+          164,
+          133,
+          195,
+          46,
+          255,
+          188
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "8351b722855779acf1135b26a325af65959cb884873e94b05c4da430a9f356c2",
+      "skin_bgra_sha256": "f7304c26424be303bc7ef06d735c1ef1e310b6bc72e3e261855b7f371c270c51",
+      "composed_bgra_sha256": "a1866f5600e10f6a660f8fce8de407d3ad44cb88e57053ef0e94ad505828ad39"
+    },
+    {
+      "input": {
+        "detail": [
+          241,
+          59,
+          35,
+          156,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          215,
+          147,
+          242,
+          153,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "2342f0dffbbe5726fe81dcd35c27410b053e5a1b2f4550af84c060566c2005dc",
+      "skin_bgra_sha256": "9c77a9175fc073afe9f7076f752766ae07b4756034899fe18650516f8f1d023f",
+      "composed_bgra_sha256": "b6f76b1cce828dcf47fa139a37b3ea0d7267cb2bbda28fafdb21778c287a97be"
+    },
+    {
+      "input": {
+        "detail": [
+          82,
+          162,
+          113,
+          222,
+          81,
+          93,
+          68,
+          1
+        ],
+        "skin": [
+          28,
+          100,
+          220,
+          113,
+          211,
+          178,
+          176,
+          98
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "d2de2dc4032c94c5c788dc6260bbfcc7ecf726db5350bfb67c66727f68f09ecb",
+      "skin_bgra_sha256": "02b54e74f7b809c7628c6533aba5cbb33fe13110695e5a9927caa378e36a3085",
+      "composed_bgra_sha256": "e39592d46870a4f5b48da445f9ec8b448e44a63137d9a583796e2a6390982393"
+    },
+    {
+      "input": {
+        "detail": [
+          232,
+          204,
+          10,
+          210,
+          7,
+          140,
+          250,
+          162
+        ],
+        "skin": [
+          195,
+          124,
+          68,
+          105,
+          70,
+          206,
+          212,
+          241
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "8ef78dbc5a88df9ec43409d5cd9d88b60a37cb88f9ec5981197dec26226559f3",
+      "skin_bgra_sha256": "67bc704ac299fd4ee8b99c7b2eb043c4e458bae335881c5360f456654bf242eb",
+      "composed_bgra_sha256": "2d67e16225e01405a7f0921637caf3403f52841c84e3564cebd9ff4f355f1c0d"
+    },
+    {
+      "input": {
+        "detail": [
+          227,
+          213,
+          235,
+          91,
+          100,
+          200,
+          2,
+          193
+        ],
+        "skin": [
+          11,
+          195,
+          25,
+          191,
+          160,
+          214,
+          117,
+          157
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "a34dab588e1c7725e2c93f5427526bd47b199d342c17dd11eb65ec7397203681",
+      "skin_bgra_sha256": "4a88d9bb0f571e05a4f73c5acfc653a2bf135519db85541097c2ea90fc930595",
+      "composed_bgra_sha256": "2ec8617946057893697f6f194412c310b5951862f0a1e5c92d3c76c0891f60c4"
+    },
+    {
+      "input": {
+        "detail": [
+          136,
+          75,
+          154,
+          167,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          172,
+          76,
+          215,
+          197,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "f5645cdb3754f20d155bbbcd0c87691e8ad6e65a3d965f6dc6fdb09094b9c570",
+      "skin_bgra_sha256": "f5ee1e2c1900d49d9b7dde457ca489210e11bf2c042de4b057f850ec922946e5",
+      "composed_bgra_sha256": "b5e69635c586e99f36c822f6fa8093fcedb9c70a40c6194f610cc956f60fe75e"
+    },
+    {
+      "input": {
+        "detail": [
+          204,
+          51,
+          140,
+          164,
+          242,
+          2,
+          132,
+          252
+        ],
+        "skin": [
+          237,
+          115,
+          149,
+          219,
+          66,
+          149,
+          231,
+          176
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "62471ac258c324b183afea15f6a232c7b5784c564a9182dff3297ab0730b010f",
+      "skin_bgra_sha256": "e1faa9237fdfd10f8f31304a519db75f3ec8584fc370033ff084fdff59726849",
+      "composed_bgra_sha256": "72510ce69a235de4012dd680f31ff655aaaf1ec9debd79c4416fd6325400b558"
+    },
+    {
+      "input": {
+        "detail": [
+          106,
+          42,
+          37,
+          81,
+          187,
+          192,
+          56,
+          15
+        ],
+        "skin": [
+          147,
+          144,
+          141,
+          232,
+          245,
+          84,
+          146,
+          28
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "a129a6e42b7bcec65dfb02ec8d2ae1397883ad1602ff3acd779a7f5c71fede5c",
+      "skin_bgra_sha256": "f0c7ebd73a310606692d89a6558cfcddfb51a85114fa1d6aee0b19aad1a09683",
+      "composed_bgra_sha256": "c8b8deccaa33df1666341f872cf83654780af369b1476d927d7a2d9a845bbec3"
+    },
+    {
+      "input": {
+        "detail": [
+          15,
+          222,
+          152,
+          183,
+          53,
+          55,
+          25,
+          207
+        ],
+        "skin": [
+          229,
+          254,
+          107,
+          141,
+          85,
+          154,
+          101,
+          1
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "53dbe3992f119f43e39a6c73a837a215d5aa8c16e39a535826183a86382fa063",
+      "skin_bgra_sha256": "01f9580d3bfff766b4b5c2b4e1ae005bb8dd96611f9688837a856341e903709a",
+      "composed_bgra_sha256": "a86ecfa500998ba2f54857fa302ae083227995fb4652130a09c6d552276cbda6"
+    },
+    {
+      "input": {
+        "detail": [
+          117,
+          229,
+          47,
+          230,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          54,
+          218,
+          47,
+          133,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "81e26dd8b45eeb1fd038d0a4e7170bc74e6d382dc7350c897e7b560fd75f25a0",
+      "skin_bgra_sha256": "3443668a8a59dc22d1344a532a96346f2f0fb3552e9ea8a2f3d09cc05b18c8fd",
+      "composed_bgra_sha256": "a4c2849859aff4207fbee0e24c08a4ed1199e80732e8b5ab5aa5c040289b1938"
+    },
+    {
+      "input": {
+        "detail": [
+          185,
+          1,
+          199,
+          36,
+          174,
+          189,
+          226,
+          37
+        ],
+        "skin": [
+          140,
+          91,
+          1,
+          49,
+          218,
+          128,
+          120,
+          117
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "03e7be602e9710f0579d175fd4f1f7adeea661ba961fc68dcda68c5cc92aa3c6",
+      "skin_bgra_sha256": "79f9c3c213cb0ec012811fd6414fff95e0f0c8ac6d54e4dadd9a0cce2ee5c2c4",
+      "composed_bgra_sha256": "e91872333269986a69be53dc0c34894d5e9820c743c9049ae406efb15a6db75a"
+    },
+    {
+      "input": {
+        "detail": [
+          78,
+          111,
+          123,
+          166,
+          197,
+          193,
+          148,
+          25
+        ],
+        "skin": [
+          117,
+          211,
+          230,
+          250,
+          183,
+          59,
+          65,
+          250
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "977fba280905e940cdd1cf587935e653fe29e47b5dce2975c649940d8bd2f664",
+      "skin_bgra_sha256": "8ad1d303cb9f22b4aa1ee107f319ef0c270b4e957bcb372eeef40348cf45a76b",
+      "composed_bgra_sha256": "3d7298a6217328ce9542ccd91bce96b399b24095e531225ca3cf893449bb627f"
+    },
+    {
+      "input": {
+        "detail": [
+          99,
+          211,
+          221,
+          167,
+          172,
+          220,
+          116,
+          242
+        ],
+        "skin": [
+          161,
+          24,
+          161,
+          226,
+          101,
+          141,
+          68,
+          102
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "c7b454b5256641d78016ea3098610d7bfa06bbc1684110375a81e7c2d7988cf5",
+      "skin_bgra_sha256": "b89a170e579319f0e7024edcf1af5668ddb1089a60637929144b389bb51a261e",
+      "composed_bgra_sha256": "ea20cf67ca6a61bba96fc50debf1619c23c54a990dad96a68138ce71e4d2e408"
+    },
+    {
+      "input": {
+        "detail": [
+          21,
+          44,
+          208,
+          11,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          250,
+          251,
+          255,
+          22,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "3de74c0dfe365f5ee3f558a630235f6ab6427a97a56eb365808acc05e53ab311",
+      "skin_bgra_sha256": "de1fd6b58b6a12ae19deed3aec5cfaba18627930afa86ea4bbb13817a0a2e30a",
+      "composed_bgra_sha256": "90b1522058ef8b6b75bbc15886682c2e348c28fcd13d3e4b2cbf6a903ce7d407"
+    },
+    {
+      "input": {
+        "detail": [
+          54,
+          170,
+          14,
+          20,
+          203,
+          196,
+          147,
+          99
+        ],
+        "skin": [
+          72,
+          12,
+          118,
+          105,
+          42,
+          21,
+          157,
+          154
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "b8aada2b1c9199a1ef684cbd05b59361a77bd986a4dfc70bf1b88900d52fc72a",
+      "skin_bgra_sha256": "762838587d2912b4b468b183ff4e427b0c7f6a7437e540b6394f1ec7214681fe",
+      "composed_bgra_sha256": "aaea7d2b69a08bee12f1281183e3465141df266b9627b7e7239fd9336278b4b4"
+    },
+    {
+      "input": {
+        "detail": [
+          159,
+          155,
+          211,
+          74,
+          15,
+          63,
+          94,
+          60
+        ],
+        "skin": [
+          139,
+          15,
+          176,
+          57,
+          187,
+          223,
+          230,
+          221
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "557588e16368d39b20ba1d8a47b2de86d264ce0f410d86eeaded3e0ad5634788",
+      "skin_bgra_sha256": "baa5057b03da2dfe4cef3df8b2b11e2201767d77f17fa8963c84cab662f61b39",
+      "composed_bgra_sha256": "4a5b2309a368ebd4aeae83cd7e33d652716e6dae8c6b3656b35db3bde3302f41"
+    },
+    {
+      "input": {
+        "detail": [
+          91,
+          143,
+          173,
+          208,
+          41,
+          184,
+          108,
+          59
+        ],
+        "skin": [
+          16,
+          52,
+          194,
+          172,
+          209,
+          73,
+          231,
+          26
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "4220a5caac128b810e012ed74b6a66e4e3f15ff0a91bc0de4269920b88706d4b",
+      "skin_bgra_sha256": "c8a0cd8b06c8e0285a6c5e9f8d8b327c9dca9ee9ef88bdf3f0ef07fc50912ad5",
+      "composed_bgra_sha256": "56e6aa219370d808de1621f42e35a542045e28fc65115c6670b2bcca1f205ca0"
+    },
+    {
+      "input": {
+        "detail": [
+          210,
+          55,
+          81,
+          125,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          226,
+          238,
+          53,
+          53,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "86b5cf72faeb72b4dcd8f679cda8e6719dc17bd032cc975554b4d8bcf8f02529",
+      "skin_bgra_sha256": "00bb24cdb42e5f74e8b9201510d928e12fa64aaafa9f6c54045539eeccb5c7dd",
+      "composed_bgra_sha256": "f3b44b93f61dde5d2032fe5673afb4feaa3e6bc2e443fb7b6dc03fdc1030fb21"
+    },
+    {
+      "input": {
+        "detail": [
+          149,
+          103,
+          138,
+          60,
+          243,
+          83,
+          72,
+          191
+        ],
+        "skin": [
+          109,
+          205,
+          145,
+          1,
+          28,
+          210,
+          76,
+          219
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "a18a4a5fef9d5e8066dbd7b781c2337301a138dfc6590ee8302e5e56a29a3021",
+      "skin_bgra_sha256": "a1a496b699432a6304c3d6e866ce75a861b94afb7ad4dbe2d53e861484e45619",
+      "composed_bgra_sha256": "9de18e667b41725891ff9ff1a332018274b40078df5e862a8f37a1712c26afbd"
+    },
+    {
+      "input": {
+        "detail": [
+          98,
+          81,
+          95,
+          175,
+          33,
+          28,
+          152,
+          192
+        ],
+        "skin": [
+          110,
+          249,
+          134,
+          249,
+          34,
+          118,
+          1,
+          125
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "4646d7b8e4fd07eee362f63261d022547c91a9a324ea4084b6cd9f452eb94877",
+      "skin_bgra_sha256": "b6c462fb65ecc988729ab158d23e2f098145706e0852deb7f321ce18e7f4500a",
+      "composed_bgra_sha256": "ed7c931a54e5fb0bf218f2e4e62b850e304d1a352589c1c503c8b24743133739"
+    },
+    {
+      "input": {
+        "detail": [
+          90,
+          156,
+          242,
+          124,
+          11,
+          212,
+          189,
+          131
+        ],
+        "skin": [
+          75,
+          178,
+          154,
+          31,
+          131,
+          57,
+          150,
+          86
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "40e6d0b43f3205aca4036005d11a451fc03259c9afac38c5ff8ff189bd8b6103",
+      "skin_bgra_sha256": "5f79b8315edb438fd034411f8d5b9934115fa82e7571d2d01b00258cf799ab7c",
+      "composed_bgra_sha256": "704c7c095766ae45fea7ffbafcff74b5b35dd9aec452d6ac4b82eb60f132cb51"
+    },
+    {
+      "input": {
+        "detail": [
+          165,
+          95,
+          114,
+          135,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          175,
+          123,
+          34,
+          131,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "998add7d54f46781eaa3c08643ea16a5b8deba55891a12fe0cb14378f366ee5d",
+      "skin_bgra_sha256": "61f5723f24b22c7f9eb1ceb8e083a0f624c8068d7277417b5de70e64f0daebdf",
+      "composed_bgra_sha256": "6b3acd2140d2a4bcf7e4befc99c13af2df9b093852b4aeb94ee9652012e43e37"
+    },
+    {
+      "input": {
+        "detail": [
+          88,
+          204,
+          22,
+          177,
+          6,
+          39,
+          39,
+          63
+        ],
+        "skin": [
+          244,
+          232,
+          100,
+          141,
+          94,
+          4,
+          243,
+          48
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "36a21fc6c04526ec84136794db54475376af87c7ec8a6ccb52e9975ffa73e933",
+      "skin_bgra_sha256": "ca87d38b1097c3c3bf3fd2a6e01b51a2e3ab9d28534908300b3e23b18992e065",
+      "composed_bgra_sha256": "541fbf705574ce3dc14209885da5f0050dad6f4064e1cd92ce4c4eb823947271"
+    },
+    {
+      "input": {
+        "detail": [
+          219,
+          118,
+          5,
+          237,
+          118,
+          210,
+          72,
+          152
+        ],
+        "skin": [
+          237,
+          34,
+          65,
+          135,
+          98,
+          60,
+          39,
+          70
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "faf2028ad4f9332c14b11f7c144198274bd0282e92598699ca1c3a64a9d91681",
+      "skin_bgra_sha256": "496ff2f86acf490173eae8dd59a53b7fb584519a15679efe60056326c2cca783",
+      "composed_bgra_sha256": "b248abe86ecb87ef089b7e9f8fb55bfc317c47402acbb7a173d3ff504c1dcdb7"
+    },
+    {
+      "input": {
+        "detail": [
+          251,
+          168,
+          83,
+          151,
+          150,
+          86,
+          21,
+          179
+        ],
+        "skin": [
+          163,
+          240,
+          255,
+          120,
+          101,
+          97,
+          132,
+          211
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "d6d6ce922e14c62a72cd6341ca5046bc28d85510d513cb0b1688551c8518fdfd",
+      "skin_bgra_sha256": "a6adb431eb190b62b488cbd841470dde5167784488e57527aa33839d36c79bbe",
+      "composed_bgra_sha256": "c18beedf14144989049abad4945a5dbfdf9e7fc0eb1d4d02453fdcd55733a6ca"
+    },
+    {
+      "input": {
+        "detail": [
+          253,
+          88,
+          32,
+          13,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          232,
+          229,
+          53,
+          238,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "74e1b7f3d3e4753fe0dc25715121817aec74e1074f05a76d38ba12a68da9ed02",
+      "skin_bgra_sha256": "7f2eeebf999ed5a280e72dd84b2ac5b59c12711107c930c6e4be1e0e8bf17c46",
+      "composed_bgra_sha256": "610e2e66898ef10ae1b9b2fbf1c762a2fd5b7684d2c8c31b7833536dd1f4885a"
+    },
+    {
+      "input": {
+        "detail": [
+          17,
+          40,
+          217,
+          144,
+          6,
+          210,
+          186,
+          1
+        ],
+        "skin": [
+          251,
+          233,
+          117,
+          24,
+          26,
+          7,
+          93,
+          146
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "9ada1ac1943bc1c25761a4b24913e3905cd5a39c7a298c312ea95da489d56ee8",
+      "skin_bgra_sha256": "e146c099ded8fba2ec999a1d8391fb2f34874541773c1d164135ed3b90f4fbd2",
+      "composed_bgra_sha256": "17e37b0cec8c575ac1e345c12cc9fa0443bf01d4cd28067fc3076ff867719d0d"
+    },
+    {
+      "input": {
+        "detail": [
+          58,
+          207,
+          44,
+          1,
+          73,
+          207,
+          188,
+          171
+        ],
+        "skin": [
+          253,
+          122,
+          53,
+          118,
+          160,
+          200,
+          251,
+          67
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "91b112b7142b40444c4148aaccc1037752f0fde5d3257cdd010eafeb63b1636b",
+      "skin_bgra_sha256": "033d81c8edc1e0d6a74c5ce5a08d05001e8e4854a98bed268e0dab961d45c859",
+      "composed_bgra_sha256": "14c3d452935e406f22e4fdb4a34424ec6526fb223e45119344ef75b04a074d11"
+    },
+    {
+      "input": {
+        "detail": [
+          182,
+          26,
+          221,
+          162,
+          187,
+          134,
+          141,
+          30
+        ],
+        "skin": [
+          213,
+          144,
+          255,
+          22,
+          154,
+          78,
+          253,
+          239
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "48223ae5cc0c19de9309a5dc9c3f3418f99c6de2134076aa89be1ca7e221b184",
+      "skin_bgra_sha256": "bc1d338a6c739bb1b4b6a0aaef1e37d88a2382367cf7ffe19ac11dea401f3171",
+      "composed_bgra_sha256": "8d78fb0c6390e44c13fbfcf6a53680263cb19eb1fd6fa0d2a5058086ae177163"
+    },
+    {
+      "input": {
+        "detail": [
+          183,
+          118,
+          173,
+          118,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          80,
+          122,
+          116,
+          67,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "1102c281792f0504f86c8bb3f699390d9f31bbad2fa989ad19d0a98bcf546312",
+      "skin_bgra_sha256": "c7c78a68a59905c77fdbbf2640134d2688e488e86f2c7a2b951c2f265fa88287",
+      "composed_bgra_sha256": "e7996def87f4f0f95269ce83a9f4aaf9020f09b9969603c0b82403b720882ce6"
+    },
+    {
+      "input": {
+        "detail": [
+          80,
+          118,
+          5,
+          231,
+          141,
+          154,
+          155,
+          157
+        ],
+        "skin": [
+          219,
+          16,
+          137,
+          211,
+          153,
+          37,
+          23,
+          240
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "5eb3ab3b89993fbf1a6a62c09f13a3244c31f099e0b517dcca53c671785cb1ae",
+      "skin_bgra_sha256": "08fae6b03dd5ac72f0e0aaa3d80d580dda814b5aff9e4c4462335d42169d47f8",
+      "composed_bgra_sha256": "df9ac8da00802c93256e575335e47137e1c9819018edf8cc852cbefacfa3b30d"
+    },
+    {
+      "input": {
+        "detail": [
+          13,
+          223,
+          17,
+          54,
+          6,
+          125,
+          159,
+          114
+        ],
+        "skin": [
+          153,
+          147,
+          158,
+          217,
+          251,
+          44,
+          200,
+          192
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "4ceffe8ca0ac4e49c2becc89a718a61a52f60f8882602d2b9624708835dadc69",
+      "skin_bgra_sha256": "d344e9ea2f74f9948d66f4255522d8439088b1b11219b0f246a3d3abff8472ba",
+      "composed_bgra_sha256": "cb164d42be3d5abeae4c75f2621f17073ceac8033b5b39b3a292cf982ccbdd83"
+    },
+    {
+      "input": {
+        "detail": [
+          96,
+          117,
+          174,
+          93,
+          14,
+          147,
+          157,
+          116
+        ],
+        "skin": [
+          30,
+          180,
+          212,
+          235,
+          139,
+          133,
+          149,
+          92
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "da84168fd541f94e47d8b01962f2c0b463fc609e3955ed498b496bf257ac6fc9",
+      "skin_bgra_sha256": "3fbcc3d68a26b1927d8e62d1e5a6ccbd6ad2e39687591263bd7a935b1b36078f",
+      "composed_bgra_sha256": "8f33459e721cec9238bc81e7abe0356be9b24c30c432fa1459e76f47c3d080f9"
+    },
+    {
+      "input": {
+        "detail": [
+          132,
+          133,
+          244,
+          75,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          116,
+          6,
+          254,
+          189,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "3c7dea8d0534d2be23486010250186bcad02c66604b0c678a04383d50dc0c157",
+      "skin_bgra_sha256": "6b21283e753f10122091d7f6636ee9fbd8d922e7ed98c61cf9f70172bc701eed",
+      "composed_bgra_sha256": "aeaeed78f7669d842fa1d56dc25b1056fdaa88fe3de89a4f26e0d867e3137792"
+    },
+    {
+      "input": {
+        "detail": [
+          214,
+          72,
+          80,
+          206,
+          0,
+          245,
+          24,
+          111
+        ],
+        "skin": [
+          131,
+          36,
+          206,
+          167,
+          35,
+          25,
+          88,
+          129
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "ce626180e140610abf5ce7705baee9895cade69ee9d276134d31f2c04fa169aa",
+      "skin_bgra_sha256": "9b8e8de4363591042b933201313899643c32235a3532445acee9550b6cf4496f",
+      "composed_bgra_sha256": "aa6d14c7084e1288efbc8908c26c7aeac27965f104ca4b1b5b404cb813323e8b"
+    },
+    {
+      "input": {
+        "detail": [
+          87,
+          253,
+          113,
+          26,
+          233,
+          18,
+          183,
+          60
+        ],
+        "skin": [
+          81,
+          64,
+          132,
+          168,
+          46,
+          109,
+          234,
+          156
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "68c19382800b2d67dfac37d06be4d4fd2385a4cbefdb60d9275dc35407e4a150",
+      "skin_bgra_sha256": "7ef5ba94e0f7c310d12093cd1fefb577d0c6f3892cceabcf43e720df8837fa50",
+      "composed_bgra_sha256": "80e0fdb4e1180d4db1b5523746e1af7d830ede7687e79de30046b1e4527d8098"
+    },
+    {
+      "input": {
+        "detail": [
+          172,
+          116,
+          173,
+          50,
+          242,
+          19,
+          204,
+          207
+        ],
+        "skin": [
+          8,
+          49,
+          91,
+          166,
+          236,
+          216,
+          52,
+          134
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "3ee6a01c9e64a4145f40c396d420567f2e68b3e9275d68416b6b7255f42acace",
+      "skin_bgra_sha256": "d91ae56ac741a6433c19931e56eb5298faf4a088d4af830ae413de1b65c575cd",
+      "composed_bgra_sha256": "3342ff733ae101b07891b523cfdd8c9883028fc18512a228773e4be68409a861"
+    },
+    {
+      "input": {
+        "detail": [
+          107,
+          64,
+          10,
+          179,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          174,
+          131,
+          8,
+          28,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "548364ffeb439fd5d90b9b9933e096c9ad11b7ec717939cbb93545e4d5663717",
+      "skin_bgra_sha256": "7365beeada330301b167b113edb1791fadc7ed966d2e0795734920435cbe716e",
+      "composed_bgra_sha256": "053af5d713cb224810012a0cc8f9571371f478f3c5efc5322dae444edf8696f1"
+    },
+    {
+      "input": {
+        "detail": [
+          243,
+          46,
+          74,
+          23,
+          173,
+          188,
+          205,
+          232
+        ],
+        "skin": [
+          206,
+          48,
+          71,
+          117,
+          13,
+          91,
+          157,
+          204
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "b5a20ce705377ecab110c10b5171551951642a9de8d262dcaaa78ee92927c3ee",
+      "skin_bgra_sha256": "2a72415d213274a8ef307528ee75af4dfc03362558cf6960483d9c6689b42127",
+      "composed_bgra_sha256": "bf7fdc031e7e2121a012f58fbd6509ce2d53f45ac945bf48984b357b76aefedc"
+    },
+    {
+      "input": {
+        "detail": [
+          8,
+          244,
+          131,
+          193,
+          113,
+          168,
+          220,
+          75
+        ],
+        "skin": [
+          206,
+          68,
+          247,
+          217,
+          196,
+          37,
+          76,
+          0
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "8acd038015e3d0b8727dde68ec8ace608ebe260a0b216a5170a9b6e15b9e906e",
+      "skin_bgra_sha256": "6b6dc26fabb1a2a68353871b2b63d40e7e1663b0e0d18b2ed60142c590fdfb34",
+      "composed_bgra_sha256": "6892256ea7940480964182dc26b780806b0acb0e7d3fa0c134bf4af4f05ab468"
+    },
+    {
+      "input": {
+        "detail": [
+          130,
+          166,
+          26,
+          38,
+          139,
+          205,
+          242,
+          142
+        ],
+        "skin": [
+          112,
+          13,
+          56,
+          199,
+          173,
+          142,
+          155,
+          77
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "1d8b82539042cfa88da36eae317cd1a7eb12478612dd405e6e741cea79d2d6c1",
+      "skin_bgra_sha256": "186dd25a4e131b9e7dde718a54fac06c295a8850a3801b675e9cb6d0112df956",
+      "composed_bgra_sha256": "0cad556e10f11251d86439c5f314d0bcef77981d13b4e1c714434f1c8d4ad8c2"
+    },
+    {
+      "input": {
+        "detail": [
+          139,
+          8,
+          24,
+          2,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          125,
+          177,
+          148,
+          84,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "1c1bd6c6fb00b77ce32f3150159e8cdfb9f2afe5194e1e2ed55e11599e9576cc",
+      "skin_bgra_sha256": "8a476135a386c8ac3f56c138cfe2364d5ef8ac6b59ec0b7d9d49cffa2e777f14",
+      "composed_bgra_sha256": "70fe1cc15e61093dedb54ebea85cd088ac99c69e27fbf433fee100da03326dbd"
+    },
+    {
+      "input": {
+        "detail": [
+          63,
+          85,
+          12,
+          182,
+          196,
+          38,
+          85,
+          213
+        ],
+        "skin": [
+          151,
+          110,
+          54,
+          103,
+          56,
+          235,
+          233,
+          119
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "59cac6d6c9b9097f64529fcff16340e12c3f9a66b6bdffd62ed928b327a291e0",
+      "skin_bgra_sha256": "d842cc67ef0f1af4a92c1b987b9fb360230b0ade4811593acbb9169149c153cf",
+      "composed_bgra_sha256": "cd2fdab492e04b03aa98b0cd37066b188779bc5bec6456e0a2f32b9b03dd0fba"
+    },
+    {
+      "input": {
+        "detail": [
+          78,
+          59,
+          241,
+          52,
+          78,
+          226,
+          53,
+          238
+        ],
+        "skin": [
+          131,
+          197,
+          205,
+          191,
+          6,
+          94,
+          141,
+          177
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "ffbdc40d1651487292fff46f65906f8c4ea40ecd5820fa470780a3116794de63",
+      "skin_bgra_sha256": "d9f4d4b5661a784d46947c7aaafcc342f0a07cfa8b8521d1f6c2829cd1ffac3a",
+      "composed_bgra_sha256": "4e3fd229ed08a5dd92695eeb62896195bcdc2875ec6ad5a93629bb656c87eaa7"
+    },
+    {
+      "input": {
+        "detail": [
+          106,
+          138,
+          117,
+          191,
+          148,
+          23,
+          176,
+          70
+        ],
+        "skin": [
+          207,
+          176,
+          244,
+          223,
+          246,
+          200,
+          191,
+          219
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "83d72e3adc11ae057187bb164974966ca0f06665aa0ebb1dbde5682689b5d358",
+      "skin_bgra_sha256": "f8351f112764830124b0d106a62faaeae8b121c17d9524a336d9292acd262c21",
+      "composed_bgra_sha256": "3967606ac5216ae186eb418ca986ea0c31d903c63c76ed8468c589efa4bedb90"
+    },
+    {
+      "input": {
+        "detail": [
+          20,
+          172,
+          156,
+          169,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          29,
+          101,
+          118,
+          225,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "e601e7bf33d4ed39e90e1535a4051324b5780ead0d4f01ec6518ed9091f4e856",
+      "skin_bgra_sha256": "3de3f1f8ed122f87d4bea93e67b234a09f6d2153a0b79baada1941fa4d441df0",
+      "composed_bgra_sha256": "380653fa1cf3e7988995781fe077991e17a124738a6884df3b633a87c5a3359a"
+    },
+    {
+      "input": {
+        "detail": [
+          49,
+          187,
+          188,
+          32,
+          146,
+          62,
+          183,
+          82
+        ],
+        "skin": [
+          85,
+          248,
+          17,
+          31,
+          131,
+          132,
+          109,
+          189
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "2f1e4e85e26844b24e08e847473321216c753e71e89973f2b6f6e6e9045c1fc1",
+      "skin_bgra_sha256": "dac7cd8d9d62d17e02e25bce7582290b28540b115c62eb42a6ce5ee8abd79e3e",
+      "composed_bgra_sha256": "39b2133845eaf067146caa050cb6f3a1ef11a4f72533dafe1b7907b00dc80f80"
+    },
+    {
+      "input": {
+        "detail": [
+          90,
+          112,
+          9,
+          57,
+          232,
+          64,
+          46,
+          161
+        ],
+        "skin": [
+          252,
+          234,
+          129,
+          219,
+          100,
+          50,
+          102,
+          42
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "0013ed24843558450ab9833062f07daa98499aa7cf5e4313ed3b9a24fa6da978",
+      "skin_bgra_sha256": "c1f00a75aec9907abdee1e9e9070b750a1c1639c70be03b3eea9fb1d6c5b2235",
+      "composed_bgra_sha256": "7a85d8d972e998c119420afa5f10e81ff915c08052486f2f81c42d8a2c4fadee"
+    },
+    {
+      "input": {
+        "detail": [
+          102,
+          57,
+          62,
+          244,
+          33,
+          236,
+          84,
+          77
+        ],
+        "skin": [
+          177,
+          127,
+          117,
+          169,
+          177,
+          82,
+          161,
+          4
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "d19967045bd5fb9da99cd2af2e4c8c9c3c0ab38ddac515c82f21453802bed6f9",
+      "skin_bgra_sha256": "2512fe1cb2e0af07b9d9f2af605d0dad83dc08cda637060afabcee4015418dc7",
+      "composed_bgra_sha256": "8783c0fd99d760fb8e731e2f99972a315fff558b9d69ecf21a66e2b3ed608ba2"
+    },
+    {
+      "input": {
+        "detail": [
+          123,
+          14,
+          129,
+          180,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          130,
+          127,
+          3,
+          28,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "0cf8e7fa1cb8103e98979b58851f6f14353cb495601e8788bd467c8c4344ff0a",
+      "skin_bgra_sha256": "2eecaaac71b3afc08118894c6e1dd15018f134de595fa0b4d8e945fd4222c9b2",
+      "composed_bgra_sha256": "a9182fdddc79e5f0121a9654b38754975d3be435179d5dc340013a273c667087"
+    },
+    {
+      "input": {
+        "detail": [
+          251,
+          153,
+          68,
+          10,
+          183,
+          186,
+          213,
+          177
+        ],
+        "skin": [
+          69,
+          141,
+          133,
+          5,
+          175,
+          179,
+          148,
+          186
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "efdfe624024a23f7b6f98cfc4246fb93dc016f5387e8f23871d36dc5231ea446",
+      "skin_bgra_sha256": "08452227031d82d47eb6164dbd8c454bce76175df3e278b1841bcca23cd74ef9",
+      "composed_bgra_sha256": "888bc03be1a32b9cc560459319a4cbdb6f8b8451453544c02896b33d77715bfd"
+    },
+    {
+      "input": {
+        "detail": [
+          51,
+          142,
+          2,
+          1,
+          164,
+          200,
+          105,
+          238
+        ],
+        "skin": [
+          249,
+          97,
+          36,
+          183,
+          131,
+          119,
+          120,
+          252
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "f424b8c4b4b6dc9ee9e1f5a790938a934ef7fdb89925d0a4276d163373c63015",
+      "skin_bgra_sha256": "016bea6ae425818a247d49df9fac70412a64ea03f65c37ac9b96afac5accf652",
+      "composed_bgra_sha256": "3f771149780b273b78e076b19a6b1c4ad72ecc434a2b1bb4f96062290b269ab4"
+    },
+    {
+      "input": {
+        "detail": [
+          60,
+          29,
+          106,
+          65,
+          64,
+          174,
+          194,
+          232
+        ],
+        "skin": [
+          234,
+          65,
+          242,
+          79,
+          130,
+          78,
+          45,
+          189
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "5fcb5a85d0a3c67a00bbd9cdee1c028462616413333e15645875fe0b1f2f385e",
+      "skin_bgra_sha256": "9a2f7edb88690e411721fa1a7a5773c8dd3553bd9c4aea5b5fbc32d138e28ddb",
+      "composed_bgra_sha256": "bc37279ddd17bd9de5e376b9a6ca7892a9a7291998f283c6d010a0874bce03f2"
+    },
+    {
+      "input": {
+        "detail": [
+          207,
+          212,
+          40,
+          1,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          241,
+          216,
+          101,
+          156,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "1bfe391f3f05e4d9b035928e3ad8cc48ac935f0cd828d37a018092cc78e9b0f8",
+      "skin_bgra_sha256": "ab9bb56cead3ec6e82cb86c79676ba6afe5ad8c9bf97df46bd2bd50bb9ec850a",
+      "composed_bgra_sha256": "b52b58ef5de68232b0844707fa6b9e996dc78946e3d9f32ae0d07fa9be3a5d64"
+    },
+    {
+      "input": {
+        "detail": [
+          193,
+          124,
+          119,
+          217,
+          131,
+          108,
+          42,
+          217
+        ],
+        "skin": [
+          100,
+          143,
+          197,
+          129,
+          93,
+          21,
+          150,
+          159
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "2d4b3e2fef1316eb5aa2122a1905abd29adfa9e3d91cddfec0ba95225bc4f4d4",
+      "skin_bgra_sha256": "01b88a66270d82f235edd4e9dcc916092bf6d8a91ec1bd1bf62242980cb5665d",
+      "composed_bgra_sha256": "383e06488a8a3b463d64c57c9107903babcab3ebd1ae29763cef5b3d1e50aa91"
+    },
+    {
+      "input": {
+        "detail": [
+          112,
+          40,
+          122,
+          137,
+          26,
+          190,
+          215,
+          149
+        ],
+        "skin": [
+          76,
+          89,
+          167,
+          175,
+          121,
+          64,
+          44,
+          69
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "7a333b98ec472ba2fc11be25aba8111c21b888622eabf1cfbd0e12dc7769ad2a",
+      "skin_bgra_sha256": "3fe766c33ee244ba95cebcf9b3771811eb3770ebc32a8b5339a2193051ad0fbd",
+      "composed_bgra_sha256": "9d5743cdf1ca3fc71ed24c3742c4d2336ad47a0e6b74fcc4c2efe712f06fff91"
+    },
+    {
+      "input": {
+        "detail": [
+          247,
+          39,
+          77,
+          88,
+          83,
+          234,
+          90,
+          80
+        ],
+        "skin": [
+          184,
+          240,
+          254,
+          110,
+          27,
+          32,
+          70,
+          188
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "452d47ebbfc79fbb34dff44d42767f5af8fa4bcdafb5313f1d3d2e97c89cc3e2",
+      "skin_bgra_sha256": "1a49a69e5dbb2706ee808aa6193d8ea76522bdeeccdf6ea1be726fe62d0aae60",
+      "composed_bgra_sha256": "46eec16d815303de82d25a6186e1c6d53bbfc497c91e45bea85e8aac8bbb67b9"
+    },
+    {
+      "input": {
+        "detail": [
+          215,
+          86,
+          85,
+          16,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          141,
+          168,
+          89,
+          44,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "b474a74335e8cc2365e54827ba646e6c4c03b172cb7d91c9db5b451dd8e9095a",
+      "skin_bgra_sha256": "9d650b08e6eceaf8ee767f45a8e11d6c66bce893239726c23bd4e3b7f5bd993d",
+      "composed_bgra_sha256": "f0da203ddd9f1306bd1d1ffae515ce56b07d615a4e031b5b44c85589b0b71438"
+    },
+    {
+      "input": {
+        "detail": [
+          196,
+          207,
+          60,
+          142,
+          42,
+          49,
+          166,
+          153
+        ],
+        "skin": [
+          229,
+          101,
+          54,
+          10,
+          55,
+          190,
+          119,
+          67
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "e7ef416a13a83a97cbe4de436f242dff20bd874080af1df67281bc13d51b75f6",
+      "skin_bgra_sha256": "2bf3d0a4035ae2a4b146c356e70bb4d464a0d52e554360c47165d89a1b0dc9f9",
+      "composed_bgra_sha256": "eec2cd6e40a37f56cb812663056dd65193f0bba201463709a8b4db8f414ecf83"
+    },
+    {
+      "input": {
+        "detail": [
+          90,
+          201,
+          79,
+          210,
+          203,
+          233,
+          228,
+          77
+        ],
+        "skin": [
+          26,
+          33,
+          118,
+          126,
+          188,
+          166,
+          136,
+          178
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "9e2a2880ed064c7d328b854cb322bc0c7e4e975e31f73da7bfa48265bc298a55",
+      "skin_bgra_sha256": "e9c7bad8b1c28c63f32b451f55019c9ec46a10e7692a068153d4d9813dfdba68",
+      "composed_bgra_sha256": "1fcd74dcb8160d7c867ed9e8b1036439cbd3b6eefca6daa2a718d4626a6d97f2"
+    },
+    {
+      "input": {
+        "detail": [
+          37,
+          122,
+          154,
+          152,
+          70,
+          12,
+          44,
+          75
+        ],
+        "skin": [
+          219,
+          83,
+          220,
+          52,
+          101,
+          118,
+          174,
+          129
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "70ddc96893ab822d4d4ee245f74ca0df6fea0f602a0977de790761ca70ed8588",
+      "skin_bgra_sha256": "b6c1905d27ea73188a723914670506a4741176ce38cce2fa8a9749b2362dfbbe",
+      "composed_bgra_sha256": "251bb8ff814c0f9cfbc08c102557f4cd5af6d09207a4dfef0104ae25b4679c0b"
+    },
+    {
+      "input": {
+        "detail": [
+          250,
+          33,
+          162,
+          144,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          147,
+          58,
+          191,
+          178,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "3ad5f3af5750211af9303831130f06b8706ff5c6a29b173a0b3f3f5c91efd275",
+      "skin_bgra_sha256": "af2c5331fbc038a717775b793e4c495f40b30e4dc231255942f3855fb7cafc7e",
+      "composed_bgra_sha256": "5e86dd10ecb3d114c45acb01d0aefcbaceb1c3137f24a079aa980192d8ac720c"
+    },
+    {
+      "input": {
+        "detail": [
+          240,
+          198,
+          16,
+          29,
+          78,
+          119,
+          229,
+          9
+        ],
+        "skin": [
+          138,
+          84,
+          21,
+          25,
+          132,
+          139,
+          13,
+          22
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "e8bb20ae1ebc70643e0a178ebd652288427189046118bc798a542c1ab8b8adaa",
+      "skin_bgra_sha256": "92f27a5e303edf01cfb9251de3d8ce092672be86953428a1b580c73ffa56085d",
+      "composed_bgra_sha256": "5018340bd4828858bbc0864ee729e087843b650b5193fd6e72803d11370c6a09"
+    },
+    {
+      "input": {
+        "detail": [
+          28,
+          192,
+          167,
+          151,
+          86,
+          17,
+          187,
+          221
+        ],
+        "skin": [
+          18,
+          230,
+          99,
+          32,
+          184,
+          159,
+          54,
+          72
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "710760b7fdc4e8304a35c891f66a8d7f7736f9c33c9267e9a49525bf3dec9980",
+      "skin_bgra_sha256": "b8bce10b42cd78140afbee61d981dff03e9aa62795bc0a535daaacfd1119ef62",
+      "composed_bgra_sha256": "4331b250372ae556280e8efc177d6f3fba7d40c2ad1d7c593d34685f5a9bbd78"
+    },
+    {
+      "input": {
+        "detail": [
+          226,
+          56,
+          199,
+          103,
+          199,
+          177,
+          200,
+          73
+        ],
+        "skin": [
+          134,
+          221,
+          217,
+          51,
+          151,
+          196,
+          158,
+          172
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "16ee917a6e0084cce82728eea8c64bdc88506c4d95b41b4663eede9265e63329",
+      "skin_bgra_sha256": "9c5ea701d5119e13000605b1f1988595cba3ae7b4b0a4fba234b4efb6c097f46",
+      "composed_bgra_sha256": "2922cc7cbd4dc9e216e862c261efaec29f25f613056215603d681d6b0368327b"
+    },
+    {
+      "input": {
+        "detail": [
+          239,
+          5,
+          173,
+          162,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          61,
+          170,
+          138,
+          194,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "c14d3145ab728f5d4045716f4a4a3219d8ee0490bc0fd88cc125f842fd5e2a6c",
+      "skin_bgra_sha256": "71e967109d116e93989a9e129f4723fa0b9913b544545bc83bfbe318f2d97e0c",
+      "composed_bgra_sha256": "1219d37c01b2df95949190a6cbd2770cf2091e58b87ac8f160b18a93250f520c"
+    },
+    {
+      "input": {
+        "detail": [
+          138,
+          14,
+          101,
+          40,
+          243,
+          234,
+          254,
+          114
+        ],
+        "skin": [
+          95,
+          148,
+          35,
+          9,
+          192,
+          147,
+          70,
+          105
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "ddc82a80314a4622ed25aca47405ae11c982ad61c696ea5fda8eaa8347327796",
+      "skin_bgra_sha256": "b6ab040ca69cd8e2ff45b3665a83a4b637d92fd4ee4994b26dc0d3e1fba80ab0",
+      "composed_bgra_sha256": "b1f9d491c2a8d0c0d1093e394b7259724e51ffa7736bd664850407e8f26d4433"
+    },
+    {
+      "input": {
+        "detail": [
+          13,
+          152,
+          41,
+          16,
+          138,
+          166,
+          242,
+          92
+        ],
+        "skin": [
+          247,
+          206,
+          27,
+          29,
+          90,
+          131,
+          17,
+          134
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "63598249520aa3a9c549107093a097172be104fe67d94b0b28ff752e8fbf6f84",
+      "skin_bgra_sha256": "e88a3a951bb5f34d998da42d9e3aa6bb2f784ba946e9effbe75c6e7ed14a3291",
+      "composed_bgra_sha256": "20e65596fe7c15642996b35ef3054f8c93a772fc0e91f66b3174ae8ff26a2921"
+    },
+    {
+      "input": {
+        "detail": [
+          175,
+          50,
+          147,
+          133,
+          5,
+          175,
+          245,
+          74
+        ],
+        "skin": [
+          10,
+          189,
+          42,
+          45,
+          30,
+          46,
+          192,
+          175
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "439535e7647d951fd09391d6c376aa50a0aa0e91a38efaa53e9575c0fe8d5c1d",
+      "skin_bgra_sha256": "3b3bcfbd0efd562dbba318c9bec444034626b37778b51f0706dad1a83e9536f4",
+      "composed_bgra_sha256": "7ba98932bedf5721e0b714ba2490bd5eb8631ada4fca9bef615f329130439076"
+    },
+    {
+      "input": {
+        "detail": [
+          188,
+          146,
+          158,
+          45,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          13,
+          229,
+          109,
+          21,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "090f284e0a48df36ba29c15939ad592f65741f50ebfdd122b27345e7021c6a50",
+      "skin_bgra_sha256": "fb3a28ed6466a8c48d5a7e84321a1fea62bbae94888416e276fc9a61f473e4e7",
+      "composed_bgra_sha256": "ea170ec47cd35aab62b4569031d6db03a36664eefcdadca7f7eb4cc57c79ce36"
+    },
+    {
+      "input": {
+        "detail": [
+          132,
+          254,
+          165,
+          115,
+          90,
+          189,
+          194,
+          138
+        ],
+        "skin": [
+          71,
+          63,
+          17,
+          238,
+          139,
+          118,
+          92,
+          193
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "d752810fb14e9d02f24d37fa95638ab9957ec0a17947c5c1dc8ac00deb142839",
+      "skin_bgra_sha256": "50cf257f085e048057f1640714d246a01527251fdfe80306e37175f701fe339f",
+      "composed_bgra_sha256": "6e59c7c1cda463bf8778ee2589c4657e642e66d274903356638fa26951cd9dbb"
+    },
+    {
+      "input": {
+        "detail": [
+          249,
+          55,
+          103,
+          255,
+          148,
+          150,
+          85,
+          5
+        ],
+        "skin": [
+          206,
+          33,
+          18,
+          189,
+          31,
+          147,
+          164,
+          248
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "6a7835133c0e78157574297f4551cffaf02075da99c247db9a2f11b8a1478438",
+      "skin_bgra_sha256": "b71341c9352b206fe07584502ab5e969a76b4ffe3ae18aa39366c4c6af678308",
+      "composed_bgra_sha256": "448dcde6a5e7ae093622a821c6d3f4858134318ee09ef28362d5ce13c6414dba"
+    },
+    {
+      "input": {
+        "detail": [
+          185,
+          139,
+          45,
+          19,
+          133,
+          110,
+          75,
+          167
+        ],
+        "skin": [
+          192,
+          182,
+          211,
+          91,
+          113,
+          10,
+          158,
+          131
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "d1154582daca21b3a00c4985eb3edf84298f352221f1270ab5c73d158dc8e99e",
+      "skin_bgra_sha256": "d100e925a17ba5159c7ef5cda952d60ec06c30588df903322d401a4fa513fc86",
+      "composed_bgra_sha256": "dc50fec2c06e80bfc28572d7438bff86f041922399e7c9065ce7392c70d8772a"
+    },
+    {
+      "input": {
+        "detail": [
+          175,
+          176,
+          90,
+          245,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          27,
+          94,
+          251,
+          191,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "437b956a5f4ad22e5518d4e1b9d0b6b5158cd4b657108ad8dde727b86faa4c0c",
+      "skin_bgra_sha256": "81a6ae3c49c66c5a8a3e91698c470b83d9733d695e401107a7179bc234647292",
+      "composed_bgra_sha256": "49a22510197832b2002d84dfefa68713ee2ebb6a0da1c7305a581ae2daee4906"
+    },
+    {
+      "input": {
+        "detail": [
+          221,
+          7,
+          169,
+          106,
+          203,
+          12,
+          68,
+          30
+        ],
+        "skin": [
+          191,
+          205,
+          83,
+          18,
+          125,
+          92,
+          249,
+          114
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "13e8b313fc72387c3b211f18e02ea8962d539dc3d04bf43b478ee48c56dc4b9f",
+      "skin_bgra_sha256": "dbba55f52185973e32aeba5dc91dce9b422761c82ad7d5a485c7df447b1cf91c",
+      "composed_bgra_sha256": "12d6d076857c5ecd636883568f9e98a91655514c7082ae842294a0dc3e6b1707"
+    },
+    {
+      "input": {
+        "detail": [
+          158,
+          136,
+          114,
+          178,
+          62,
+          201,
+          176,
+          137
+        ],
+        "skin": [
+          39,
+          30,
+          103,
+          53,
+          250,
+          203,
+          35,
+          73
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "5c32fc25f3833df53a9794cc349926ddbc16c01a6704c193fbca6d7e3a611066",
+      "skin_bgra_sha256": "6c630217ba01f111a5e6f5889a1b441983334414b312c0d55b0b0a0d6fc88524",
+      "composed_bgra_sha256": "be845031ceca947dd9fe214d15f0b91b28a3db6b9b5a76ea920b6904ee12a458"
+    },
+    {
+      "input": {
+        "detail": [
+          235,
+          19,
+          160,
+          0,
+          244,
+          167,
+          38,
+          80
+        ],
+        "skin": [
+          201,
+          227,
+          229,
+          23,
+          156,
+          242,
+          116,
+          120
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "06a1ca9f3d2a8f2fc725991a7e22345c9dbb3a378e862e829a10ce6a787e9a1d",
+      "skin_bgra_sha256": "d0a840971897398a08a32aaaadfccd6aa8b1d4e2d731ba5dbe83cff9b1d4e108",
+      "composed_bgra_sha256": "8877e3da4536d7fd9b40907240a0d61a02d6f73453dfe2894d8aca32f752934e"
+    },
+    {
+      "input": {
+        "detail": [
+          160,
+          204,
+          164,
+          103,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          157,
+          122,
+          222,
+          225,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "b42dd0d3b0392cd27d1d382093e428739de19b895efd40c61c6d3354a3ccf9a4",
+      "skin_bgra_sha256": "ec5cd8734d987538512cd3878e9cf387307fb18e7566bee7194e68b686e3dee9",
+      "composed_bgra_sha256": "f3df7593ae7d28d855e01d584d3517b1db0ae4e47e9ee8326c7119ff31c6b18e"
+    },
+    {
+      "input": {
+        "detail": [
+          90,
+          167,
+          99,
+          183,
+          54,
+          91,
+          37,
+          232
+        ],
+        "skin": [
+          184,
+          70,
+          9,
+          131,
+          55,
+          62,
+          213,
+          141
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "b708f7d7ba4681d9a6b87a69112743cacf659cb365093088df773d97bfc9eb6b",
+      "skin_bgra_sha256": "8ac4ea266b20d149a9d31edf24d4e54971880bce3d7fcbf896bb167da476cb57",
+      "composed_bgra_sha256": "e8a8a4a03211b4414fcd510e3650d05b5e7e69b50089bb43238860537175ca92"
+    },
+    {
+      "input": {
+        "detail": [
+          206,
+          105,
+          134,
+          187,
+          56,
+          152,
+          229,
+          167
+        ],
+        "skin": [
+          132,
+          95,
+          202,
+          82,
+          50,
+          190,
+          57,
+          180
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "4e580479c1c9e707a45c9855cebc0663e96e0beb05078a83debf3bb203a36ae5",
+      "skin_bgra_sha256": "56867f7a3167d2de315f584047b8129f79012b3b48e02f01cf0e49cbe9eb5e09",
+      "composed_bgra_sha256": "b788a91cf9b9196d870845f948d1ee5c83c94c74278841fa3444c775dd400b40"
+    },
+    {
+      "input": {
+        "detail": [
+          107,
+          50,
+          217,
+          191,
+          145,
+          245,
+          42,
+          171
+        ],
+        "skin": [
+          99,
+          123,
+          241,
+          99,
+          24,
+          113,
+          147,
+          198
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "c4a918e2d7380605d7d0a2d0b615545ee0ddc1c34bca98889e191e76ceca4504",
+      "skin_bgra_sha256": "bca100c1cc5504d83984b5ea84ea128ed0350557a885bcc458b48fce8264ce86",
+      "composed_bgra_sha256": "bc45bc996b7b7b4ac36bb7e8de7f65b42d7723b9a25f16446544623f67f4fd10"
+    },
+    {
+      "input": {
+        "detail": [
+          241,
+          84,
+          135,
+          18,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          227,
+          22,
+          90,
+          168,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "e0372e966ef4725a550f33042d9a13dbd97e64127f19049fb4e9cda5a67d80bc",
+      "skin_bgra_sha256": "e4895e2dea2e108dfcdcb0bd1015f89816e97016388dee00e6bf3fd2ca4882f6",
+      "composed_bgra_sha256": "4bfde7ca75059dc3ac303c4920b721bd90c5cb57c6e015ed0f433f3b080dd4a3"
+    },
+    {
+      "input": {
+        "detail": [
+          209,
+          67,
+          112,
+          215,
+          224,
+          203,
+          155,
+          232
+        ],
+        "skin": [
+          160,
+          39,
+          249,
+          224,
+          240,
+          212,
+          35,
+          24
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "c6c52045d4f682943ee4570014eca25bea0aac0f15d1a4ef2b0e171f1e289518",
+      "skin_bgra_sha256": "26b61565a73849eff9e65168908b6c11fb5bf95728f24d747bb51a7f10a5918d",
+      "composed_bgra_sha256": "688a7143027aa1fa9b9c8b016de4bc066e1aa9b14090cec54a8a551d6e6550df"
+    },
+    {
+      "input": {
+        "detail": [
+          136,
+          18,
+          83,
+          198,
+          63,
+          216,
+          249,
+          1
+        ],
+        "skin": [
+          178,
+          184,
+          99,
+          239,
+          118,
+          112,
+          180,
+          204
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "50220ddfa193f1c803e4fcf6aef443c14975ccbf4bed6ff234e7e30975f1954a",
+      "skin_bgra_sha256": "e98b1ededf2c4463555cc20b72c5e06c0ab8c63bd35030fede8c894ecd576921",
+      "composed_bgra_sha256": "4bb9ef8a1193b72c147854a3f1ea6ef2804c940e7e200f9d45b3b6e19a050e2e"
+    },
+    {
+      "input": {
+        "detail": [
+          120,
+          123,
+          35,
+          11,
+          58,
+          206,
+          186,
+          65
+        ],
+        "skin": [
+          176,
+          73,
+          184,
+          32,
+          93,
+          178,
+          39,
+          220
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "fa1f0cb7caedd9437cc51b2d3b521fd25f5880c6126d466626ee7e0ddb182ab3",
+      "skin_bgra_sha256": "57143bad16414b60de48101225d4cc3d954df906ca86269e07506ac6e96ccd30",
+      "composed_bgra_sha256": "b6847da03539939bfcc761d101ba60b0c5ad0dfe0e9e471065a691d2ec47db09"
+    },
+    {
+      "input": {
+        "detail": [
+          103,
+          174,
+          211,
+          40,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          218,
+          167,
+          231,
+          152,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "0f3fd9167a64dd543d30ed48244d95a89cd7d3dd6b1acadb2436445f91abba8c",
+      "skin_bgra_sha256": "4dfd172064849b2d7ff6d7b66744c822c2e3db3a2018bc2a4aff9361e08b56d7",
+      "composed_bgra_sha256": "7960bde14e5cc437f795e435157ead405a5b8262b0652b7c2032017d09c48f93"
+    },
+    {
+      "input": {
+        "detail": [
+          83,
+          137,
+          136,
+          62,
+          113,
+          252,
+          181,
+          17
+        ],
+        "skin": [
+          169,
+          130,
+          209,
+          151,
+          226,
+          88,
+          194,
+          169
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "14b00391649da53378f51db24b2791f6ebf7b21d57d450a9626462266475f542",
+      "skin_bgra_sha256": "bb211f12b9070b39e1d54c00c638fbf119a15964ff8b412c7064306ebaea5f1c",
+      "composed_bgra_sha256": "95118efbb9ba4b7362a645979080459cea762044b13bc59dec507333e0ac02be"
+    },
+    {
+      "input": {
+        "detail": [
+          152,
+          48,
+          173,
+          215,
+          209,
+          57,
+          174,
+          156
+        ],
+        "skin": [
+          43,
+          199,
+          38,
+          229,
+          208,
+          154,
+          197,
+          106
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "f6e321b70c6ec668797d8be26ff8b81862262c64a05d9105860715def5ab7847",
+      "skin_bgra_sha256": "eb32db04389273acb8e8634f013f4eef75cdf4dbc5c82374e01dcb514f666775",
+      "composed_bgra_sha256": "03c8bb85e47b9b91c5202155d3f6b6ae692b50e22afc6acd56108c420b6d9e7a"
+    },
+    {
+      "input": {
+        "detail": [
+          117,
+          163,
+          146,
+          150,
+          154,
+          113,
+          242,
+          238
+        ],
+        "skin": [
+          200,
+          253,
+          203,
+          88,
+          114,
+          197,
+          85,
+          147
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "177e80803598372cf193ad47bd71f6e2f02ef7d2b3697428bbd018a6c88bc89d",
+      "skin_bgra_sha256": "aec0bad6f7811f3ab4a37d732387c020574a02c86231a02a81c174f82a3d6cbb",
+      "composed_bgra_sha256": "c8fe91ce1866f709f4fcff54ed7441f264e71f9ce14f668b584a7771323ddd78"
+    },
+    {
+      "input": {
+        "detail": [
+          165,
+          165,
+          64,
+          113,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          147,
+          39,
+          84,
+          109,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "f4a208ce249199b5a8e09525a1ba961a1a4225abc371493012ab3b34bedc950c",
+      "skin_bgra_sha256": "bbb44e6f8814fba556b26aa0689a7e13cc9bb544eadcb0a9d4395b39e1ddcde7",
+      "composed_bgra_sha256": "58c8515966d58208382e61eb251e2b9b207a9c1d6b0a09c8006e565e5936ca1e"
+    },
+    {
+      "input": {
+        "detail": [
+          11,
+          192,
+          228,
+          73,
+          211,
+          88,
+          83,
+          224
+        ],
+        "skin": [
+          95,
+          122,
+          74,
+          214,
+          59,
+          138,
+          143,
+          131
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "d229575c468edc57dc06c06f45e3dbe3c765105bd229cbbe08f97b91e0f267ad",
+      "skin_bgra_sha256": "fe500c53fb5c8e31ef6e5972db307b38253f3235f3ff10a89b66932ba6f10744",
+      "composed_bgra_sha256": "a107b4f729dff81c1f34958d9bdd7416e31c5dedfa7cb586764997790df2b8a2"
+    },
+    {
+      "input": {
+        "detail": [
+          59,
+          20,
+          101,
+          235,
+          234,
+          26,
+          216,
+          86
+        ],
+        "skin": [
+          234,
+          52,
+          225,
+          254,
+          157,
+          164,
+          205,
+          224
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "413c5cb2719121feaf92215f6f28282f726605787c0158013e0e5e9fa23cd2d1",
+      "skin_bgra_sha256": "2536516099fa9e88f4fdd9b69aeb219539677fdeebb686db1f58ccdd7106127d",
+      "composed_bgra_sha256": "1b1e2ce9ff89484868c3c7bfabfb5c452f59ebea8a666e26916fc3a342fa8824"
+    },
+    {
+      "input": {
+        "detail": [
+          185,
+          1,
+          218,
+          166,
+          151,
+          114,
+          50,
+          139
+        ],
+        "skin": [
+          162,
+          39,
+          61,
+          88,
+          88,
+          40,
+          130,
+          160
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "1f520f937d8534fef4d2b1b0f712078343d0d86b480b29563a491749d7d835ad",
+      "skin_bgra_sha256": "eaff5fceca8ed6229eea895f61bc5048c0a54b68851a0ce5ce5c03013aa84ca0",
+      "composed_bgra_sha256": "e124c0f18343fff2bdd2694c380c36d1732a9025ff98a06bb4ab98832045aba0"
+    },
+    {
+      "input": {
+        "detail": [
+          255,
+          126,
+          142,
+          135,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          172,
+          254,
+          238,
+          240,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "44421d21d081095bfd6acedab5a71fdc2e26f9a5988d710d873d8432538df57f",
+      "skin_bgra_sha256": "f904ab665bbe936676e07f904dbc4ba034625df3e6d171b307d916f5c025d6f5",
+      "composed_bgra_sha256": "bb6e398fcf73137ccaf81e14740392c9dcde892d537c34034f91283ffe9528b5"
+    },
+    {
+      "input": {
+        "detail": [
+          234,
+          194,
+          4,
+          242,
+          149,
+          144,
+          6,
+          57
+        ],
+        "skin": [
+          7,
+          192,
+          90,
+          180,
+          253,
+          149,
+          125,
+          66
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "334e91fa5fa5e01d5d2e0781142297ec7b4f2cd2e75e41bb71fad6677edd6f4d",
+      "skin_bgra_sha256": "0245e8088e40af267bb52cd231340d536c0099e27127b1f8773721349e03adc3",
+      "composed_bgra_sha256": "897f68b169fe86c31c7bac36d98dfeae6f2dd9eead3fbcff9148fc68375ef263"
+    },
+    {
+      "input": {
+        "detail": [
+          24,
+          38,
+          152,
+          5,
+          159,
+          167,
+          169,
+          220
+        ],
+        "skin": [
+          215,
+          124,
+          3,
+          128,
+          59,
+          30,
+          150,
+          166
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "e564809cabaf971771c1f2955c019f3a38c86782d304fa31f3b59b30428e0918",
+      "skin_bgra_sha256": "a20d57b78387b936af7dfc1d483c59d4dc40859154329bec3fb5b1bd26e424f1",
+      "composed_bgra_sha256": "90ed4284c9a7324efb6b3d20341f7e281497fd7aeecc101d71bc6bb0ce537082"
+    },
+    {
+      "input": {
+        "detail": [
+          249,
+          97,
+          200,
+          149,
+          207,
+          225,
+          245,
+          94
+        ],
+        "skin": [
+          44,
+          101,
+          245,
+          182,
+          241,
+          200,
+          122,
+          207
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "760bdba4bf37d0a360c8589cc2f921ed8a0f11fc266f34cc799be2cbbaf57996",
+      "skin_bgra_sha256": "2cc241ae7a651ee9fe704b36c0869f217772d6d204fc2034bc0001e55de666c9",
+      "composed_bgra_sha256": "f5e8a466f47aa18c1444a2a789693f37a2cea17e4056661dc53ae3bb49d7b2bd"
+    },
+    {
+      "input": {
+        "detail": [
+          54,
+          97,
+          51,
+          171,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          58,
+          110,
+          38,
+          78,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "0e1cced5ce7f044e61ca0d57cc614664c554a00384d9c95ddc4b0ec38e239930",
+      "skin_bgra_sha256": "142fab8d0d315c31fcf99152aa8ec5a0c12226b3cc07f56c4584bcc0dead0798",
+      "composed_bgra_sha256": "2835bc547ffc4437ef1c28b24ec06c39a794f7dae8ab4543ba8d533a7f3d3fce"
+    },
+    {
+      "input": {
+        "detail": [
+          168,
+          72,
+          35,
+          163,
+          131,
+          168,
+          221,
+          54
+        ],
+        "skin": [
+          18,
+          68,
+          136,
+          199,
+          220,
+          231,
+          105,
+          215
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "d9eb9a319159c052c870943d200c68eec62e924b18d47d33b12961d5197c8121",
+      "skin_bgra_sha256": "1f7580aa3a75c1c31daad3c9a766ab197c122e73bba189904a46a46be4d1f81b",
+      "composed_bgra_sha256": "6ddb583277aa3f4d328df9d0d90d19c4ad1dc25b45baf324c193ac94bbe8f369"
+    },
+    {
+      "input": {
+        "detail": [
+          181,
+          248,
+          0,
+          181,
+          79,
+          248,
+          30,
+          254
+        ],
+        "skin": [
+          160,
+          216,
+          161,
+          107,
+          235,
+          56,
+          159,
+          37
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "fde8fa6a62cac05a84333bcf631979f10f3d0c455477c4cd530c09316eca5ca9",
+      "skin_bgra_sha256": "4966c777e9a4bdaad579aeab34eb4e1fd1fadb5ca2b7c4327734a9f39af53b49",
+      "composed_bgra_sha256": "012b9b3c4985c7b4b0a4fcd686e1f9eb6c85927b16565e744896b4067f923f8b"
+    },
+    {
+      "input": {
+        "detail": [
+          116,
+          228,
+          164,
+          7,
+          146,
+          32,
+          47,
+          198
+        ],
+        "skin": [
+          55,
+          101,
+          101,
+          173,
+          152,
+          186,
+          11,
+          244
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "2900cf3955e6c40b6a356022cd111cd56da543d08067bd206004ea16adbfd0d2",
+      "skin_bgra_sha256": "18ed1cb5170367a6ae050c6f398213a210ee5d02e99e707474ea0313b2a40acd",
+      "composed_bgra_sha256": "f2a9773bd34c089db327b807e1ba3865f2549fe602912effb05b1d4c2e9b5455"
+    },
+    {
+      "input": {
+        "detail": [
+          77,
+          68,
+          138,
+          136,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          71,
+          84,
+          201,
+          183,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "f666240efd38eb1bafc7d258bd8df2ecfbac1a028b53b09ea96d617ec4ce478a",
+      "skin_bgra_sha256": "baaca85131cd53ccfbd1e7dcce0d14aad21d2cc23693cf9d1a913a7412a9d36e",
+      "composed_bgra_sha256": "96bb384fde982a61ea5221bbcc28f43667b4f66b03dd0063287f1f04add9ed5c"
+    },
+    {
+      "input": {
+        "detail": [
+          178,
+          131,
+          70,
+          215,
+          237,
+          110,
+          132,
+          130
+        ],
+        "skin": [
+          95,
+          202,
+          2,
+          178,
+          212,
+          227,
+          45,
+          141
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "bb109e69dac51df21cfad5ba45c5e631e0291701bf9ea123cb5a8a6d00c175a6",
+      "skin_bgra_sha256": "87344f9fc7c3ab49ae0da19974ce57f0c2e5bba85ddf74b6be3a300a693632f0",
+      "composed_bgra_sha256": "36ebbb3146d90fd9796c09c415e3cfe7fac887ee3d0c418a6d37f619a8137363"
+    },
+    {
+      "input": {
+        "detail": [
+          167,
+          181,
+          53,
+          172,
+          86,
+          61,
+          126,
+          65
+        ],
+        "skin": [
+          46,
+          38,
+          115,
+          109,
+          1,
+          44,
+          124,
+          227
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "46774fa88cfb3c3b26974e07e0bac81ac909e5fef0730c1398d631985cd95ccd",
+      "skin_bgra_sha256": "61ca0ddaf4cf09c1559a1955065d2312bf39590396c61f712185af40697b4c4d",
+      "composed_bgra_sha256": "99f31bb71a165b92b15b7f7b578f078ae49b58c1d65b4eb4c9302d1bea9e3c85"
+    },
+    {
+      "input": {
+        "detail": [
+          29,
+          214,
+          100,
+          238,
+          193,
+          129,
+          0,
+          73
+        ],
+        "skin": [
+          47,
+          30,
+          21,
+          20,
+          161,
+          31,
+          120,
+          91
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "2286ec66c0897b623bc9f139827f833a47d476eb28035d9d13e15a906701c6cb",
+      "skin_bgra_sha256": "bfa5c751d420dd4f67670a532527070706f8196634f49cb1e97336cd713c8b9e",
+      "composed_bgra_sha256": "f5648bd458338ef2024e16bf61e4dcb1545f7a5716fce7d900db828cc73cefbe"
+    },
+    {
+      "input": {
+        "detail": [
+          213,
+          72,
+          121,
+          226,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          227,
+          183,
+          175,
+          118,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "adb80ab99fa5484d9af8f8e7e6b82e81780923af69ba60dc57c181c9c439fd54",
+      "skin_bgra_sha256": "0ebf9dad5705b26116d4a2461194692d65eb420f41ca278522a0c5c79a658daf",
+      "composed_bgra_sha256": "a2d664e43cb629b1c5469cb05f676e6835f316d5ec4b9c5f218ce9b064d39ab3"
+    },
+    {
+      "input": {
+        "detail": [
+          57,
+          155,
+          185,
+          255,
+          8,
+          87,
+          214,
+          42
+        ],
+        "skin": [
+          235,
+          178,
+          224,
+          65,
+          88,
+          237,
+          185,
+          17
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "5b21586a122c2f35812cc5f7c70bf58293954fa8040754300dfb9c08d2bfcb79",
+      "skin_bgra_sha256": "355171196f299dbacb256669a79ae98a1022435899fab62141b2ed40265030ff",
+      "composed_bgra_sha256": "f13660ed7d94203d01ac8e958a0202154f7f878761d7e2d82c395e032932c5a1"
+    },
+    {
+      "input": {
+        "detail": [
+          192,
+          199,
+          186,
+          112,
+          127,
+          78,
+          47,
+          63
+        ],
+        "skin": [
+          24,
+          71,
+          22,
+          96,
+          60,
+          234,
+          197,
+          13
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "aba6b23d360cb52b705959dbe6dec3d56d9cd4a14f146f605e67751b7ee8d541",
+      "skin_bgra_sha256": "d8f49abd962f1e22d3aeaab229231608de8721ae2c4d37d78263e47ed3865793",
+      "composed_bgra_sha256": "e75ca68f52a6d6eaf7f05f60d34e5df58c40544a49aa511ea5b2efc554ff53d0"
+    },
+    {
+      "input": {
+        "detail": [
+          38,
+          76,
+          251,
+          179,
+          98,
+          127,
+          130,
+          56
+        ],
+        "skin": [
+          21,
+          40,
+          48,
+          94,
+          138,
+          147,
+          50,
+          85
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "d48e4dd942689991eb79f288087a4a7615421815f6ca44054baaca2dcf9c4952",
+      "skin_bgra_sha256": "5625775f4b356dc3ccabf068cf444c840c517acdcbdf58cac4e3ec6113dcc89a",
+      "composed_bgra_sha256": "c3299d3ae85f1a893a664c3c931773c93272b6c24ed8806eac5fdf4fe53eaa99"
+    },
+    {
+      "input": {
+        "detail": [
+          140,
+          222,
+          26,
+          86,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          208,
+          35,
+          44,
+          172,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "4d95ba49c1e0034a9fbf579fcd2a8a210ee5811aa1cd0d86ae0ae85f7c24528e",
+      "skin_bgra_sha256": "381d652ed2cb015c0677dad9e83024ca9691e9366965314a61bea1c0741b97e5",
+      "composed_bgra_sha256": "48b7fa0a1f0867ce01feeb396a6c07a6005ea6e2399fe48dee263b630128d77c"
+    },
+    {
+      "input": {
+        "detail": [
+          58,
+          111,
+          92,
+          63,
+          13,
+          147,
+          158,
+          22
+        ],
+        "skin": [
+          216,
+          134,
+          104,
+          238,
+          137,
+          39,
+          221,
+          247
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "173601393698316f3e1820207f4eb67f5ace31689e6ff37f8d1e9e4a0ca6aa15",
+      "skin_bgra_sha256": "1661d9545e4c137be4bf9018edf15eaad5e2357191a4f8704961b8cfa209d31e",
+      "composed_bgra_sha256": "e1951db00aa24e53c070fb5f5f278de5a0794fab025873505ab4483c9cee0a4e"
+    },
+    {
+      "input": {
+        "detail": [
+          40,
+          84,
+          208,
+          137,
+          77,
+          50,
+          123,
+          105
+        ],
+        "skin": [
+          91,
+          170,
+          187,
+          38,
+          77,
+          97,
+          160,
+          217
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "a05a951886c7cb07052f90ef33108d39a8c54ba12318e07cd86581428fcf8d63",
+      "skin_bgra_sha256": "4b490212b06ff3c52bf6a171b5aa4ef88dd29fa086392e2cbc0258f47826c108",
+      "composed_bgra_sha256": "6a7ea182a19da7f93a9bb128ae3294ef967e80e861eda461a2af7b122829de77"
+    },
+    {
+      "input": {
+        "detail": [
+          146,
+          118,
+          106,
+          13,
+          25,
+          87,
+          114,
+          182
+        ],
+        "skin": [
+          147,
+          11,
+          179,
+          17,
+          114,
+          184,
+          169,
+          231
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "60000def48929a8aad284b0475bec949e6d46bcc5fc9564113233a13d293daf3",
+      "skin_bgra_sha256": "ade6c0a05949153eb1c82e85d216a16ae2895a207278e3c642f4d22e2b8ede75",
+      "composed_bgra_sha256": "a16b60e7418cafa1abfa4b76e27759bcd32b814381c3872afd0a381ab166db8e"
+    },
+    {
+      "input": {
+        "detail": [
+          93,
+          75,
+          171,
+          92,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          94,
+          136,
+          42,
+          90,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "95da9de70a61f3a0b611a9f0666698e99190f60ae8f4ef678113af8a7ddda7b1",
+      "skin_bgra_sha256": "a4e28f00f92e5c427963828d0a9aaff1255c4373799db5c29a832bde0d76a7a4",
+      "composed_bgra_sha256": "6b2afeb0bde06adbe38f3b3ca65d9118f0930ad63a9453f94c16bf2a6284d959"
+    },
+    {
+      "input": {
+        "detail": [
+          69,
+          145,
+          67,
+          23,
+          140,
+          100,
+          243,
+          171
+        ],
+        "skin": [
+          238,
+          245,
+          159,
+          210,
+          192,
+          133,
+          144,
+          156
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "1364d9df3e0e069abf7ddc6da2993e99ce708b669172deaf46b10b7e6d2be1e7",
+      "skin_bgra_sha256": "5bdfc0460341234364737270c6d865bbc46961bb824d0a3e491d4d89a87fd5be",
+      "composed_bgra_sha256": "ec900c1691d15f8a18793510f860e041c964d98d777b0726a08ea7bebcac0df1"
+    },
+    {
+      "input": {
+        "detail": [
+          54,
+          15,
+          186,
+          183,
+          139,
+          246,
+          89,
+          147
+        ],
+        "skin": [
+          79,
+          127,
+          10,
+          22,
+          219,
+          73,
+          225,
+          135
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "e24726efbddc29be4fe1138560fe5605675a870f540f7fcc932a8de0a4020b1c",
+      "skin_bgra_sha256": "8d6dc989b03ef2a928a87cfaed3101c6712818cb932288c4dc88df3bcdbebf7e",
+      "composed_bgra_sha256": "6aac960d5737959d0880e956a77b6bd208d946c22b34003d5fcb68896479e1ec"
+    },
+    {
+      "input": {
+        "detail": [
+          152,
+          99,
+          110,
+          185,
+          47,
+          180,
+          52,
+          116
+        ],
+        "skin": [
+          154,
+          44,
+          217,
+          107,
+          219,
+          122,
+          78,
+          69
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "eaef96e74245a10a2176a594e4a10782e986fc87e566775c4cf4140604e63e1c",
+      "skin_bgra_sha256": "044084085f4a2ec14f9f502ae80232ad3e07ac5d02dbfe8292a993de3b0cfb42",
+      "composed_bgra_sha256": "924c238d4542dd8bed11e2faaa177cc2cebea4b4f728e8b7ea6c68b4df46e9ae"
+    },
+    {
+      "input": {
+        "detail": [
+          231,
+          203,
+          84,
+          220,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          181,
+          217,
+          254,
+          223,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 0
+      },
+      "detail_sha256": "8e41525801e0d79e410bec87e200d685b83e0c00360442d17bdd3b88133dbf99",
+      "skin_bgra_sha256": "a5f7d68e5f814d3f465129353c9096b3dca75b2db3280ac2fd1f4b87d1c1b0b3",
+      "composed_bgra_sha256": "4657d5a33ce75f78490c8031d869b4aca0427f0d615ce56c21ae7f0d39c6820b"
+    },
+    {
+      "input": {
+        "detail": [
+          52,
+          47,
+          235,
+          115,
+          16,
+          42,
+          251,
+          248
+        ],
+        "skin": [
+          208,
+          49,
+          71,
+          199,
+          154,
+          95,
+          188,
+          234
+        ],
+        "packed": 655380,
+        "opacity": 0
+      },
+      "detail_sha256": "4d3c20098d6f9fd7a3113a1dc9e4d2f95a06cca55c892465d5bbde626681410f",
+      "skin_bgra_sha256": "f9f9d6dfc1da0a49484056650173146d00ae320f622535130c6f542d0df7d760",
+      "composed_bgra_sha256": "81e574bac0d220a43c94af2f7aa87d01a8d8468d1965b3f28f6f4e5de65c9993"
+    },
+    {
+      "input": {
+        "detail": [
+          52,
+          152,
+          134,
+          37,
+          220,
+          166,
+          136,
+          119
+        ],
+        "skin": [
+          142,
+          97,
+          233,
+          25,
+          138,
+          76,
+          229,
+          160
+        ],
+        "packed": 1966180,
+        "opacity": 0
+      },
+      "detail_sha256": "238928398175a300cae2ee988072e048da21b7ec60cf946ddb677c77d43b50b6",
+      "skin_bgra_sha256": "52e055c8f39d2609aa63da6f75aab81ecfdc36935a7d891c19dcf1969c4a1cfc",
+      "composed_bgra_sha256": "8ef6f37712267e0b675467b1a33fea1078cc0a854c4d00688fb685cdb7cddaea"
+    },
+    {
+      "input": {
+        "detail": [
+          241,
+          21,
+          56,
+          49,
+          201,
+          240,
+          191,
+          79
+        ],
+        "skin": [
+          193,
+          166,
+          141,
+          107,
+          108,
+          245,
+          247,
+          147
+        ],
+        "packed": 4294967295,
+        "opacity": 0
+      },
+      "detail_sha256": "d014ebe00ad8680b487a0f66a2c2eee8d0527835faf821a88fe3001b5f66bb98",
+      "skin_bgra_sha256": "813cc5a1f3c3840475f85401f959050d0223caf5262d3952a6ddda6911fd9bc9",
+      "composed_bgra_sha256": "6db8d311ed5e83ddcde3991618259fbeeddc3eb3d3549b558a8856b9a68fc8bb"
+    },
+    {
+      "input": {
+        "detail": [
+          190,
+          132,
+          80,
+          54,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          123,
+          144,
+          1,
+          117,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 1
+      },
+      "detail_sha256": "9d721381b57257ccc220f3184212edde77035d4b3d1f65a7e36c9e5fe060d5ff",
+      "skin_bgra_sha256": "9225e17bd21412a99ed9c81726fcdca824f8d90e79660e92176ee5fff505ba03",
+      "composed_bgra_sha256": "a5aa45a2b28234b127675090b044ece8345434f1f1a6f295eecb43c0592646bf"
+    },
+    {
+      "input": {
+        "detail": [
+          148,
+          170,
+          75,
+          114,
+          121,
+          164,
+          16,
+          194
+        ],
+        "skin": [
+          39,
+          248,
+          135,
+          93,
+          162,
+          162,
+          65,
+          240
+        ],
+        "packed": 655380,
+        "opacity": 1
+      },
+      "detail_sha256": "8c4a54d2865b6d94a65c7ee8fc25f2ff5b97719034297093e46094c53ab30dd6",
+      "skin_bgra_sha256": "629f520823b2996cfaf11d4a0ad6a7e7c4e3f79a5e4766896179200a005f4a54",
+      "composed_bgra_sha256": "714cf077e4f369c9ea777d95477bd067be13040565314b8c96cc4336fa567b52"
+    },
+    {
+      "input": {
+        "detail": [
+          93,
+          38,
+          172,
+          35,
+          27,
+          123,
+          243,
+          26
+        ],
+        "skin": [
+          90,
+          57,
+          125,
+          47,
+          92,
+          151,
+          251,
+          42
+        ],
+        "packed": 1966180,
+        "opacity": 1
+      },
+      "detail_sha256": "acaded7649caa2ce0d9e2ff91300fe4a843c0ab8db151d7b1f6c40f4618da53f",
+      "skin_bgra_sha256": "2eb98f653cee19d75406d575557058947c301d64051747c22cb6fdc2c7084590",
+      "composed_bgra_sha256": "7e748a65129d28e6a0a7d5b49704f2df9e6e37221d28863e4f9d0e3aa3b8ceed"
+    },
+    {
+      "input": {
+        "detail": [
+          165,
+          3,
+          173,
+          187,
+          100,
+          180,
+          144,
+          111
+        ],
+        "skin": [
+          75,
+          141,
+          205,
+          189,
+          7,
+          84,
+          135,
+          135
+        ],
+        "packed": 4294967295,
+        "opacity": 1
+      },
+      "detail_sha256": "b5d75c021e0b99954b181fd5af942a9813df04eac31ae72c468a72be224038a7",
+      "skin_bgra_sha256": "7a7c1da9357cc300060ac86a7290b90ebb48d6395df07e0d95e9b1c418abd27b",
+      "composed_bgra_sha256": "62d3c412fc7c51d0cc117026af526816e0cd179e80ea44b6ccd6c16d6ab3f2ea"
+    },
+    {
+      "input": {
+        "detail": [
+          27,
+          164,
+          183,
+          118,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          8,
+          152,
+          212,
+          209,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 85
+      },
+      "detail_sha256": "3f11642d737adcd3c8bd55e96a9bbe5dd6b4bd6918933a2e979fd6f686daf005",
+      "skin_bgra_sha256": "2c99e451de8f3bcb25ca463e44508621bfc85a0b033c983ccaac62766c635ece",
+      "composed_bgra_sha256": "3309281a529c5a3d12149563927ade1af875a1a555c30d8f52040dacef3cd616"
+    },
+    {
+      "input": {
+        "detail": [
+          252,
+          148,
+          159,
+          164,
+          130,
+          246,
+          108,
+          110
+        ],
+        "skin": [
+          138,
+          68,
+          106,
+          118,
+          93,
+          210,
+          58,
+          138
+        ],
+        "packed": 655380,
+        "opacity": 85
+      },
+      "detail_sha256": "5337b88a53656b7311acdf4fa55d72951c78d63dc49fda9408837173e0c4fd53",
+      "skin_bgra_sha256": "97f4a32ab733add8c9386410b508272dbb3a152f917ea8988151a0a6b4d25e7b",
+      "composed_bgra_sha256": "ecdbbadb7c68c2f73e91441502b28a4f97f004ae6f994415320a5194b7d7ab59"
+    },
+    {
+      "input": {
+        "detail": [
+          39,
+          20,
+          41,
+          159,
+          182,
+          59,
+          153,
+          171
+        ],
+        "skin": [
+          10,
+          88,
+          155,
+          189,
+          4,
+          106,
+          47,
+          159
+        ],
+        "packed": 1966180,
+        "opacity": 85
+      },
+      "detail_sha256": "34a13d76909f836f56855bdd38e36678280c98e269f4922c6483518830960ac8",
+      "skin_bgra_sha256": "cc0e96247cf3beb87cbf1cac378bed385519035baa855cb8461299a71d524b20",
+      "composed_bgra_sha256": "47abe6d238d71f77272543bdd41cba024d70c6ce65d3fa9806e8f9aec862d156"
+    },
+    {
+      "input": {
+        "detail": [
+          140,
+          27,
+          114,
+          109,
+          137,
+          106,
+          36,
+          43
+        ],
+        "skin": [
+          94,
+          235,
+          138,
+          201,
+          45,
+          40,
+          49,
+          121
+        ],
+        "packed": 4294967295,
+        "opacity": 85
+      },
+      "detail_sha256": "8cf592af28bf4bf736ade30585dc357eb8c28ab5e3b559418aab93c6a393b7f1",
+      "skin_bgra_sha256": "3e3300da80c42d4ce6cfd08d1b3f1879e5e999a986e835816d52f40e4aa7623b",
+      "composed_bgra_sha256": "e4a316fae3705efab36f91915ce1c4fae5b19cddaff93f0f65ae595f9232caa8"
+    },
+    {
+      "input": {
+        "detail": [
+          47,
+          199,
+          217,
+          145,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          84,
+          22,
+          224,
+          113,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 100
+      },
+      "detail_sha256": "f91a0ea128e6ea51704a3f9ebe55485cadabbc052e58d356b6f45d312262c586",
+      "skin_bgra_sha256": "7c69d8d797f29ffe3e9881b831607dce13817afb687e3be21a4433887c73a2a9",
+      "composed_bgra_sha256": "6abe7e376a8352f1aa1f1f8dd634b0784cbdabd2fe0a73a07d03e352707bb21b"
+    },
+    {
+      "input": {
+        "detail": [
+          88,
+          194,
+          53,
+          246,
+          139,
+          247,
+          22,
+          174
+        ],
+        "skin": [
+          183,
+          199,
+          101,
+          101,
+          162,
+          126,
+          62,
+          131
+        ],
+        "packed": 655380,
+        "opacity": 100
+      },
+      "detail_sha256": "6c934b1badd16546e99fb2064682439b5bcfb9465c8ed7958261e203be928049",
+      "skin_bgra_sha256": "aaab285971ff533266b781287d725e38ee5787a2de1f2ea89ba0b865a84365bd",
+      "composed_bgra_sha256": "e67ec697524f2796b61267033da8231a6e2ec04129b71856855798198326012b"
+    },
+    {
+      "input": {
+        "detail": [
+          30,
+          166,
+          245,
+          103,
+          47,
+          153,
+          14,
+          106
+        ],
+        "skin": [
+          32,
+          122,
+          65,
+          121,
+          150,
+          12,
+          21,
+          148
+        ],
+        "packed": 1966180,
+        "opacity": 100
+      },
+      "detail_sha256": "58247eb25d2c4601e00e0c04656942c910a3da091c90605202af5dee3420fa88",
+      "skin_bgra_sha256": "b39e5f53bcac836e51153af4944fd5a3c1217280215e72b1b06a9e84d7d835b8",
+      "composed_bgra_sha256": "b3056132fe160020bb36430f7021f3e3cf632867da60dea5d7cfdec53b6381ee"
+    },
+    {
+      "input": {
+        "detail": [
+          79,
+          31,
+          143,
+          158,
+          55,
+          205,
+          67,
+          149
+        ],
+        "skin": [
+          80,
+          13,
+          119,
+          224,
+          241,
+          5,
+          117,
+          223
+        ],
+        "packed": 4294967295,
+        "opacity": 100
+      },
+      "detail_sha256": "48ef8c6d2b4c02baab87d92eabc63f190b272191d8137d9c64310e812d4b34b7",
+      "skin_bgra_sha256": "5fa534a0fb531ce6bf272e80a58ee1f11d02a18a625edeb21fb5ae54fd1b0c98",
+      "composed_bgra_sha256": "e17d0d016edbdf122ae65665ae0236a0c14b5f714ff24476c59e6c57d327c605"
+    },
+    {
+      "input": {
+        "detail": [
+          252,
+          231,
+          231,
+          149,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          191,
+          28,
+          67,
+          115,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 101
+      },
+      "detail_sha256": "1a4dd78df77192101044711ce885210a7cdab2fbb5ac509b58368c4bfca39bae",
+      "skin_bgra_sha256": "3a7f9ba6f66190071279a6c46ae85c580d1264e435b864229b76aba8554e8b6c",
+      "composed_bgra_sha256": "6c278443d54fff5e5ca483349e3b41075dad60493a7684eb9f5b43096f610ac8"
+    },
+    {
+      "input": {
+        "detail": [
+          152,
+          194,
+          14,
+          47,
+          246,
+          75,
+          11,
+          166
+        ],
+        "skin": [
+          64,
+          84,
+          58,
+          86,
+          166,
+          254,
+          10,
+          206
+        ],
+        "packed": 655380,
+        "opacity": 101
+      },
+      "detail_sha256": "b850d61e7422699c0a33b01d40fd9cd0b2fe006157e69f4286035f4571b7d01f",
+      "skin_bgra_sha256": "483b94baeea0691cc6eac1768e9111a6903f75c4420b40a4eceff87fbee17d38",
+      "composed_bgra_sha256": "1cc9a2db0d1401c21fa9130ada29a4bd01d9564841737cca521103eecbda4590"
+    },
+    {
+      "input": {
+        "detail": [
+          238,
+          200,
+          112,
+          71,
+          83,
+          48,
+          132,
+          252
+        ],
+        "skin": [
+          205,
+          165,
+          94,
+          255,
+          227,
+          59,
+          104,
+          129
+        ],
+        "packed": 1966180,
+        "opacity": 101
+      },
+      "detail_sha256": "8ef61029be9646183b0cbf52685f1dd213f92acf7b72e98a9928e57371244a28",
+      "skin_bgra_sha256": "7ab720807da59da4aadd7376941a9a55ca81577dffa12301f21dcd86c0a1554a",
+      "composed_bgra_sha256": "158f26600bd19e8367cc30c3afaa9274eafec3b69f0131fe211a6086cf024406"
+    },
+    {
+      "input": {
+        "detail": [
+          111,
+          78,
+          247,
+          62,
+          106,
+          40,
+          201,
+          139
+        ],
+        "skin": [
+          223,
+          146,
+          181,
+          114,
+          24,
+          72,
+          4,
+          145
+        ],
+        "packed": 4294967295,
+        "opacity": 101
+      },
+      "detail_sha256": "10aeba34fd107880ad2b6e22cb7adb0f594515d7906bbcd174d8557c7d7a3833",
+      "skin_bgra_sha256": "9a6216207a14a9ce6e6dd08d83718e64205c10145720b303d64aa92e4eb6a15f",
+      "composed_bgra_sha256": "2c3a01c2e349b8bd0b5ce8287cd8734c7c907204913f27a358366db944891fd8"
+    },
+    {
+      "input": {
+        "detail": [
+          157,
+          10,
+          113,
+          152,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          165,
+          174,
+          151,
+          140,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 127
+      },
+      "detail_sha256": "bba91b91b876d88de1783de55936bcc035348a2bcbe1f7cb1daf0d17f9b06644",
+      "skin_bgra_sha256": "0181fcddb91f89beb928ecc1e19dc62bd349a27515feb131ab9604df2f22e5bf",
+      "composed_bgra_sha256": "c9da0c3edf97326f0fd46e21881e272581df37ab9da809e601e92531e04d394e"
+    },
+    {
+      "input": {
+        "detail": [
+          201,
+          255,
+          222,
+          65,
+          57,
+          242,
+          219,
+          116
+        ],
+        "skin": [
+          227,
+          214,
+          133,
+          33,
+          53,
+          98,
+          180,
+          139
+        ],
+        "packed": 655380,
+        "opacity": 127
+      },
+      "detail_sha256": "1fca7d055301e54b3db9af53b2602ee68659e6ed789575230d7bf3c1b1b3b477",
+      "skin_bgra_sha256": "26b22ff5533c69a63cee4f1c129c61aca1d9309583a2b87a64e90f9df0e2b144",
+      "composed_bgra_sha256": "5c3cd85dbe5b1bfb6b046331ea17fd20b167f94b21bcd1658524868f1134bca1"
+    },
+    {
+      "input": {
+        "detail": [
+          179,
+          253,
+          10,
+          249,
+          74,
+          230,
+          121,
+          111
+        ],
+        "skin": [
+          4,
+          159,
+          12,
+          92,
+          191,
+          139,
+          64,
+          177
+        ],
+        "packed": 1966180,
+        "opacity": 127
+      },
+      "detail_sha256": "02edcf45c77b62f3aeaec77655a1075a92dfab94a56f1a0201e927cca57c09e1",
+      "skin_bgra_sha256": "dd6f17b3f81df77285a51bd4a2d10c8f7d3015a0480ce168b1378b36dc4ffd10",
+      "composed_bgra_sha256": "46657f39357ece49176326a99f3a954a588dd88cb8f94fd18383885c54069626"
+    },
+    {
+      "input": {
+        "detail": [
+          64,
+          170,
+          188,
+          156,
+          150,
+          247,
+          204,
+          189
+        ],
+        "skin": [
+          220,
+          77,
+          47,
+          10,
+          206,
+          79,
+          160,
+          28
+        ],
+        "packed": 4294967295,
+        "opacity": 127
+      },
+      "detail_sha256": "e79ea5ed82da6125501c5b567cf4a083bda148a95979ba24c11ddc71db157656",
+      "skin_bgra_sha256": "5bafaffbb435726e15d1c5ef5b828358f6683841b367a76c581d59cfd9443810",
+      "composed_bgra_sha256": "5730987a6b62edb161e53b4e2a92eaae921bfbff3b083691928d89348910e938"
+    },
+    {
+      "input": {
+        "detail": [
+          194,
+          26,
+          132,
+          198,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          1,
+          37,
+          4,
+          5,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 128
+      },
+      "detail_sha256": "05d760e245908fedf7995a42e7a7903f73b39c853af92761f291a6abbba3ecd9",
+      "skin_bgra_sha256": "2c299c1a27c485dd2f7234146b17ce6af94f8ccc8a6dc692b31a90b7ebbcd084",
+      "composed_bgra_sha256": "eb0d91d371c0715e37938bb25531dc98949aca83d439a880be2f98e8e93a2560"
+    },
+    {
+      "input": {
+        "detail": [
+          132,
+          225,
+          91,
+          242,
+          125,
+          183,
+          185,
+          67
+        ],
+        "skin": [
+          95,
+          38,
+          176,
+          158,
+          248,
+          242,
+          15,
+          147
+        ],
+        "packed": 655380,
+        "opacity": 128
+      },
+      "detail_sha256": "d86075fa95387dfb0718bd183f22cc7878da8febbd8e73e026cdc6322e89689c",
+      "skin_bgra_sha256": "1d1a9c7b83692dbcd0543161291d445ac3addb8907698ba5c2d8478342c5a231",
+      "composed_bgra_sha256": "1784fa3b4c6053f4325f7cb207065cf1f92b5aab21f780f3a9143a98ad229215"
+    },
+    {
+      "input": {
+        "detail": [
+          73,
+          49,
+          64,
+          58,
+          134,
+          229,
+          255,
+          197
+        ],
+        "skin": [
+          91,
+          168,
+          20,
+          116,
+          238,
+          100,
+          157,
+          67
+        ],
+        "packed": 1966180,
+        "opacity": 128
+      },
+      "detail_sha256": "ef6c6f25e181756330ccf1ff984efc77e315a1207b75b9134a27a0805ae2f9c3",
+      "skin_bgra_sha256": "7270b79fc97a04c0911198ea42bb97841cf75229912ee4531de7347897c95ee9",
+      "composed_bgra_sha256": "6ea1cd879480cf177854b8fe51f5a165e31bce77e1ae153418d60855353b3f11"
+    },
+    {
+      "input": {
+        "detail": [
+          254,
+          142,
+          178,
+          160,
+          135,
+          194,
+          21,
+          168
+        ],
+        "skin": [
+          220,
+          188,
+          108,
+          139,
+          254,
+          98,
+          95,
+          231
+        ],
+        "packed": 4294967295,
+        "opacity": 128
+      },
+      "detail_sha256": "970c7889a6a27de50a6b9c116fecfa775f5f6eb2483a17c938f4e6b7e59fac4d",
+      "skin_bgra_sha256": "53315499afccdf9818dea72bc21465587cd70b8e04f1537691a222552beb2766",
+      "composed_bgra_sha256": "35e20b5e39c328ff2f2887ab98e1ada1c8da04bdbf05d2825995b7287b9b9c86"
+    },
+    {
+      "input": {
+        "detail": [
+          94,
+          144,
+          233,
+          158,
+          228,
+          228,
+          228,
+          228
+        ],
+        "skin": [
+          31,
+          232,
+          251,
+          63,
+          228,
+          228,
+          228,
+          228
+        ],
+        "packed": 0,
+        "opacity": 255
+      },
+      "detail_sha256": "0e2d3b561c4c0268f33e2c7df329221e842f614e4ff28d399e7b875858050b3a",
+      "skin_bgra_sha256": "3efc6b75046402cb90d7ac20cd71556246a33d9b95b3990f39fa851b49f1bf34",
+      "composed_bgra_sha256": "52e7628bfe709f55f87968e04b8486f953f9d4f40667e68d145af51cbd759007"
+    },
+    {
+      "input": {
+        "detail": [
+          202,
+          199,
+          252,
+          153,
+          129,
+          182,
+          243,
+          119
+        ],
+        "skin": [
+          98,
+          143,
+          7,
+          84,
+          95,
+          55,
+          149,
+          194
+        ],
+        "packed": 655380,
+        "opacity": 255
+      },
+      "detail_sha256": "67d5a4967328162c9fe55e010894155d06362aee428ebfb4f0f7b7a793c169da",
+      "skin_bgra_sha256": "449292070c9af5381fa438fd02f0e684b2ed777b8e05b1359ef97b2fc67c9cde",
+      "composed_bgra_sha256": "7c8eaec12a60b70c29fbd119517d6b363d571c255d01a35830c32568b143b11d"
+    },
+    {
+      "input": {
+        "detail": [
+          45,
+          222,
+          244,
+          107,
+          113,
+          239,
+          91,
+          162
+        ],
+        "skin": [
+          79,
+          33,
+          104,
+          110,
+          161,
+          230,
+          114,
+          71
+        ],
+        "packed": 1966180,
+        "opacity": 255
+      },
+      "detail_sha256": "da9603d268b1970ba49d8f8a0592f483c50c1280225962bc18c60d36845e73a5",
+      "skin_bgra_sha256": "f2e45cb95bafe44909d5368b825d135701dca0971f0af1c0f3edd4f9f6a854f2",
+      "composed_bgra_sha256": "0228bf384b19418e4b5a149fd633eecbeb7b8965bb2658ce8e9d68df9e885f9b"
+    },
+    {
+      "input": {
+        "detail": [
+          34,
+          163,
+          193,
+          56,
+          52,
+          20,
+          223,
+          128
+        ],
+        "skin": [
+          39,
+          252,
+          196,
+          34,
+          254,
+          231,
+          62,
+          47
+        ],
+        "packed": 4294967295,
+        "opacity": 255
+      },
+      "detail_sha256": "a66147f804d6c6345491fb1eccaa9a68e86059b57f0dd6678aadd831e3e88e39",
+      "skin_bgra_sha256": "0dffe16dc7947e07ed84b6403fb4cd11fcd5d4344deb32a210e7e9bb1fb10cb3",
+      "composed_bgra_sha256": "405dc5ecf6f8f5eb875b92161cc0d38b1355b455073ddce961babddcbdc2b730"
+    }
+  ]
+}

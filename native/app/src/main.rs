@@ -7,6 +7,7 @@ mod library;
 mod persistence;
 mod profiling;
 mod room_view;
+mod source_ui;
 mod texture;
 mod viewport;
 
@@ -30,6 +31,9 @@ use std::{
 struct Startup {
     roots: Vec<PathBuf>,
     ui_assets: Option<PathBuf>,
+    source_ui_root: Option<String>,
+    source_ui_locale: Option<String>,
+    source_ui_strings: Option<PathBuf>,
     game_root: Option<PathBuf>,
     sim_view: bool,
     character_assets: Vec<PathBuf>,
@@ -79,6 +83,25 @@ impl Startup {
                     out.game_root = Some(absolute_path(
                         args.next()
                             .ok_or("--game-root requires an installed game directory")?
+                            .into(),
+                    )?)
+                }
+                "--source-ui-root" => {
+                    out.source_ui_root = Some(
+                        args.next()
+                            .ok_or("--source-ui-root requires an original movie name")?,
+                    )
+                }
+                "--source-ui-locale" => {
+                    out.source_ui_locale = Some(
+                        args.next()
+                            .ok_or("--source-ui-locale requires an installed ll_cc locale")?,
+                    )
+                }
+                "--source-ui-strings" => {
+                    out.source_ui_strings = Some(absolute_path(
+                        args.next()
+                            .ok_or("--source-ui-strings requires an explicit locale package")?
                             .into(),
                     )?)
                 }
@@ -220,6 +243,16 @@ impl Startup {
                 _ => return Err(format!("Unknown argument: {arg}")),
             }
         }
+        if out.source_ui_root.is_some()
+            && (out.ui_assets.is_none()
+                || out.source_ui_locale.is_none()
+                || out.source_ui_strings.is_none())
+        {
+            return Err(
+                "Original UI inspection requires explicit --ui-assets, --source-ui-locale and --source-ui-strings"
+                    .into(),
+            );
+        }
         out.roots = out
             .roots
             .into_iter()
@@ -356,6 +389,7 @@ struct CharacterContext {
 struct Studio {
     viewport: viewport::Viewport,
     ui_assets: cas_ui::InstalledUiState,
+    source_ui: Option<source_ui::State>,
     ui_restore_required: bool,
     room: room_view::RoomState,
     character: character_view::CharacterState,
@@ -465,6 +499,7 @@ impl Studio {
                 cc.wgpu_render_state.clone().expect("wgpu is required"),
             ),
             ui_assets: cas_ui::InstalledUiState::new(),
+            source_ui: None,
             ui_restore_required: false,
             room: room_view::RoomState::default(),
             character: character_view::CharacterState::default(),
@@ -558,6 +593,25 @@ impl Studio {
         }
         if let Some(path) = out.startup.ui_assets.clone() {
             out.ui_assets.load(&cc.egui_ctx, path);
+        }
+        if let Some(root) = out.startup.source_ui_root.clone() {
+            out.source_ui = Some(source_ui::State::start(
+                cc.wgpu_render_state.clone().expect("wgpu is required"),
+                cc.egui_ctx.clone(),
+                out.startup
+                    .ui_assets
+                    .clone()
+                    .expect("source package validated"),
+                root,
+                out.startup
+                    .source_ui_locale
+                    .clone()
+                    .expect("locale validated"),
+                out.startup
+                    .source_ui_strings
+                    .clone()
+                    .expect("locale package validated"),
+            ));
         }
         if !out.startup.exit_on_ready || out.startup.session_root.is_some() {
             match persistence::Persistence::start(out.startup.session_root.clone()) {
@@ -2596,6 +2650,7 @@ impl Studio {
     fn capture_and_report(&mut self, ctx: &egui::Context) {
         if self.ready
             && !self.ui_assets.is_loading()
+            && self.source_ui.as_ref().is_none_or(|s| s.capture_ready())
             && !self.room.loading
             && !self.character.loading
             && self.profile.finished(self.startup.profile_frames)
@@ -2686,6 +2741,11 @@ impl Studio {
             report["native_color_shift"] =
                 serde_json::json!(native_color.copied().flatten().map(|v| format!("{v:016X}")));
             report["installed_ui_status"] = serde_json::json!(self.ui_assets.status);
+            report["source_ui_runtime"] = self
+                .source_ui
+                .as_ref()
+                .map(|s| s.report())
+                .unwrap_or(serde_json::Value::Null);
             report["native_room_status"] = serde_json::json!(self.room.status);
             report["whole_sim_view"] = serde_json::json!(self.whole_sim);
             report["native_character"] = serde_json::json!(self.character.receipt);
@@ -2727,6 +2787,7 @@ impl Studio {
             if self.startup.exit_on_ready {
                 self.diagnostic_failed.store(
                     !self.errors.is_empty()
+                        || self.source_ui.as_ref().is_some_and(|s| s.failed())
                         || (self.startup.game_root.is_some() && self.room.source.is_none())
                         || (self.startup.sim_view && self.character.receipt.is_none())
                         || ((self.startup.ui_assets.is_some() || self.ui_restore_required)
@@ -2788,7 +2849,11 @@ impl eframe::App for Studio {
         {
             self.start_search();
         }
-        cas_ui::show(self, ui);
+        if let Some(source_ui) = &mut self.source_ui {
+            source_ui.surface(ui, &mut self.viewport, self.draft.is_some());
+        } else {
+            cas_ui::show(self, ui);
+        }
         if !self.searching {
             if let Some(requested) = self.search_requested_at {
                 self.search_first_frame_ms

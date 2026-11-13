@@ -70,6 +70,7 @@ pub struct UnresolvedGlobalBinding {
 #[derive(Clone,Debug)]
 pub struct CharacterMaterialInputs {
     pub parts:Vec<PartMaterialInputs>,
+    pub globals:crate::native_globals::NativeGlobalMaterialInputs,
     pub unresolved_global_bindings:Vec<UnresolvedGlobalBinding>,
     pub source_pins:Vec<Arc<ResourceObservation>>,
     pub decoded_bytes:u64,
@@ -90,7 +91,7 @@ fn extent(raw:&[u8])->Result<(u32,u32),String>{
         else {image::ImageReader::new(std::io::Cursor::new(raw)).with_guessed_format().map_err(|e|e.to_string())?.into_dimensions().map_err(|e|e.to_string())?};
     if dimensions.0==0||dimensions.1==0{return Err("Zero image extent".into())}Ok(dimensions)
 }
-fn decode_source(source:Arc<ResourceObservation>,remaining:u64,cancel:&AtomicBool)->Result<DecodedMaterialPlane,String>{
+pub(crate) fn decode_source(source:Arc<ResourceObservation>,remaining:u64,cancel:&AtomicBool)->Result<DecodedMaterialPlane,String>{
     check(cancel)?;let raw=source.bytes.as_ref().ok_or_else(||source.error.clone().unwrap_or("Material image unresolved".into()))?;
     let (width,height)=extent(raw)?;let bytes=(width as u64).checked_mul(height as u64).and_then(|n|n.checked_mul(4)).ok_or("Material image extent overflow")?;
     if bytes>remaining{return Err(format!("Material decoded-plane budget: requires{bytes}, remaining{remaining}"))}
@@ -114,7 +115,7 @@ pub fn resolve_character_material_inputs_with_limits<'a>(plan:&CharacterPlan,cat
     let mut choices=BTreeMap::new();
     for source in plan.parts.iter().filter_map(|p|p.source.as_ref()).chain(plan.parts.iter().flat_map(|p|&p.materials).filter_map(|m|m.selected.as_ref())){if let Some(provider)=source.selected{choices.insert(source.key,provider);}}
     let mut resolver=ResourceResolver::new(catalog,policy,&choices,ReadLimits{max_resource_bytes:limits.max_source_bytes},limits.max_source_bytes,cancel);
-    let mut output=CharacterMaterialInputs{parts:vec![],unresolved_global_bindings:globals(),source_pins:vec![],decoded_bytes:0,issues:vec!["Authored CASP images remain separate; native composite construction, per-mesh MTNF overrides, SRV/sampler spaces and shader permutation selection remain unqualified".into()],native_qualified:false};
+    let mut output=CharacterMaterialInputs{parts:vec![],globals:Default::default(),unresolved_global_bindings:globals(),source_pins:vec![],decoded_bytes:0,issues:vec!["Authored CASP images remain separate; native composite construction, per-mesh MTNF overrides, SRV/sampler spaces and shader permutation selection remain unqualified".into()],native_qualified:false};
     let mut seen=BTreeSet::new();let mut decoded:BTreeMap<ResourceKey,Result<Arc<DecodedMaterialPlane>,String>>=BTreeMap::new();let mut count=0;
     for (part_index,part) in plan.parts.iter().enumerate(){
         check(cancel)?;progress(format!("Resolving actual CASP material inputs {}/{}",part_index+1,plan.parts.len()));
@@ -155,6 +156,12 @@ pub fn resolve_character_material_inputs_with_limits<'a>(plan:&CharacterPlan,cat
         }
         output.parts.push(current);
     }
+    check(cancel)?;
+    progress("Resolving native species ambient texture and TONE detail lookup".into());
+    let ambient=crate::native_globals::native_ambient_context(plan).and_then(|context|crate::native_globals::resolve_native_ambient_context_with_budget(context,catalog,policy,cancel,limits.max_source_bytes,limits.max_decoded_bytes.saturating_sub(output.decoded_bytes)));
+    match ambient{Ok(ambient)=>{output.decoded_bytes+=ambient.image.pixels.rgba.len()as u64;if seen.insert(ambient.image.source.key){output.source_pins.push(ambient.image.source.clone())}output.globals.ambient=Some(ambient);output.unresolved_global_bindings.retain(|b|b.parameter_hash!=0xe02df0f4);},Err(error)=>output.globals.issues.push(format!("CASAmbientIntensityTexture: {error}"))}
+    if limits.max_decoded_bytes.saturating_sub(output.decoded_bytes)<1024{output.globals.issues.push("SkinDetailHSL: remaining decoded budget is smaller than the native lookup".into())}
+    else{match crate::native_globals::resolve_native_tone_lookup(plan,catalog,policy,cancel){Ok(lookup)=>{output.decoded_bytes+=lookup.lookup.bgra.len()as u64;if seen.insert(lookup.source.key){output.source_pins.push(lookup.source.clone())}output.globals.tone_lookup=Some(lookup);output.unresolved_global_bindings.retain(|b|b.parameter_hash!=0x3c410f96);},Err(error)=>output.globals.issues.push(format!("SkinDetailHSL: {error}"))}}
     check(cancel)?;Ok(output)
 }
 #[cfg(test)]mod tests{

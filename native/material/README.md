@@ -95,8 +95,8 @@ The imported native Sim supplied 34 images across 15 parts: 15 diffuse, six
 shadow, five normal and eight specular. All decoded with zero source conflicts,
 using 208,142,336 decoded bytes. This is an off-thread resource qualification,
 not a frame-time or complete-character performance claim. `SkinDetailHSL` and
-`CASAmbientIntensityTexture` remain explicit missing global bindings while their
-native selectors/construction are investigated. The reference atlas belongs to
+`CASAmbientIntensityTexture` were explicit missing global bindings in that first
+receipt. Their subsequent native resolution is described below. The reference atlas belongs to
 an explicitly labeled reference/CPU-skintone preview, not the native five-plane
 GPU-skintone contract.
 
@@ -117,3 +117,61 @@ Container-specific getter provenance: C. Marinetti, GPL-3.0-or-later SimRipper
 The optional [MTNF oracle](oracle/geom-mtnf/README.md) verifies source SHA256
 before compiling complete unchanged declarations in private build storage.
 Native material and game-visible parity remain unqualified.
+
+`CharacterMaterialInputs.globals` now resolves the actual native species ambient
+texture and the source-pinned v12 TONE lookup. No ambient context is
+guessed when serialized ExtendedSpecies is missing/zero/unknown. The lookup's
+256×1 BGRA bytes and native DXGI resource format 87 are independently qualified
+against 147 isolated executions of the actual numeric routine, matching all
+150,528 output bytes. Native TONE reader/getter/copy dataflow establishes packed
+`(hue << 16) | saturation`. Packed zero selects the actual initialized-renderer
+default table: native grayscale helper19BFC80 creates `[i,i,i,i]` BGRA entries,
+stored as256×1 format87 by initializer12591C0. Selection metadata distinguishes
+this resource from explicit HSL generation, which differs at zero. Missing
+TONE values remain errors. No game process is used by runtime or qualification.
+See [native construction evidence](../../docs/engine/CAS_MATERIAL_CONSTRUCTION_20261112.md).
+
+`native_cpu_bc1` adds explicit native CPU compressed detail/skin preparation.
+All256 synthetic block pairs (4,096 pixels;36,864 prepared/composed bytes)
+match bounded original native instruction execution exactly. Its palette
+rounding is intentionally distinct from a universal GPU BC1 decoder. It
+does not choose missing-block/cache policy, upstream layers or full placement.
+
+`native_blend` exposes the actual raw-image job's encoded-byte blend with an
+explicit native alpha mode and finite opacity. A4×4 block API and cancellable
+same-size RGBA plane API share the qualified integer operation. All256
+synthetic blocks (4,096 pixels;16,384 bytes) match original native instruction
+execution exactly. This supplies no inferred image layers, HSL, masks or flags.
+
+`native_shadow` supplies the distinct native CASP shadow operation on explicit
+BC1/BC3-color blocks and prepared BGRA pixels, plus row-major placement into an
+existing RGBA plane. It preserves destination alpha, skips transparent BC1
+pixels and ignores BC3 source alpha. All512 blocks (8,192 pixels;32,768 bytes)
+match bounded original native instruction execution exactly. No canvas,
+resource/mip choice, RLE stream parser or complete layer order is inferred.
+See [shadow evidence](evidence/native-shadow-qualification.json).
+
+`native_compressed_blend` qualifies the native unshifted BC1/BC3 image-job
+operation with an explicit ordinary prepared-cache destination. It retains
+the separate full-opacity compressed path and expands BC3 alpha directly to
+blend weights before interpolation. All768 cases (12,288 pixels;49,152 bytes)
+match the original native routines exactly, including fractional opacity,
+reversed/equal endpoints and transparent selectors. This is not a replacement
+for source selection, native HSL/masks, canvas flags or ordered assembly.
+See [compressed-blend evidence](evidence/native-compressed-blend-qualification.json).
+
+`native_physique` and `native_physique_source` provide the actual native detail
+weight order and source-pinned CASTuning parameters. The native builder matches
+483 ordered preset calls across 64 controlled nine-weight profiles, including
+exact float bits. Real-import selection uses numeric SimData Species/Occult
+and checked schema offsets, preserves unknown fields and effective tombstones,
+and refuses ambiguous contexts or malformed weight lists. Native image naming,
+full frame/occult eligibility and complete plane composition remain separate.
+
+`native_cpu_skin` supplies the actual native CPU skin/detail numeric operation
+as a separate 4×4 block API. Its explicit inputs are prepared detail-green,
+skin BGRA, native lookup and raw opacity; no layer or source is replaced.
+All 260 blocks / 4,160 pixels matched isolated execution of the unchanged native
+numeric routines byte for byte. Native compressed-block preparation, complete
+input ordering and final atlas placement remain separate gates. This component
+does not silently replace the existing reference atlas with a native claim.

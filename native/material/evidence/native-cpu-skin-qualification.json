@@ -1,0 +1,22 @@
+{
+  "schema":1,
+  "date":"2026-11-12",
+  "native_client_sha256":"95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "entry_rva":"01A3D340",
+  "native_cpu_lookup_setter_rva":"01A3DF20",
+  "oracle":"Unicorn 2.1.4, bounded actual x86_64 numeric routines in isolated virtual memory",
+  "cases":260,
+  "pixels_compared":4160,
+  "bytes_compared":16640,
+  "exact_bytes":true,
+  "native_instructions_interpreted":676753,
+  "lookup_inputs":[0,655380,1966180,11796580,4294967295],
+  "opacity_inputs":[0,1,20,50,85,99,100,101,127,128,200,255,4294967125],
+  "input_alpha_ignored":true,
+  "output_alpha":255,
+  "originals_unchanged":true,
+  "game_process_contacted":false,
+  "external_io":false,
+  "compressed_block_preparation_qualified":false,
+  "full_native_composition_qualified":false
+}

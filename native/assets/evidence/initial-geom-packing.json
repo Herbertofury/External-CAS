@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "native_initial_producer_rva": "01A29A40",
+  "position_helper_rva": "019F6020",
+  "normal_helper_rva": "019F5FE0",
+  "source_contract": {
+    "position_xyz": "low signed16 bits of floor(f32(f32(x * 8192) + 0.5)); destination fourth word untouched",
+    "normal_xyz": "low byte of signed32 trunc(f32(f32(n * 127) + 128)); fourth byte untouched",
+    "tangent_xyzw": "low byte of signed32 trunc(f32(f32(t + 1) * 127.5)); W is 0x80",
+    "uv": "UV occurrence1 takes abs(U); wrap finite components above1 by x-trunc(x), below0 by (x-trunc(x))+1; low16(roundTiesEven(f32(x*65535))-32768)",
+    "uv_rounding_context": "CVTSS2SI with explicit MXCSR0x1F80 in isolated qualification",
+    "conversion_boundary": "non-finite or out-of-signed32 conversion domain refused; no inferred saturation"
+  },
+  "controlled_original_instruction_cases": 2613,
+  "instructions": 76895,
+  "visited_instruction_addresses": 136,
+  "intercepted_calls": 0,
+  "game_contact": false,
+  "source_mutations": false,
+  "full_mesh_palette_tag_qualified": false,
+  "original_game_bytes_redistributed": false
+}

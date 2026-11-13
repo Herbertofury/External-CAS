@@ -24,3 +24,4 @@ external-cas-fidelity = { path = "../fidelity" }
 external-cas-material = { path = "../material" }
 external-cas-room = { path = "../room" }
 external-cas-character = { path = "../character" }
+external-cas-source-ui = { path = "../source_ui" }

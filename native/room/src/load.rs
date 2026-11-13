@@ -459,19 +459,31 @@ pub fn load_cas_tuning(
         .map(|c| {
             (
                 ResourceKey::new(0x545ac67a, 0x005adec7, c.instance),
-                true,
+                0u8,
                 c.instance,
             )
         })
         .chain(out.lighting.iter().map(|c| {
             (
                 ResourceKey::new(0x545ac67a, 0x000a3610, c.instance),
-                false,
+                1u8,
                 c.instance,
             )
         }))
+        .chain(
+            out.other_records
+                .iter()
+                .filter(|(_, record)| record.class == "Client_CASTuning")
+                .map(|(_, record)| {
+                    (
+                        ResourceKey::new(0x545ac67a, 0x004b5265, record.instance),
+                        2u8,
+                        record.instance,
+                    )
+                }),
+        )
         .collect();
-    for (key, is_camera, instance) in partners {
+    for (key, kind, instance) in partners {
         check(cancel)?;
         if !catalog.by_key.contains_key(&key) {
             out.issues.push(RoomIssue {
@@ -486,7 +498,7 @@ pub fn load_cas_tuning(
         let source = resolver.resource(key)?;
         let document = parse_simdata(&source.bytes, cancel)?;
         let data = CasDataResource { source, document };
-        if is_camera {
+        if kind == 0 {
             let t = out
                 .cameras
                 .iter_mut()
@@ -496,7 +508,7 @@ pub fn load_cas_tuning(
                 return Err("duplicate CAS camera logical instance".into());
             }
             crate::tuning::camera_data(t.into_iter().next().unwrap(), &data)?;
-        } else {
+        } else if kind == 1 {
             let t = out
                 .lighting
                 .iter_mut()

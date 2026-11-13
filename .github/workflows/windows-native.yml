@@ -10,6 +10,10 @@ jobs:
   native:
     runs-on: windows-latest
     timeout-minutes: 30
+    env:
+      # The pinned source interpreter has long upstream fixture paths even
+      # though those fixtures are not bundled in the application.
+      CARGO_HOME: D:\ec-cargo
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -21,6 +25,9 @@ jobs:
           rustup default 1.99.0
           rustc --version
           cargo --version
+      - name: Enable dependency checkout long paths
+        shell: pwsh
+        run: git config --global core.longpaths true
       - name: Test native source workspace
         run: cargo test --workspace --locked --jobs 2
       - name: Build native application

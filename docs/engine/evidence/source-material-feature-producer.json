@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "client_sha256": "95e40b75f76711c66b9f36a974ec04d43304a6f591d409d3d4019818f366237b",
+  "material_bytes_copy_constructor_rva": "011FD0E0",
+  "native_parameter_constructor_rva": "011FD9F0",
+  "material_feature_list_producer_rva": "011FCA80",
+  "allowed_mask_global_rva": "02975160",
+  "allowed_mask_setter_rva": "011FD0C0",
+  "allowed_mask_test_rva": "011FCDB0",
+  "source_entry_bytes": 16,
+  "native_record_bytes": 32,
+  "native_record_membership_flag_byte": 26,
+  "native_record_membership_flag_mask": 1,
+  "native_data_type": "source_data_type & 0xFF",
+  "required_capability_mask": "source_data_type >> 16",
+  "admission": "(required_mask & ~allowed_mask) == 0",
+  "native_payload_word_count": "source_count & 0xFFFF",
+  "membership": {
+    "types_1_3": "scan native float32 UCOMISS/JNE nonzero test; unordered behavior retained as a qualification issue",
+    "type_2": "any integer word nonzero",
+    "types_4_5_6": "unconditional; no image availability inference"
+  },
+  "unconditional_platform_feature": {"name": "win32", "hash": "DD3D121E"},
+  "explicit_caller_flag_feature": {"name": "ShadowCaster", "hash": "4A06F965"},
+  "complete_cas_override_chain_and_allowed_mask_qualified": false,
+  "production_permutation_selected_by_this_research": false,
+  "game_contact": false,
+  "source_mutations": false,
+  "original_code_redistributed": false
+}
