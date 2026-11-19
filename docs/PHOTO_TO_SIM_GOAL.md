@@ -24,10 +24,41 @@ Reviewed 2026-11-19; dates below are review dates, not invented release dates. T
 1. Local image selection with consent and input validation. Separate source observations from inferred geometry.
 2. Normalize orientation/camera/expression; permit manual landmarks, masks and exclusions. Reject ambiguity or ask the user to choose the subject.
 3. Fit a bounded, versioned map of supported installed face/body morph controls using landmark reprojection and silhouette error, with camera parameters and shape regularization separated. Start with a small independently verified control subset. Report unreachable shape residuals instead of silently distorting the Sim.
-4. Search only the user's authorized installed presets and CC for optional hair/outfit suggestions, showing exact resource IDs, required packs and missing dependencies. Do not download, clone copyrighted clothing from the photo or install CC automatically.
+4. Match face/body and appearance using the best suitable authorized installed presets, sliders, skins, hair and costumes, with optional discovery through the mod database as specified below. Keep installed/usable candidates separate from missing recommendations. Do not download, clone copyrighted clothing from the photo or install CC automatically.
 5. Preview several editable candidates, not a single asserted identity match. Keep sliders and corrections inspectable; manual edits must not disappear after a later inference result.
 6. Commit only an explicitly reviewed proposal to a separate revision-checked project draft. Reuse existing undo, recovery and Tray validation. Game application remains a different explicit qualified boundary.
 7. Optional later texture/custom morph generation requires topology, UV, rig, normals, LOD, material, animation and distribution validation. It must never replace unsupported resources or imply generic AI output can be dropped into CAS.
+
+## CC-aware likeness and mod database integration
+Owner clarification, 2026-11-19. **Requirements/backlog, not implemented capability or verified creator catalog.** Expand the original installed-only suggestion scope to include optional discovery of suitable missing CC, without making online access or new CC mandatory.
+
+### Match the whole editable result
+- Fit the face and body jointly with supported base-game controls and installed **presets/sliders**, then compare compatible **skins/overlays, hair, costumes/outfits and accessories**. Separate geometry/proportions from texture, makeup, lighting, pose and clothing so a skin's shading is not misrepresented as a shape fix.
+- User examples to investigate: **Magic Bot** presets/sliders and **ThisIsThem** skins, including a relevant celebrity skin if one is actually verified. These are owner-provided discovery leads, not assertions of a particular file's identity, availability, licensing, installation or compatibility. Do not guess a celebrity or identify a person from their photograph.
+- “Best” means best supported fit for the user's chosen likeness/style and constraints within the searched collection, not a universal ranking or exhaustive inventory. Explain coverage, alternatives, uncertainty and tradeoffs. Let the user prefer installed-only, base-game-only, no paid content, specific styles or excluded creators; never silently substitute missing assets.
+
+### Database contract and recommendation evidence
+Use the shared mod database's provider-qualified creator, project, release and file identities rather than matching names alone. Cross-site aliases require verified links. Each candidate must retain:
+- Canonical creator/project/source URLs and IDs; exact release/file identity, evidence timestamps, license/usage restrictions and available integrity metadata. Distinguish author attribution from uploader identity.
+- Installed status and actual local package/resource identity, hash/revision when available, selected provider/override priority and duplicate/conflict evidence. Do not expose personal paths in public logs.
+- Required meshes, packs, other CC, presets/sliders/frameworks and their dependency chains, including missing, conflicting and unresolved requirements.
+- Declared game-build, age/frame/species/occult/outfit/category restrictions where supported, plus renderer/morph/parser support and actual local validation separately. Provider-declared compatibility is not game-tested compatibility; unknown stays unknown.
+- Availability states: installed and validated, installed but unresolved, publicly downloadable, login/member/payment required, removed/unavailable, or unknown. A failed request is not proof of deletion. Record the legitimate acquisition route and last check without promising universal automatic access.
+- The proposed contribution (face shape, body proportion, skin detail, hair silhouette, outfit likeness), local preview evidence, confidence/limitations and why it outranks alternatives under the user's preferences. Preserve the full selected CC/dependency manifest and provenance in the portable draft.
+
+### Missing CC and review workflow
+Show missing items explicitly with creator, exact project/file or unresolved identity, why each helps, requirements, compatibility uncertainty, cost/access conditions and official source. Ask the user to supply a legitimately obtained local file or choose an authorized source/login workflow, skip it, or select an installed alternative. Do not download, purchase, install, replace, redistribute or bypass a host's restrictions merely because a recommendation exists.
+
+After user-supplied acquisition, rescan and verify the actual file, resource identities and dependency closure before offering it as usable. Never silently enable scripts or overwrite packages. Revalidate changed/deleted sources and reject stale inference/recommendation results if the reference image, Sim draft, installed inventory, chosen CC or database evidence changed. Commit only reviewed, supported changes to a recoverable draft; retain manual region locks and undo.
+
+Keep photo analysis local by default. Database discovery should use ordinary asset/category metadata, not upload the photograph, face embedding or derived identifying representation. Any optional remote photo processing requires separate informed approval; database access is not that approval. Keep reference photos, private inventories and likeness previews out of public catalog/issue data.
+
+### Additional acceptance backlog
+- [ ] **CC1: identity and inventory join.** Fixtures with duplicate filenames, similar creator names, different provider IDs, overrides, changed hashes and missing meshes must not join or mark installed incorrectly.
+- [ ] **CC2: constrained likeness comparison.** Compare supported preset/slider + skin + hair/outfit combinations against a base-game/manual baseline; explain geometry-versus-texture effects and preserve user locks and unsupported fields.
+- [ ] **CC3: missing-CC workflow.** Exercise available, restricted, unavailable and unknown sources; skip, cancel, offline, user-supplied file and installed alternative paths. No automatic acquisition, hidden substitution or manufactured availability.
+- [ ] **CC4: compatibility and recovery.** Test dependency chains, conflicts, stale game/build/catalog/package changes and out-of-order results; save/reopen the exact manifest, undo and separately qualify real game/Tray round-trip.
+- [ ] **CC5: privacy and performance.** Verify no photos/embeddings/private inventories leave the device through discovery, portable storage after relocation, and measured cold/warm search/preview at large-library scale without hiding candidates or dropping fidelity.
 
 ## Milestones and acceptance backlog
 - [ ] **M0: capability/rights inventory.** Pin game build, native baseline and existing parser/morph/Tray contracts; enumerate supported parameters and unsupported fields. Review code, weights, model dependencies and output terms separately. Preserve current development and reserved Apex sessions.
