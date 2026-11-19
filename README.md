@@ -107,3 +107,7 @@ The combined application is GPL-3.0-or-later; individual component licenses and
 upstream provenance remain applicable. See [LICENSE](LICENSE) and
 [native notices](native/THIRD_PARTY_NOTICES.md). Do not publish private captures,
 catalogs, extracted resources or source packages in issues or pull requests.
+
+## Planned photo-to-Sim creation
+
+Owner-requested 2026-11-19: select a face photo, full-body photo or both to propose an editable Sims 4 likeness, with optional extra views and manual correction. See the [source-backed technology shortlist, milestones and acceptance backlog](docs/PHOTO_TO_SIM_GOAL.md). Start with fitting verified Sims morph controls; generic generated meshes are not game-ready Sims. Local-first portable data, consent, licensing, uncertainty and preservation are required. **Goal only, not implemented or game-accepted; existing full-CAS gates remain open.**
