@@ -47,3 +47,6 @@ impl Pixels{
         Ok(Self{width,height,rgba})
     }
 }
+
+/// Private diagnostic viewport image export with no replacement.
+pub mod viewport_capture;

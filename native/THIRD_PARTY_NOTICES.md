@@ -32,6 +32,9 @@ original authors is implied.
   in `source_ui/RUFFLE-LICENSE.md` and `source_ui/PROVENANCE.md`. Its small test
   movies are compiled from the accompanying original test source.
 
+- The pinned `tempfile` 3.27.0 dependency (MIT OR Apache-2.0) is used
+  in the viewport capture writer for same-directory, no-replace output.
+
 Game and creator resources, private Sims, extracted fonts/atlases, textures,
 meshes, portraits and reference frames are not included or sublicensed. The
 application reads authorized installed content locally and retains exact source

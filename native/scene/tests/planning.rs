@@ -683,3 +683,44 @@ fn pack_delta_directory_does_not_invent_a_priority_above_its_config() {
         EffectiveState::TiedHighestPriority
     );
 }
+
+#[test]
+fn shadowed_payload_failure_does_not_veto_identical_current_rig_sources() {
+    let key = native_rig_key(Some(1), Some(32), 1).unwrap().0;
+    for storage in [0xffe0u16, 0x5a42] {
+        let fixture = Fixture::new();
+        let root = install_fixture(&fixture);
+        let old = fixture.package(
+            "install/Data/Client/ClientFullBuild0.package",
+            &[(key, b"broken-history".to_vec())],
+        );
+        let mut bytes = fs::read(&old).unwrap();
+        let n = bytes.len();
+        bytes[n - 4..n - 2].copy_from_slice(&storage.to_le_bytes());
+        fs::write(&old, bytes).unwrap();
+        for name in ["ClientDeltaBuild0.package", "ClientDeltaBuild1.package"] {
+            fixture.package(
+                &format!("install/Data/Client/{name}"),
+                &[(key, b"current".to_vec())],
+            );
+        }
+        let catalog = Catalog::scan_roots(&[root.clone()], &AtomicBool::new(false), |_| {}).unwrap();
+        let scope = GameInstallScope::discover(&root).unwrap();
+        let policy = scope.prepare(&catalog).unwrap();
+        assert_eq!(policy.resolve_key(key).state, EffectiveState::TiedHighestPriority);
+
+        let plan = resolve_scene_scoped(&sim(), &catalog, &SceneOptions::default(), Some(&policy));
+        assert_eq!(plan.rig_payload.as_deref(), Some(b"current".as_slice()));
+        let dep = plan.rig.unwrap();
+        assert_eq!(dep.state, DependencyState::ByteIdenticalPriorityProviders);
+        assert_eq!(dep.candidates.len(), 3);
+        assert_eq!(dep.provider_payload_hashes.len(), 2);
+        assert_eq!(dep.shadowed_payload_errors.len(), 1);
+        assert_eq!(
+            catalog.provider(dep.shadowed_payload_errors[0].0).unwrap().0.path,
+            old.canonicalize().unwrap()
+        );
+        assert!(dep.payload_error.is_none());
+        assert!(resolve_scene(&sim(), &catalog, &SceneOptions::default()).rig_payload.is_none());
+    }
+}

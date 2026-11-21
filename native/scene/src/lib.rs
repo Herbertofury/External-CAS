@@ -74,6 +74,8 @@ pub struct Dependency {
     pub state: DependencyState,
     pub selected: Option<Candidate>,
     pub provider_payload_hashes: Vec<(Provider, String)>,
+    /// Read failures for providers below an already-qualified priority tie.
+    pub shadowed_payload_errors: Vec<(Provider, String)>,
     pub payload_error: Option<String>,
 }
 #[derive(Clone, Debug)]
@@ -288,6 +290,7 @@ fn dependency(
         state,
         selected,
         provider_payload_hashes: Vec::new(),
+        shadowed_payload_errors: Vec::new(),
         payload_error: None,
     }
 }
@@ -392,13 +395,20 @@ impl<'a, 'b> PlanReaders<'a, 'b> {
         let mut first_candidate = None;
         let mut identical = true;
         for c in &d.candidates {
-            let bytes = self.read(c, limits)?;
+            let active = eligible
+                .as_ref()
+                .is_none_or(|providers| providers.contains(&c.provider));
+            let bytes = match self.read(c, limits) {
+                Ok(bytes) => bytes,
+                Err(error) if !active => {
+                    d.shadowed_payload_errors.push((c.provider, error));
+                    continue;
+                }
+                Err(error) => return Err(error),
+            };
             d.provider_payload_hashes
                 .push((c.provider, format!("{:x}", Sha256::digest(&bytes))));
-            if eligible
-                .as_ref()
-                .is_some_and(|active| !active.contains(&c.provider))
-            {
+            if !active {
                 continue;
             }
             if let Some(original) = &first {
@@ -411,13 +421,16 @@ impl<'a, 'b> PlanReaders<'a, 'b> {
             }
         }
         if identical {
+            let (bytes, selected) = first
+                .zip(first_candidate)
+                .ok_or("No current provider payload to compare")?;
             d.state = if eligible.is_some() {
                 DependencyState::ByteIdenticalPriorityProviders
             } else {
                 DependencyState::ByteIdenticalProviders
             };
-            d.selected = first_candidate;
-            Ok(first.unwrap())
+            d.selected = Some(selected);
+            Ok(bytes)
         } else {
             Err(
                 "Same full TGI has differing provider payloads; explicit source selection required"

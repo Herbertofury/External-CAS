@@ -171,36 +171,54 @@ impl<'a, 'b> Resolver<'a, 'b> {
                 });
             let mut first: Option<(Provider, Arc<[u8]>, [u8; 32])> = None;
             let mut identical = true;
-            for (i, p) in providers.into_iter().enumerate() {
-                match self.read(key, p) {
-                    Ok(bytes) => {
-                        let hash = Sha256::digest(&bytes).into();
-                        if let Some(c) = out.candidates.get_mut(i) {
-                            c.payload_sha256 = Some(hash);
-                        }
-                        if eligible.as_ref().is_some_and(|active| !active.contains(&p)) {
-                            continue;
-                        }
-                        if let Some((_, old, _)) = &first {
-                            if old.as_ref() != bytes.as_ref() {
-                                identical = false;
-                            }
-                        } else {
-                            first = Some((p, bytes, hash));
-                        }
+            // Compare the current sources before spending any byte budget on
+            // lower-priority diagnostics. Without qualified priorities every
+            // candidate remains part of the required comparison.
+            'read_providers: for active_pass in [true, false] {
+                for (i, p) in providers.iter().copied().enumerate() {
+                    let active = eligible.as_ref().is_none_or(|sources| sources.contains(&p));
+                    if active != active_pass {
+                        continue;
                     }
-                    Err(e) => {
-                        if let Some(c) = out.candidates.get_mut(i) {
-                            c.error = Some(e.clone());
+                    match self.read(key, p) {
+                        Ok(bytes) => {
+                            let hash = Sha256::digest(&bytes).into();
+                            if let Some(c) = out.candidates.get_mut(i) {
+                                c.payload_sha256 = Some(hash);
+                            }
+                            if !active {
+                                continue;
+                            }
+                            if let Some((_, old, _)) = &first {
+                                if old.as_ref() != bytes.as_ref() {
+                                    identical = false;
+                                }
+                            } else {
+                                first = Some((p, bytes, hash));
+                            }
                         }
-                        out.error = Some(e);
-                        break;
+                        Err(e) => {
+                            if let Some(c) = out.candidates.get_mut(i) {
+                                c.error = Some(e.clone());
+                            }
+                            if active || self.cancel.load(Ordering::Relaxed) {
+                                out.error = Some(e);
+                                break 'read_providers;
+                            }
+                        }
                     }
                 }
+                if eligible.is_none() {
+                    break;
+                }
+            }
+            if self.cancel.load(Ordering::Relaxed) {
+                out.error = Some("Cancelled".into());
             }
             if out.error.is_none() {
-                if identical {
-                    let (p, bytes, hash) = first.unwrap();
+                if !identical {
+                    out.error=Some("Differing providers remain unresolved without qualified priority/explicit choice".into());
+                } else if let Some((p, bytes, hash)) = first {
                     out.selected = Some(p);
                     out.bytes = Some(bytes);
                     out.payload_sha256 = Some(hash);
@@ -211,7 +229,7 @@ impl<'a, 'b> Resolver<'a, 'b> {
                     }
                     .into();
                 } else {
-                    out.error=Some("Differing providers remain unresolved without qualified priority/explicit choice".into());
+                    out.error = Some("No current provider payload to compare".into());
                 }
             }
         }
