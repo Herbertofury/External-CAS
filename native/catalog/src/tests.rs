@@ -733,7 +733,10 @@ fn scan_overlap_publishes_one_scoped_cc_hit_and_keeps_payload_pin() {
         .search_scoped("exact-discovery", "", None, 0, 100, &cancel)
         .unwrap();
     assert_eq!(matches.len(), 1);
-    assert_eq!(matches[0].package_path, expected.path);
+    assert_eq!(
+        matches[0].package_path,
+        expected.path.canonicalize().unwrap()
+    );
     assert_eq!(matches[0].key, expected.entries[0].key);
     assert_eq!(matches[0].payload_sha256, metadata[0].payload_sha256);
 }
