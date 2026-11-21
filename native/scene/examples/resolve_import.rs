@@ -6,7 +6,7 @@ use serde_json::json;
 use sha2::{Digest, Sha256};
 use std::{path::PathBuf, sync::atomic::AtomicBool};
 fn dep(d: &Dependency, catalog: &Catalog) -> serde_json::Value {
-    json!({"role":d.role,"requested_keys":d.requested_keys.iter().map(ToString::to_string).collect::<Vec<_>>(),"state":format!("{:?}",d.state),"candidates":d.candidates.iter().map(|c|json!({"key":c.key.to_string(),"package_index":c.provider.package_index,"entry_index":c.provider.entry_index,"package":catalog.provider(c.provider).map(|(p,_)|p.path.clone()),"deleted":c.deleted})).collect::<Vec<_>>(),"selected_key":d.selected.as_ref().map(|c|c.key.to_string()),"provider_payload_hashes":d.provider_payload_hashes.iter().map(|(p,h)|json!({"package_index":p.package_index,"entry_index":p.entry_index,"sha256":h})).collect::<Vec<_>>(),"payload_error":d.payload_error})
+    json!({"role":d.role,"requested_keys":d.requested_keys.iter().map(ToString::to_string).collect::<Vec<_>>(),"state":format!("{:?}",d.state),"candidates":d.candidates.iter().map(|c|json!({"key":c.key.to_string(),"package_index":c.provider.package_index,"entry_index":c.provider.entry_index,"package":catalog.provider(c.provider).map(|(p,_)|p.path.clone()),"deleted":c.deleted})).collect::<Vec<_>>(),"selected_key":d.selected.as_ref().map(|c|c.key.to_string()),"provider_payload_hashes":d.provider_payload_hashes.iter().map(|(p,h)|json!({"package_index":p.package_index,"entry_index":p.entry_index,"sha256":h})).collect::<Vec<_>>(),"shadowed_payload_errors":d.shadowed_payload_errors.iter().map(|(p,e)|json!({"package_index":p.package_index,"entry_index":p.entry_index,"error":e})).collect::<Vec<_>>(),"payload_error":d.payload_error})
 }
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut args = std::env::args_os().skip(1);

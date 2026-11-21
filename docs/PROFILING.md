@@ -15,7 +15,10 @@ pwsh -File scripts/profile-native.ps1 -AssetRoots '<installed CC directory>' -Ou
 ```
 
 The script uses a below-normal-priority child and records the exact binary
-SHA-256. It never replaces existing evidence. Runtime captures and source paths
+SHA-256. It never replaces existing evidence. The app’s explicit `--capture` output
+also refuses existing filenames. It stages the encoded image in the chosen
+folder and reports `capture.status` as saved, not_saved, or not_requested.
+Runtime captures and source paths
 are private and must stay excluded from Git. A diagnostic timeout terminates
 only its own child, retaining any partial evidence.
 

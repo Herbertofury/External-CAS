@@ -23,8 +23,10 @@ metadata are preserved. That is a payload check, not a whole-file snapshot.
 
 `Catalog::scan_roots` incrementally visits explicit files/folders, accepts
 cancellation, reports genuine counts and per-source errors, and preserves all
-providers. Its `unique` lookup refuses ambiguous keys. Directory order does not
-establish game or mod load precedence. Child links are skipped and counted;
+providers. Selecting a folder and the same package inside it indexes the
+canonical package path once. Separate package paths remain separate providers,
+even if their contents match. Its `unique` lookup refuses ambiguous keys.
+Directory order does not establish game or mod load precedence. Child links are skipped and counted;
 choose a resolved target explicitly to scan it. Counts and package indexes use
 memory proportional to the actual library. No library-size cap is imposed.
 `casp_candidates(instance_id)` reports every full-TGI/provider candidate for a

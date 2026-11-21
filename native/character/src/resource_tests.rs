@@ -142,3 +142,60 @@ fn highest_priority_tombstone_does_not_restore_old_payload() {
     assert!(result.bytes.is_none());
     assert!(result.error.as_ref().unwrap().contains("deletion"));
 }
+
+#[test]
+fn shadowed_payload_failure_or_byte_budget_cannot_veto_a_qualified_current_dependency() {
+    let key = ResourceKey::new(0x067caa11, 0, 42);
+    for (compression, old, budget) in [
+        (0xffe0, b"".as_slice(), 1024),
+        (0x5a42, b"invalid zlib".as_slice(), 1024),
+        (0, b"bigger history".as_slice(), 6),
+    ] {
+        let root = fixture();
+        package(&root, "Old.package", key, old, compression);
+        package(&root, "PatchA.package", key, b"new", 0);
+        package(&root, "PatchB.package", key, b"new", 0);
+        let cancel = AtomicBool::new(false);
+        let catalog = Catalog::scan_roots(&[root.clone()], &cancel, |_| {}).unwrap();
+        let scope = GameInstallScope::discover(&root).unwrap();
+        let policy = scope.prepare(&catalog).unwrap();
+        let choices = BTreeMap::new();
+        let mut resolver = Resolver::new(
+            &catalog, Some(&policy), &choices, ReadLimits::default(), budget, &cancel,
+        );
+        let resolved = resolver.get(key);
+        assert_eq!(resolved.bytes.as_deref(), Some(b"new".as_slice()));
+        assert!(resolved.error.is_none());
+        assert_eq!(resolver.bytes, 6);
+        assert_eq!(resolved.candidates.len(), 3);
+        let historical = resolved
+            .candidates
+            .iter()
+            .find(|c| c.package_path.ends_with("Old.package"))
+            .unwrap();
+        assert!(historical.error.is_some());
+        assert!(historical.payload_sha256.is_none());
+        assert_eq!(historical.deleted, compression == 0xffe0);
+    }
+}
+
+#[test]
+fn a_mixed_live_deleted_highest_priority_tie_remains_unresolved() {
+    let key = ResourceKey::new(0x067caa11, 0, 42);
+    let root = fixture();
+    package(&root, "Old.package", key, b"new", 0);
+    package(&root, "PatchA.package", key, b"new", 0);
+    package(&root, "PatchB.package", key, b"", 0xffe0);
+    let cancel = AtomicBool::new(false);
+    let catalog = Catalog::scan_roots(&[root.clone()], &cancel, |_| {}).unwrap();
+    let scope = GameInstallScope::discover(&root).unwrap();
+    let policy = scope.prepare(&catalog).unwrap();
+    let choices = BTreeMap::new();
+    let mut resolver = Resolver::new(
+        &catalog, Some(&policy), &choices, ReadLimits::default(), 1024, &cancel,
+    );
+    let resolved = resolver.get(key);
+    assert!(resolved.selected.is_none());
+    assert!(resolved.bytes.is_none());
+    assert!(resolved.error.is_some());
+}

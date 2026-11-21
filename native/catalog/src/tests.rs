@@ -696,6 +696,52 @@ fn source_write_handle_prevents_cache_publication() {
 }
 
 #[test]
+fn scan_overlap_publishes_one_scoped_cc_hit_and_keeps_payload_pin() {
+    let root = tempfile::tempdir().unwrap();
+    let package_path = root.path().join("fixture.package");
+    let (expected, metadata) = source(&package_path, 1);
+    let cancel = AtomicBool::new(false);
+    let catalog = external_cas_assets::scan::Catalog::scan_roots(
+        &[root.path().to_path_buf(), package_path],
+        &cancel,
+        |_| {},
+    )
+    .unwrap();
+    let updates: Vec<_> = catalog
+        .packages
+        .iter()
+        .map(|package| CachePackageUpdate {
+            package,
+            rows: &metadata,
+            unsupported: &[],
+        })
+        .collect();
+    let cache_path = root.path().join("portable-catalog.sqlite");
+    let mut cache = CatalogCache::open(&cache_path).unwrap();
+    cache
+        .store_packages_with_progress(&updates, CacheBatchLimits::default(), &cancel, |_| {})
+        .unwrap();
+    let pins: Vec<_> = catalog
+        .packages
+        .iter()
+        .map(|package| package.fingerprint())
+        .collect();
+    cache.bind_scope("exact-discovery", &pins, &cancel).unwrap();
+    drop(cache);
+    let mut reopened = CatalogCache::open(cache_path).unwrap();
+    let matches = reopened
+        .search_scoped("exact-discovery", "", None, 0, 100, &cancel)
+        .unwrap();
+    assert_eq!(matches.len(), 1);
+    assert_eq!(
+        matches[0].package_path,
+        expected.path.canonicalize().unwrap()
+    );
+    assert_eq!(matches[0].key, expected.entries[0].key);
+    assert_eq!(matches[0].payload_sha256, metadata[0].payload_sha256);
+}
+
+#[test]
 fn search_scope_preserves_duplicate_keys_and_excludes_other_sources() {
     let root = tempfile::tempdir().unwrap();
     let (first, a) = source(&root.path().join("first.package"), 3);

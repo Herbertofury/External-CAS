@@ -22,8 +22,11 @@ ambiguous. `rig_payload` contains bytes only after these checks pass.
 `resolve_scene_scoped(sim, catalog, options, Some(&policy))` applies the
 observed installed priority rules while loading payloads. Identical tied
 highest-priority payloads resolve as `ByteIdenticalPriorityProviders` even
-when lower-priority historical bytes differ. Hashes for all compared providers
-remain retained. Differing highest-priority payloads stay ambiguous, and a
+when lower-priority historical bytes differ. Readable historical hashes remain
+retained; an unreadable or deleted lower-priority provider stays visible as a
+historical observation but does not block identical current copies. The
+character reader compares current sources before using remaining byte budget
+for historical diagnostics. Differing highest-priority payloads stay ambiguous, and a
 highest-priority tombstone never revives a lower historical resource. The
 unscoped wrapper retains its strict all-provider equivalence rule.
 

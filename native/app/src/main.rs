@@ -2686,33 +2686,41 @@ impl Studio {
                 ctx.request_repaint();
                 return;
             }
-            let mut capture_done = self.startup.capture.is_none();
+            let mut capture = self
+                .startup
+                .capture
+                .is_none()
+                .then(|| serde_json::json!({"status":"not_requested"}));
             let events = ctx.input(|i| i.events.clone());
             for event in events {
                 if let egui::Event::Screenshot { image, .. } = event {
                     if let Some(path) = &self.startup.capture {
                         let bytes: Vec<u8> =
                             image.pixels.iter().flat_map(|p| p.to_array()).collect();
-                        if let Err(e) = image::save_buffer(
-                            path,
-                            &bytes,
-                            image.size[0] as u32,
-                            image.size[1] as u32,
-                            image::ColorType::Rgba8,
-                        ) {
-                            self.errors.push(e.to_string());
-                        }
-                        capture_done = true;
+                        use external_cas_material::viewport_capture::{CaptureError, write_new_capture};
+                        let outcome = u32::try_from(image.size[0])
+                            .and_then(|width| u32::try_from(image.size[1]).map(|height| (width, height)))
+                            .map_err(|_| CaptureError::InvalidPixels)
+                            .and_then(|(width, height)| write_new_capture(path, &bytes, width, height));
+                        capture = Some(match outcome {
+                            Ok(frame) => serde_json::json!({"status":"saved", "width":frame.width, "height":frame.height}),
+                            Err(e) => {
+                                self.errors.push(format!("Diagnostic capture was not saved: {e}"));
+                                serde_json::json!({"status":"not_saved", "reason":e.code()})
+                            }
+                        });
+                        break;
                     }
                 }
             }
-            if !capture_done {
+            let Some(capture) = capture else {
                 ctx.request_repaint_after(Duration::from_millis(16));
                 return;
-            }
+            };
             let adapter = self.viewport.adapter_info();
             let report = serde_json::json!({"application":"External CAS","native_ui":"eframe + wgpu","gpu_adapter":{"name":adapter.name,"backend":format!("{:?}",adapter.backend)},"renderer":"Rust GPU diffuse cutout bind-geometry preview","end_to_end_accepted":false,"ready_after_ms":self.started.elapsed().as_secs_f64()*1000.,"packages":self.library.as_ref().map(|l|l.catalog.packages.len()),"items":self.library.as_ref().map(|l|l.items.len()),"unsupported_items":self.library.as_ref().map(|l|l.unsupported.len()),"discovery_ms":self.library.as_ref().map(|l|l.elapsed.as_secs_f64()*1000.),"cache_hits":self.library.as_ref().map(|l|l.cache_hits),"cache_misses":self.library.as_ref().map(|l|l.cache_misses),"cache_issues":self.library.as_ref().map(|l|l.cache_issues.len()),"preview_ms":self.preview_elapsed.as_secs_f64()*1000.,"vertices":self.vertices,"triangles":self.triangles,"rendered_frames":self.viewport.rendered_frames,"status":self.status,"warnings":self.warnings,"errors":self.errors,"pose_status":self.pose_status,"pose_tick":self.tick,"pose_palette_sha256":self.pose_palette_sha256,"rig_bones":self.rig.as_ref().map(|r|r.bones.len()),"project_native_files":self.project.as_ref().map(|p|p.documents.len()),"draft_slots":self.draft.as_ref().and_then(|d|d.slots().ok()).map(|s|s.len()),"draft_revision":self.draft.as_ref().map(|d|d.revision()),"recovery_revision_loaded":self.project.as_ref().zip(self.session.state.recovery_project_path.as_ref()).is_some_and(|(p,path)|same_provider_path(&p.directory,path)),"session_enabled":self.session.worker.is_some(),"session_restored":self.session.restored,"session_saved":self.session.snapshot.is_some(),"session_error":self.session.error,"camera":{"yaw":self.viewport.camera.yaw,"pitch":self.viewport.camera.pitch,"distance":self.viewport.camera.distance,"target":self.viewport.camera.target},"ui_tab":self.tab.name()});
             let mut report = report;
+            report["capture"] = capture;
             report["profile"] = self.profile.report();
             report["query"] = serde_json::json!(self.query);
             report["search_ms"] = serde_json::json!(self.search_elapsed.as_secs_f64() * 1000.);

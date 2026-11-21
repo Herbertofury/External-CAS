@@ -51,6 +51,11 @@ pub struct Catalog {
     /// stay distinguishable from an unbuilt one to avoid whole-library scans.
     pub instance_indexes_ready: bool,
 }
+fn is_package(path: &Path) -> bool {
+    path.extension()
+        .is_some_and(|suffix| suffix.eq_ignore_ascii_case("package"))
+}
+
 impl Catalog {
     pub fn rebuild_instance_indexes(&mut self) {
         self.casp_instances.clear();
@@ -145,7 +150,8 @@ impl Catalog {
         }
     }
     /// Roots may be files or folders. Files/indexes are visited incrementally.
-    /// Every duplicate, tombstone and raw storage marker remains represented.
+    /// Overlapping roots scan each canonical package path once. Resource
+    /// duplicates, tombstones and raw storage markers remain represented.
     /// No game load order is inferred from directory order.
     pub fn scan_roots(
         roots: &[PathBuf],
@@ -238,8 +244,14 @@ impl Catalog {
                 if ty.is_dir() {
                     pending.push(entry.path());
                 } else if ty.is_file() {
-                    out.progress.current = entry.path();
-                    out.scan_file(&entry.path(), cancel)?;
+                    // read_dir uses the canonical parent, so this is the same
+                    // path identity as an independently selected package root.
+                    let child = entry.path();
+                    if is_package(&child) && !seen.insert(child.clone()) {
+                        continue;
+                    }
+                    out.progress.current = child.clone();
+                    out.scan_file(&child, cancel)?;
                     if out.progress.files % 64 == 0 {
                         report(&out.progress);
                     }
@@ -251,10 +263,7 @@ impl Catalog {
     }
     fn scan_file(&mut self, path: &Path, cancel: &AtomicBool) -> Result<()> {
         self.progress.files += 1;
-        if !path
-            .extension()
-            .is_some_and(|s| s.eq_ignore_ascii_case("package"))
-        {
+        if !is_package(path) {
             return Ok(());
         }
         match PackageIndex::open_cancellable(path, cancel) {

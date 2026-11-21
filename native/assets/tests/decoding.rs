@@ -227,6 +227,55 @@ fn scan_retains_duplicate_providers_and_cancellation() {
 }
 
 #[test]
+fn overlapping_file_and_folder_roots_are_one_scanned_source_in_either_order() {
+    let root = tempfile::tempdir().unwrap();
+    let child = root.path().join("sub");
+    std::fs::create_dir(&child).unwrap();
+    let path = root.path().join("synthetic.PACKAGE");
+    std::fs::write(&path, package(7, 0, b"ok", 2)).unwrap();
+    let alias = child.join("..").join("synthetic.PACKAGE");
+    let folder = root.path().to_path_buf();
+    let cancel = AtomicBool::new(false);
+    for roots in [[folder.clone(), alias.clone()], [alias, folder]] {
+        let catalog = Catalog::scan_roots(&roots, &cancel, |_| {}).unwrap();
+        assert!(catalog.issues.is_empty());
+        assert_eq!(catalog.progress.files, 1);
+        assert_eq!(catalog.progress.packages, 1);
+        assert_eq!(catalog.progress.resources, 1);
+        let key = catalog.packages[0].entries[0].key;
+        let (observed, _) = catalog.unique(key).unwrap();
+        assert_eq!(observed.path, path.canonicalize().unwrap());
+        assert!(catalog.unique_casp_instance(key.instance_id).is_ok());
+    }
+}
+
+#[test]
+fn overlapping_roots_keep_distinct_exact_tgi_providers_and_one_corruption_observation() {
+    let root = tempfile::tempdir().unwrap();
+    let first = root.path().join("first.package");
+    let second = root.path().join("second.package");
+    let broken = root.path().join("broken.package");
+    let good = package(7, 0, b"ok", 2);
+    for path in [&first, &second] {
+        std::fs::write(path, &good).unwrap();
+    }
+    std::fs::write(&broken, b"not a DBPF archive").unwrap();
+    let roots = [first, broken.clone(), root.path().to_path_buf(), second];
+    let catalog = Catalog::scan_roots(&roots, &AtomicBool::new(false), |_| {}).unwrap();
+    assert_eq!(catalog.progress.files, 3);
+    assert_eq!(
+        catalog.packages.len(),
+        2,
+        "same bytes at distinct package paths remain separate"
+    );
+    let key = catalog.packages[0].entries[0].key;
+    assert_eq!(catalog.providers(key).len(), 2);
+    assert!(catalog.unique(key).is_err());
+    assert_eq!(catalog.issues.len(), 1);
+    assert_eq!(catalog.issues[0].path, broken.canonicalize().unwrap());
+}
+
+#[test]
 fn texture_family_candidates_never_choose_a_group_or_source_winner() {
     let dir = tempfile::tempdir().unwrap();
     for (name, ty) in [

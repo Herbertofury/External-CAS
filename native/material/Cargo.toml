@@ -15,6 +15,7 @@ external-cas-morph = { path = "../morph" }
 external-cas-room = { path = "../room" }
 external-cas-tray = { path = "../tray" }
 image = { version = "=0.25.10", default-features = false, features = ["png", "jpeg", "dds"] }
+tempfile = "=3.27.0"
 
 [dev-dependencies]
 serde_json = "=1.0.154"
