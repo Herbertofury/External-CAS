@@ -8,6 +8,8 @@ Call `store.load()` at launch and inspect `LoadReport`. A missing, torn, malform
 
 Unsupported schema files are preserved. A recognized future schema or future commit-marker schema prevents automatic downgrade saves; the older app can read a previous supported snapshot but cannot replace the future context. A newer schema must be handled by a compatible app or a separately reviewed migration. Hashes detect accidental corruption, not an attacker who can rewrite both local files.
 
+Before saving, the store verifies the newest recoverable context and still checks every older marker and outer envelope for an unsupported future schema. Once it has this context, it does not repeat the inner content checks that only inform restore diagnostics. Public `load()` still checks and reports problems in every checkpoint. The append-only file format and I/O requirements are unchanged.
+
 `save()` is intended for meaningful user actions and orderly close, not every rendered frame. The payload budget is 4 MiB, with no source-count cap or truncation. Oversize state is rejected before files are created. Callers should debounce repeated saves and show failures rather than claiming context is durable.
 
 Snapshots are append-only. Automatic retention/cleanup is deliberately pending a configurable policy; this crate performs no deletion, including incomplete files, unknown schemas or old valid snapshots. Private absolute paths and hashes belong in app data or ignored local files, never public build evidence.

@@ -334,6 +334,10 @@ impl SessionStore {
     }
 
     pub fn load(&self) -> Result<LoadReport> {
+        self.scan(ScanPurpose::Restore)
+    }
+
+    fn scan(&self, purpose: ScanPurpose) -> Result<LoadReport> {
         reject_links(&self.root)?;
         let entries = match fs::read_dir(&self.root) {
             Ok(entries) => entries,
@@ -353,7 +357,8 @@ impl SessionStore {
         let mut report = LoadReport::default();
         let mut newer_bad = false;
         for snapshot in candidates {
-            let result = self.read_snapshot(&snapshot);
+            let inspect_payload = purpose == ScanPurpose::Restore || report.state.is_none();
+            let result = self.read_snapshot(&snapshot, inspect_payload);
             match result {
                 Ok(ReadSnapshot::Known(state, digest)) => {
                     if report.state.is_none() {
@@ -363,6 +368,7 @@ impl SessionStore {
                         report.recovered_from_previous = newer_bad;
                     }
                 }
+                Ok(ReadSnapshot::OlderCurrent) => {}
                 Ok(ReadSnapshot::Unknown(schema)) => {
                     let kind = if schema > SESSION_SCHEMA {
                         report.future_schemas.push(schema);
@@ -405,7 +411,7 @@ impl SessionStore {
                 "Session payload exceeds {MAX_PAYLOAD_BYTES} bytes; nothing was truncated"
             )));
         }
-        let existing = self.load()?;
+        let existing = self.scan(ScanPurpose::SavePreflight)?;
         if !existing.future_schemas.is_empty() {
             return Err(SessionError::FutureSchema {
                 versions: existing.future_schemas,
@@ -485,7 +491,11 @@ impl SessionStore {
             durability,
         })
     }
-    fn read_snapshot(&self, path: &Path) -> std::result::Result<ReadSnapshot, (IssueKind, String)> {
+    fn read_snapshot(
+        &self,
+        path: &Path,
+        inspect_payload: bool,
+    ) -> std::result::Result<ReadSnapshot, (IssueKind, String)> {
         let marker_path = path.with_extension("complete");
         let marker_bytes=read_limited(&marker_path,MAX_MARKER_BYTES).map_err(|e|{
             let kind=if matches!(&e,SessionError::Io(io) if io.kind()==std::io::ErrorKind::NotFound){IssueKind::Incomplete}else{IssueKind::Invalid};(kind,e.to_string())
@@ -520,6 +530,13 @@ impl SessionStore {
         if envelope.schema != SESSION_SCHEMA {
             return Ok(ReadSnapshot::Unknown(envelope.schema));
         }
+        // Save consumes only the newest fully verified state and evidence of
+        // any future schema. For older current-schema entries it still reads
+        // the marker and verifies the exact outer digest and JSON envelope;
+        // only a public restore needs their payload-level diagnostics.
+        if !inspect_payload {
+            return Ok(ReadSnapshot::OlderCurrent);
+        }
         if marker.schema != SESSION_SCHEMA
             || digest(&envelope.payload_sha256).is_err()
             || hash(envelope.payload.get().as_bytes()) != envelope.payload_sha256
@@ -537,8 +554,15 @@ impl SessionStore {
         Ok(ReadSnapshot::Known(state, marker.snapshot_sha256))
     }
 }
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ScanPurpose {
+    Restore,
+    SavePreflight,
+}
+
 enum ReadSnapshot {
     Known(SessionState, String),
+    OlderCurrent,
     Unknown(u32),
 }
 

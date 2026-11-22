@@ -267,6 +267,111 @@ fn future_commit_marker_is_retained_without_assuming_its_payload_schema() {
     ));
     assert!(future.exists());
 }
+fn older_name() -> &'static str {
+    "session-000000000000000000000000000000000000001-0000000000-00000000000000000000.json"
+}
+
+#[test]
+fn save_preflight_refuses_older_future_marker_or_verified_envelope() {
+    for (envelope_schema, marker_schema, corrupt_header) in
+        [(2, 1, false), (1, 2, true), (2, 1, true)]
+    {
+        let root = PrivateRoot::new();
+        let store = root.store();
+        let latest = store.save(&SessionState::default()).unwrap();
+        let older = fixture(&root, older_name(), envelope_schema, json!({"kept": true}));
+        commit(&older, marker_schema);
+        if corrupt_header {
+            // Keep the marker as written, but break the outer hash. A future
+            // marker remains a guard without loading its unknown payload;
+            // an unauthenticated future envelope is only an invalid file.
+            fs::write(&older, b"torn after marker").unwrap();
+        }
+        let before = [
+            fs::read(&older).unwrap(),
+            fs::read(older.with_extension("complete")).unwrap(),
+            fs::read(&latest.path).unwrap(),
+        ];
+        let loaded = store.load().unwrap();
+        assert_eq!(loaded.snapshot, Some(latest.path.clone()));
+        assert!(!loaded.recovered_from_previous);
+        let should_refuse = marker_schema == 2 || !corrupt_header;
+        assert_eq!(!loaded.future_schemas.is_empty(), should_refuse);
+        let count_before = fs::read_dir(&root.0).unwrap().count();
+        let saved = store.save(&SessionState {
+            ui_tab: "project".into(),
+            ..Default::default()
+        });
+        if should_refuse {
+            assert!(matches!(saved, Err(SessionError::FutureSchema { .. })));
+            assert_eq!(fs::read_dir(&root.0).unwrap().count(), count_before);
+        } else {
+            assert_eq!(store.load().unwrap().snapshot, Some(saved.unwrap().path));
+        }
+        assert_eq!(fs::read(&older).unwrap(), before[0]);
+        assert_eq!(
+            fs::read(older.with_extension("complete")).unwrap(),
+            before[1]
+        );
+        assert_eq!(fs::read(&latest.path).unwrap(), before[2]);
+    }
+}
+
+#[test]
+fn save_preflight_does_not_remove_older_payload_or_malformed_marker_diagnostics() {
+    let root = PrivateRoot::new();
+    let store = root.store();
+    store.save(&SessionState::default()).unwrap();
+    let older = fixture(&root, older_name(), 1, json!({"ui_tab": "poses"}));
+    let old_bytes = fs::read_to_string(&older)
+        .unwrap()
+        .replace("poses", "other");
+    fs::write(&older, old_bytes.as_bytes()).unwrap();
+    commit(&older, 1);
+    let malformed = root.0.join(latest_name());
+    fs::write(&malformed, b"torn snapshot").unwrap();
+    fs::write(malformed.with_extension("complete"), b"{").unwrap();
+    let before = store.load().unwrap();
+    assert!(before.recovered_from_previous);
+    assert!(
+        before
+            .issues
+            .iter()
+            .any(|i| i.path == older && i.message.contains("payload hash"))
+    );
+    assert!(
+        before
+            .issues
+            .iter()
+            .any(|i| i.path == malformed && i.kind == IssueKind::Invalid)
+    );
+
+    let saved = store
+        .save(&SessionState {
+            ui_tab: "sims".into(),
+            ..Default::default()
+        })
+        .unwrap();
+    let restored = store.load().unwrap();
+    assert_eq!(restored.snapshot, Some(saved.path));
+    assert!(restored.recovered_from_previous);
+    assert_eq!(restored.state.unwrap().ui_tab, "sims");
+    assert_eq!(restored.issues.len(), before.issues.len());
+    assert!(
+        before
+            .issues
+            .iter()
+            .zip(restored.issues)
+            .all(|(a, b)| a.path == b.path && a.kind == b.kind && a.message == b.message)
+    );
+    assert_eq!(fs::read(&older).unwrap(), old_bytes.as_bytes());
+    assert_eq!(fs::read(&malformed).unwrap(), b"torn snapshot");
+    assert_eq!(
+        fs::read(malformed.with_extension("complete")).unwrap(),
+        b"{"
+    );
+}
+
 #[test]
 fn payload_hash_mismatch_refuses_a_recommitted_but_changed_known_snapshot() {
     let root = PrivateRoot::new();
