@@ -85,6 +85,40 @@ fn sql<T>(result: rusqlite::Result<T>, cancel: &AtomicBool) -> Result<T> {
     })
 }
 
+// Match the session/Tray policy for pre-existing links. These read-only
+// checks are not a race-proof binding to the directory or SQLite handles.
+fn reject_linked_cache_paths(path: &Path) -> Result<()> {
+    fn reject_link(path: &Path) -> Result<()> {
+        let metadata = match std::fs::symlink_metadata(path) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+            Err(error) => return Err(error.into()),
+        };
+        #[cfg(windows)]
+        let linked = {
+            use std::os::windows::fs::MetadataExt;
+            metadata.file_attributes() & 0x400 != 0
+        };
+        #[cfg(not(windows))]
+        let linked = metadata.file_type().is_symlink();
+        if linked {
+            return Err(Error::Invalid(
+                "linked cache path, parent or SQLite sidecar; choose ordinary app data storage".into(),
+            ));
+        }
+        Ok(())
+    }
+    for ancestor in path.ancestors() {
+        reject_link(ancestor)?;
+    }
+    for suffix in ["-journal", "-wal", "-shm"] {
+        let mut sidecar = path.as_os_str().to_os_string();
+        sidecar.push(suffix);
+        reject_link(Path::new(&sidecar))?;
+    }
+    Ok(())
+}
+
 #[derive(Clone, Debug)]
 pub struct CachedPart {
     pub entry_index: usize,
@@ -176,7 +210,9 @@ impl CatalogCache {
         let parent = path
             .parent()
             .ok_or_else(|| Error::Invalid("database parent".into()))?;
+        reject_linked_cache_paths(path)?;
         std::fs::create_dir_all(parent)?;
+        reject_linked_cache_paths(path)?;
         let mut connection = rusqlite::Connection::open(path)?;
         let application_id: i32 =
             connection.pragma_query_value(None, "application_id", |r| r.get(0))?;

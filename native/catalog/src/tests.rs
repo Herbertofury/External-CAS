@@ -974,3 +974,125 @@ fn scope_membership_has_no_sql_parameter_list_cap() {
             .is_err()
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn cache_refuses_existing_database_link_without_initializing_its_target() {
+    use std::os::unix::fs::symlink;
+    let root = tempfile::tempdir().unwrap();
+    let target = root.path().join("elsewhere.sqlite");
+    std::fs::write(&target, []).unwrap();
+    let db = root.path().join("catalog.sqlite");
+    symlink(&target, &db).unwrap();
+    let result = CatalogCache::open(&db);
+    let accepted = result.is_ok();
+    drop(result);
+    let observed_bytes = std::fs::read(&target).unwrap().len();
+    assert!(
+        !accepted && observed_bytes == 0,
+        "linked cache accepted={accepted}, outside database now {observed_bytes} bytes"
+    );
+    assert_eq!(std::fs::read_link(&db).unwrap(), target);
+}
+
+#[cfg(unix)]
+#[test]
+fn cache_refuses_linked_ancestor_before_creating_any_directories() {
+    use std::os::unix::fs::symlink;
+    let root = tempfile::tempdir().unwrap();
+    let target = root.path().join("elsewhere");
+    std::fs::create_dir(&target).unwrap();
+    let alias = root.path().join("portable");
+    symlink(&target, &alias).unwrap();
+    let result = CatalogCache::open(alias.join("nested").join("catalog.sqlite"));
+    let accepted = result.is_ok();
+    drop(result);
+    let created = target.join("nested").exists();
+    assert!(
+        !accepted && !created,
+        "linked directory accepted={accepted}, wrote outside chosen root={created}"
+    );
+    assert_eq!(std::fs::read_link(&alias).unwrap(), target);
+    assert_eq!(std::fs::read_dir(&target).unwrap().count(), 0);
+}
+
+#[cfg(windows)]
+#[test]
+fn cache_refuses_ntfs_junction_ancestor_before_creating_any_directories() {
+    use std::{os::windows::fs::MetadataExt, process::Command};
+
+    let root = tempfile::tempdir().unwrap();
+    let target = root.path().join("elsewhere");
+    let junction = root.path().join("portable");
+    std::fs::create_dir(&target).unwrap();
+    std::fs::write(target.join("marker"), b"unaltered").unwrap();
+    // Fixed relative names are scoped by current_dir, never by shell input.
+    let output = Command::new("cmd.exe")
+        .args(["/d", "/c", "mklink", "/J", "portable", "elsewhere"])
+        .current_dir(root.path())
+        .output()
+        .expect("run the built-in Windows junction command on the disposable fixture");
+    assert!(
+        output.status.success(),
+        "NTFS junction fixture unavailable: {}\nstdout: {}\nstderr: {}",
+        output.status,
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr),
+    );
+    assert_ne!(
+        std::fs::symlink_metadata(&junction)
+            .unwrap()
+            .file_attributes()
+            & 0x400,
+        0,
+        "fixture must be a reparse point, not an ordinary folder"
+    );
+    assert_eq!(std::fs::read(junction.join("marker")).unwrap(), b"unaltered");
+    let result = CatalogCache::open(junction.join("nested").join("catalog.sqlite"));
+    assert!(matches!(result, Err(Error::Invalid(ref why)) if why.contains("linked")));
+    assert!(!target.join("nested").exists());
+    assert_eq!(std::fs::read(target.join("marker")).unwrap(), b"unaltered");
+    std::fs::remove_dir(&junction).unwrap();
+}
+
+#[cfg(unix)]
+#[test]
+fn cache_refuses_linked_sqlite_sidecars_before_open() {
+    use std::os::unix::fs::symlink;
+    for suffix in ["-journal", "-wal", "-shm"] {
+        let root = tempfile::tempdir().unwrap();
+        let target = root.path().join("do-not-change");
+        let marker = b"Outside cache storage";
+        std::fs::write(&target, marker).unwrap();
+        let db = root.path().join("catalog.sqlite");
+        let sidecar = root.path().join(format!("catalog.sqlite{suffix}"));
+        symlink(&target, &sidecar).unwrap();
+        let result = CatalogCache::open(&db);
+        let refused_before_open =
+            matches!(result, Err(Error::Invalid(ref why)) if why.contains("linked"));
+        drop(result);
+        assert!(
+            refused_before_open && !db.exists(),
+            "linked sidecar {suffix} was not refused before opening the database"
+        );
+        assert_eq!(std::fs::read(&target).unwrap(), marker);
+        assert_eq!(std::fs::read_link(&sidecar).unwrap(), target);
+    }
+}
+
+#[test]
+fn cache_creates_and_reopens_plain_nested_path_with_its_metadata() {
+    let root = tempfile::tempdir().unwrap();
+    let (package, rows) = source(&root.path().join("original.package"), 1);
+    let db = root.path().join("portable").join("Catalog").join("metadata.sqlite");
+    let cancel = AtomicBool::new(false);
+    {
+        let mut cache = CatalogCache::open(&db).unwrap();
+        cache.store_package(&package, &rows, &[], &cancel).unwrap();
+    }
+    let cache = CatalogCache::open(&db).unwrap();
+    let cached = cache.load_package(&package, &cancel).unwrap().unwrap();
+    assert_eq!(cached.rows.len(), 1);
+    assert_eq!(cached.rows[0].payload_sha256, rows[0].payload_sha256);
+    assert!(db.is_file());
+}
