@@ -1120,3 +1120,135 @@ fn design_thumbnail_fallback_is_declared_or_same_source_outfit_geometry_and_labe
             .is_empty()
     );
 }
+
+#[test]
+fn shared_outfit_thumbnail_does_not_substitute_an_unrelated_package() {
+    check_shared_outfit_thumbnail_scope(false);
+}
+
+#[test]
+fn shared_outfit_thumbnail_keeps_valid_local_pixels_despite_foreign_collision() {
+    check_shared_outfit_thumbnail_scope(true);
+}
+
+fn check_shared_outfit_thumbnail_scope(local_has_thumbnail: bool) {
+    use external_cas_assets::{
+        dbpf::THUMBNAIL,
+        thumbnail::{ThumbnailDesignIndex, ThumbnailRelationship},
+        thumbnail_decode::decode_pinned_thumbnail,
+    };
+    use image::ImageEncoder;
+    use sha2::{Digest, Sha256};
+
+    fn png(color: [u8; 4]) -> Vec<u8> {
+        let mut bytes = Vec::new();
+        image::codecs::png::PngEncoder::new(&mut bytes)
+            .write_image(&color, 1, 1, image::ExtendedColorType::Rgba8)
+            .unwrap();
+        bytes
+    }
+
+    let root = tempfile::tempdir().unwrap();
+    let trusted_path = root.path().join("source.package");
+    let unrelated_path = root.path().join("unrelated.package");
+    let child = ResourceKey::new(CASP, 0x80000000, 1);
+    let sibling = ResourceKey::new(CASP, 0x80000000, 2);
+    let female = ResourceKey::new(THUMBNAIL, 2, sibling.instance_id);
+    let male = ResourceKey::new(THUMBNAIL, 0x102, sibling.instance_id);
+    let part = casp(52);
+    let expected = [7, 151, 237, 129];
+    let mut local_resources = vec![(child, part.clone()), (sibling, part.clone())];
+    if local_has_thumbnail {
+        local_resources.push((female, png(expected)));
+    }
+    let local_bytes = thumbnail_package(&local_resources);
+    let unrelated_bytes = thumbnail_package(&[
+        (sibling, casp_with_parent(52, Some(child))),
+        (female, png([201, 8, 44, 255])),
+        (male, png([130, 91, 200, 255])),
+    ]);
+    std::fs::write(&trusted_path, &local_bytes).unwrap();
+    std::fs::write(&unrelated_path, &unrelated_bytes).unwrap();
+
+    let cancel = AtomicBool::new(false);
+    let catalog = Catalog::scan_roots(&[root.path().to_path_buf()], &cancel, |_| {}).unwrap();
+    let child_provider = catalog.providers(child)[0];
+    let mut designs = ThumbnailDesignIndex::new();
+    for key in [child, sibling] {
+        for &provider in catalog.providers(key) {
+            let bytes = if provider.package_index == child_provider.package_index {
+                part.clone()
+            } else {
+                casp_with_parent(52, Some(child))
+            };
+            designs
+                .register(
+                    key,
+                    provider,
+                    Sha256::digest(&bytes).into(),
+                    &CasPart::parse(&bytes).unwrap(),
+                )
+                .unwrap();
+        }
+    }
+    let sibling_provider = catalog
+        .providers(sibling)
+        .iter()
+        .copied()
+        .find(|p| p.package_index == child_provider.package_index)
+        .unwrap();
+    let sibling_exact = designs.choices(&catalog, sibling_provider).unwrap().exact;
+    assert_eq!(sibling_exact.len(), 2);
+    assert_eq!(
+        sibling_exact[0].providers.len(),
+        if local_has_thumbnail { 2 } else { 1 }
+    );
+
+    let choices = designs.choices(&catalog, child_provider).unwrap();
+    assert!(choices.exact.is_empty());
+    if local_has_thumbnail {
+        assert_eq!(choices.design.len(), 1);
+        let design = &choices.design[0];
+        assert_eq!(
+            design.relationship,
+            ThumbnailRelationship::SharedOutfitGeometryDesign
+        );
+        assert_eq!(
+            design.candidates.len(),
+            1,
+            "unrelated model group was admitted"
+        );
+        assert_eq!(design.candidates[0].key, female);
+        assert_eq!(
+            design.candidates[0].providers.len(),
+            1,
+            "foreign provider was admitted"
+        );
+        assert_eq!(
+            design.candidates[0].providers[0].package_index,
+            child_provider.package_index
+        );
+        let inspected = catalog
+            .inspect_thumbnails(&design.candidates, ReadLimits::default(), &cancel)
+            .unwrap();
+        let payload = inspected
+            .equivalent_payload()
+            .expect("expected only the local thumbnail");
+        let image = decode_pinned_thumbnail(
+            &payload.bytes,
+            payload.payload_sha256,
+            ReadLimits::default(),
+            &cancel,
+        )
+        .unwrap();
+        assert_eq!((image.width, image.height), (1, 1));
+        assert_eq!(image.rgba, expected);
+    } else {
+        assert!(
+            choices.design.is_empty(),
+            "a foreign-only preview must remain unavailable"
+        );
+    }
+    assert_eq!(std::fs::read(&trusted_path).unwrap(), local_bytes);
+    assert_eq!(std::fs::read(&unrelated_path).unwrap(), unrelated_bytes);
+}

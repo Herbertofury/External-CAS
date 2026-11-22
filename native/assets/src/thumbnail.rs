@@ -253,7 +253,15 @@ impl ThumbnailDesignIndex {
                 if choices.design.iter().any(|d| d.casp_key == key) {
                     continue;
                 }
-                let candidates = catalog.thumbnail_candidates(key.instance_id);
+                let mut candidates = catalog.thumbnail_candidates(key.instance_id);
+                // A shared outfit establishes a relationship only inside this package.
+                // A reused thumbnail instance elsewhere does not extend that evidence.
+                candidates.retain_mut(|candidate| {
+                    candidate
+                        .providers
+                        .retain(|provider| provider.package_index == selected.package_index);
+                    !candidate.providers.is_empty()
+                });
                 if !candidates.is_empty() {
                     choices.design.push(DesignThumbnailCandidate {
                         casp_key: key,
