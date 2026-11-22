@@ -302,7 +302,13 @@ pub fn verify_source_pins(pins: &[SourcePin], cancel: &AtomicBool) -> Result<(),
     }
     Ok(())
 }
-pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: Sender<Event>) {
+pub fn scan(
+    roots: Vec<PathBuf>,
+    generation: u64,
+    cancel: Arc<AtomicBool>,
+    cache_path: Option<PathBuf>,
+    tx: Sender<Event>,
+) {
     let start = Instant::now();
     let mut last = Instant::now();
     let result = (|| {
@@ -327,16 +333,6 @@ pub fn scan(roots: Vec<PathBuf>, generation: u64, cancel: Arc<AtomicBool>, tx: S
         let mut unsupported = Vec::new();
         let mut poses = Vec::new();
         let mut cache_issues = Vec::new();
-        let cache_path = std::env::var_os("EXTERNAL_CAS_CATALOG_PATH")
-            .map(PathBuf::from)
-            .or_else(|| {
-                std::env::var_os("LOCALAPPDATA").map(|base| {
-                    PathBuf::from(base)
-                        .join("ExternalCAS")
-                        .join("Catalog")
-                        .join("metadata-v1.sqlite")
-                })
-            });
         let mut cache = cache_path.and_then(|path| match CatalogCache::open(path) {
                 Ok(cache) => {
                     if let Ok(value)=std::env::var("EXTERNAL_CAS_CATALOG_CACHE_KIB") {
@@ -943,6 +939,7 @@ pub fn change_draft(
     generation: u64,
     scan_generation: u64,
     selection_generation: u64,
+    recovery_root: Option<PathBuf>,
     tx: Sender<Event>,
 ) {
     let base_revision = draft.revision();
@@ -1008,23 +1005,7 @@ pub fn change_draft(
             DraftChange::Undo => draft.undo(base_revision).map_err(|e| e.to_string())?,
             DraftChange::Redo => draft.redo(base_revision).map_err(|e| e.to_string())?,
         }
-        let base = std::env::var_os("LOCALAPPDATA")
-            .ok_or("Windows application data folder is unavailable; draft was not changed")?;
-        let root = PathBuf::from(base).join("ExternalCAS").join("Recovery");
-        std::fs::create_dir_all(&root)
-            .map_err(|e| format!("Cannot create recovery folder: {e}"))?;
-        let stamp = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_err(|e| e.to_string())?
-            .as_nanos();
-        let destination = root.join(format!(
-            "revision-{}-{}-{stamp}",
-            draft.revision(),
-            std::process::id()
-        ));
-        draft.save_as(&destination).map_err(|e| {
-            format!("Recovery revision could not be verified; edit remains unapplied: {e}")
-        })?;
+        let destination = crate::storage::save_draft_recovery(&draft, recovery_root.as_deref())?;
         let colors = draft_color_cache(&draft);
         Ok((draft, destination, colors))
     })();

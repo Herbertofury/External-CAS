@@ -14,9 +14,13 @@ pwsh -File scripts/build-native.ps1
 Run `target/debug/external-cas.exe`. Wardrobe opens installed packages/folders;
 Sims reads a Tray directory into an exclusive external project copy; Project
 reopens verified native files and edits existing outfit slots. Draft changes
-revalidate the selected source, preserve unsupported bytes, and create a verified
-recovery revision under `%LOCALAPPDATA%/ExternalCAS/Recovery` before appearing in
+revalidate the selected source and preserve unsupported bytes. By default, they
+create a verified recovery revision under `%LOCALAPPDATA%/ExternalCAS/Recovery` before appearing in
 the editor. Prior projects and original Tray files remain unchanged.
+
+The app also accepts `--portable-root <folder>` to put automatic session context,
+verified draft recovery and the Wardrobe metadata database in the chosen
+folder. See [portable storage and its limits](../README.md#build-and-run).
 
 The viewport is Rust/wgpu, with depth, original GEOM, original decoded diffuse
 textures, source Y-up coordinates and hash-bound GPU skinning. Poses reads CLIP

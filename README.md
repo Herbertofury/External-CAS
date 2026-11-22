@@ -85,6 +85,23 @@ separate project in Sims. Original packages and Tray files are read-only.
 Existing-slot edits create verified external recovery revisions before being
 published in the editor. The app currently makes no changes to a running game.
 
+To keep automatic editor data in a folder you choose, launch with
+`--portable-root` and a dedicated app-owned folder (not the game's Mods, Tray or
+Saves folder):
+
+```powershell
+.\target\debug\external-cas.exe --portable-root ".\ExternalCAS-data"
+```
+
+That folder holds `Session`, `Recovery`, and `Catalog` instead of using Windows
+app data for those stores. Relative paths are resolved from the launch folder.
+Repeat the option on subsequent launches. This mode does not move or import
+existing data, and it does not turn original package, project or Tray references
+into relocatable paths. Explicit imports, output files and source packages keep
+the locations you select. Without this option, existing defaults and the
+session-only `--session-root` remain unchanged. Do not combine the two options;
+portable mode also takes precedence over the catalog-path environment override.
+
 Optional `--ui-assets "<game>\Data\Client\UI.package"` loads the installed CAS
 fonts/atlases locally. No extracted resources are written or redistributed.
 See [native component details](native/README.md) and
