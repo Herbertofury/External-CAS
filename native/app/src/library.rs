@@ -732,7 +732,11 @@ pub fn prepare(
             .diffuse
             .ok_or("Diffuse texture is missing; material cannot be rendered accurately")?;
         let (texture, alternative) = if !library.catalog.providers(diffuse).is_empty() {
-            (texture::decode(&resources.read(diffuse)?)?, None)
+            let raw = resources.read(diffuse)?;
+            let image = texture::decode_diffuse(diffuse, &raw, &cancel).map_err(|error| {
+                format!("Exact diffuse texture {diffuse} could not be decoded: {error}")
+            })?;
+            (image, None)
         } else {
             let candidates = library
                 .catalog
@@ -743,22 +747,13 @@ pub fn prepare(
             match candidates.as_slice() {
                 [candidate] if candidate.providers.len() == 1 => {
                     let raw = resources.read_provider(candidate.providers[0])?;
-                    let image = if candidate.key.type_id == 0x2bc04edf {
-                        let decoded = external_cas_assets::lrle::decode_lrle_cancellable(
-                            &raw,
-                            ReadLimits::default(),
-                            &cancel,
-                        )
-                        .map_err(|e| e.to_string())?;
-                        texture::Texture {
-                            width: decoded.width,
-                            height: decoded.height,
-                            rgba: decoded.rgba,
-                            warnings: Vec::new(),
-                        }
-                    } else {
-                        texture::decode(&raw)?
-                    };
+                    let image =
+                        texture::decode_diffuse(candidate.key, &raw, &cancel).map_err(|error| {
+                            format!(
+                                "Alternate diffuse texture {} could not be decoded: {error}",
+                                candidate.key
+                            )
+                        })?;
                     (
                         image,
                         Some(format!(
