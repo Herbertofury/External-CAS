@@ -99,9 +99,108 @@ impl IndexedAppearanceEvidence {
     }
 }
 
+/// Connect the selected row to the app's prepared scene receipt
+/// generation. This does not prove actual rendered pixels.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum SelectedPreview {
+    WholeSimMode,
+    Loading,
+    LoadingWithRetainedScene,
+    LoadedForSelection,
+    PreviousSceneRetained,
+    NotLoaded,
+}
+
+impl SelectedPreview {
+    pub(crate) fn from_view(
+        whole_sim: bool,
+        preparing: bool,
+        selection_generation: u64,
+        known_scene_generation: Option<u64>,
+    ) -> Self {
+        match (whole_sim, preparing, known_scene_generation) {
+            (true, _, _) => Self::WholeSimMode,
+            (false, true, Some(_)) => Self::LoadingWithRetainedScene,
+            (false, true, None) => Self::Loading,
+            (false, false, Some(generation)) if generation == selection_generation => {
+                Self::LoadedForSelection
+            }
+            (false, false, Some(_)) => Self::PreviousSceneRetained,
+            (false, false, None) => Self::NotLoaded,
+        }
+    }
+
+    pub(crate) fn review_label(self) -> &'static str {
+        match self {
+            Self::WholeSimMode => {
+                "Whole-Sim mode is selected; a standalone preview for this item is not confirmed."
+            }
+            Self::Loading => "Loading the selected item's preview.",
+            Self::LoadingWithRetainedScene => {
+                "Loading the selected item. A previous scene is retained until the load resolves."
+            }
+            Self::LoadedForSelection => {
+                "Standalone preview prepared for this selection. Full Sim appearance and game compatibility are not verified."
+            }
+            Self::PreviousSceneRetained => {
+                "A previous scene is retained, not a standalone preview of this selection."
+            }
+            Self::NotLoaded => "No standalone preview is loaded for this selection.",
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn replacing_selection_does_not_claim_previous_geometry_as_current() {
+        assert_eq!(
+            SelectedPreview::from_view(false, false, 41, Some(41)),
+            SelectedPreview::LoadedForSelection
+        );
+        assert_eq!(
+            SelectedPreview::from_view(false, true, 42, Some(41)),
+            SelectedPreview::LoadingWithRetainedScene
+        );
+        assert_eq!(
+            SelectedPreview::from_view(false, false, 42, Some(41)),
+            SelectedPreview::PreviousSceneRetained
+        );
+        assert_eq!(
+            SelectedPreview::from_view(false, false, 42, Some(42)),
+            SelectedPreview::LoadedForSelection
+        );
+    }
+
+    #[test]
+    fn failure_or_no_scene_is_not_loaded_even_on_initial_generation() {
+        assert_eq!(
+            SelectedPreview::from_view(false, true, 3, None),
+            SelectedPreview::Loading
+        );
+        assert_eq!(
+            SelectedPreview::from_view(false, false, 3, None),
+            SelectedPreview::NotLoaded
+        );
+        assert_eq!(
+            SelectedPreview::from_view(false, false, 0, None),
+            SelectedPreview::NotLoaded
+        );
+    }
+
+    #[test]
+    fn whole_sim_intent_is_not_a_receipt_even_when_an_old_or_no_scene_is_retained() {
+        for generation in [None, Some(41), Some(42)] {
+            let mode = SelectedPreview::from_view(true, false, 42, generation);
+            assert_eq!(mode, SelectedPreview::WholeSimMode);
+            assert_eq!(
+                mode.review_label(),
+                "Whole-Sim mode is selected; a standalone preview for this item is not confirmed."
+            );
+        }
+    }
 
     #[test]
     fn established_slot_labels_are_unchanged_and_full_body_means_outfit_here() {

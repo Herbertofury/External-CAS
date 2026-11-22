@@ -2256,6 +2256,15 @@ impl Studio {
             if !self.scanning && let Some(item) = selected {
                 ui.collapsing("Selected item: source evidence", |ui| {
                     let evidence = item.indexed_appearance_evidence();
+                    let preview = wardrobe_evidence::SelectedPreview::from_view(
+                        self.whole_sim,
+                        self.preparing,
+                        self.preview_gen,
+                        self.scene_name.as_ref().map(|_| self.scene_generation),
+                    );
+                    ui.label(format!("Source package: {}", item.source_label));
+                    ui.label(format!("Resource key: {}", item.key));
+                    ui.label(preview.review_label());
                     ui.label(evidence.slot.review_label());
                     ui.label(evidence.preview.review_label());
                     ui.label(evidence.morph_review_label());
