@@ -169,6 +169,24 @@ impl Camera {
     }
 }
 
+/// Column-major Y rotation about a local item pivot. Whole-Sim and room
+/// geometry retain the existing origin/world anchoring.
+fn appearance_matrix(yaw: f32, pivot: [f32; 3]) -> [[f32; 4]; 4] {
+    let (s, c) = yaw.sin_cos();
+    let [x, _, z] = pivot;
+    let translation = if x == 0. && z == 0. {
+        [0., 0., 0., 1.]
+    } else {
+        [(1. - c) * x - s * z, 0., s * x + (1. - c) * z, 1.]
+    };
+    [
+        [c, 0., -s, 0.],
+        [0., 1., 0., 0.],
+        [s, 0., c, 0.],
+        translation,
+    ]
+}
+
 pub struct Viewport {
     state: RenderState,
     pipeline: wgpu::RenderPipeline,
@@ -190,6 +208,7 @@ pub struct Viewport {
     pub texture_id: egui::TextureId,
     pub camera: Camera,
     pub model_yaw: f32,
+    model_pivot: [f32; 3],
     pub rendered_frames: u64,
     pub framing_offset: f32,
 }
@@ -556,6 +575,7 @@ impl Viewport {
             texture_id,
             camera: Camera::default(),
             model_yaw: 0.,
+            model_pivot: [0.; 3],
             rendered_frames: 0,
             framing_offset: 0.,
         }
@@ -726,6 +746,14 @@ impl Viewport {
         Ok(())
     }
     pub fn set_parts(&mut self, parts: Vec<MeshPart>) -> Result<(), String> {
+        self.set_parts_with_pivot(parts, false)
+    }
+
+    pub fn set_wardrobe_parts(&mut self, parts: Vec<MeshPart>) -> Result<(), String> {
+        self.set_parts_with_pivot(parts, true)
+    }
+
+    fn set_parts_with_pivot(&mut self, parts: Vec<MeshPart>, wardrobe: bool) -> Result<(), String> {
         // Validate the complete replacement before changing the currently visible scene.
         for part in &parts {
             let [w, h] = part.texture_size;
@@ -846,9 +874,15 @@ impl Viewport {
                 material,
             });
         }
+        let mut pivot = [0.; 3];
         if minimum[0].is_finite() {
             self.camera.frame(minimum, maximum);
+            if wardrobe {
+                pivot = self.camera.target;
+            }
         }
+        // Keep the asset pivot independent of later user camera pans.
+        self.model_pivot = pivot;
         self.parts = uploaded;
         self.state.queue.write_buffer(
             &self.palette_buffer,
@@ -971,13 +1005,7 @@ impl Viewport {
         self.state
             .queue
             .write_buffer(&self.camera_buffer, 0, bytemuck::cast_slice(&matrix));
-        let (s, c) = self.model_yaw.sin_cos();
-        let model = [
-            [c, 0., -s, 0.],
-            [0., 1., 0., 0.],
-            [s, 0., c, 0.],
-            [0., 0., 0., 1.],
-        ];
+        let model = appearance_matrix(self.model_yaw, self.model_pivot);
         self.state
             .queue
             .write_buffer(&self.model_buffer, 0, bytemuck::cast_slice(&model));
@@ -1065,6 +1093,39 @@ impl Drop for Viewport {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn wardrobe_yaw_keeps_the_off_origin_pivot_fixed() {
+        let mut camera = Camera::default();
+        camera.frame([24., -1., 4.], [26., 1., 6.]);
+        let pivot = camera.target;
+        let homogeneous = [pivot[0], pivot[1], pivot[2], 1.];
+        for yaw in [0., 0.4, std::f32::consts::FRAC_PI_2, -std::f32::consts::FRAC_PI_2] {
+            let matrix = appearance_matrix(yaw, pivot);
+            let resulting: [f32; 4] =
+                std::array::from_fn(|r| (0..4).map(|c| matrix[c][r] * homogeneous[c]).sum());
+            for (actual, expected) in resulting.into_iter().zip(homogeneous) {
+                assert!((actual - expected).abs() < 1e-5);
+            }
+        }
+    }
+
+    #[test]
+    fn origin_anchored_model_yaw_retains_the_prior_transform() {
+        for yaw in [0.0_f32, 0.4, std::f32::consts::PI] {
+            let (s, c) = yaw.sin_cos();
+            let old = [
+                [c, 0., -s, 0.],
+                [0., 1., 0., 0.],
+                [s, 0., c, 0.],
+                [0., 0., 0., 1.],
+            ];
+            assert_eq!(
+                appearance_matrix(yaw, [0.; 3]).map(|v| v.map(f32::to_bits)),
+                old.map(|v| v.map(f32::to_bits))
+            );
+        }
+    }
     #[test]
     fn frame_projects_center_inside_frustum_and_preserves_depth_order() {
         let mut camera = Camera::default();
