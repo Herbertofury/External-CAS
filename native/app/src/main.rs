@@ -1428,7 +1428,7 @@ impl Studio {
                 Event::Preview { generation, result } if generation == self.preview_gen => {
                     self.preparing = false;
                     match result {
-                        Ok(preview) => match self.viewport.set_parts(preview.parts) {
+                        Ok(preview) => match self.viewport.set_wardrobe_parts(preview.parts) {
                             Ok(()) => {
                                 self.vertices = preview.vertices;
                                 self.triangles = preview.triangles;
