@@ -200,6 +200,68 @@ pub struct SourcePin {
     pub index_sha256: String,
     pub payload_sha256: String,
 }
+/// A saved source passing preflight does not prove it was the source used to
+/// build the new preview. Match the app's receipt order (CASP, diffuse, meshes)
+/// and all original provider/entry/content observations before publishing it.
+fn verify_prepared_source_pins(expected: &[SourcePin], observed: &[SourcePin]) -> Result<(), String> {
+    if expected.is_empty()
+        || expected.len() != observed.len()
+        || !expected.iter().zip(observed).all(|(expected, observed)| {
+            expected.key == observed.key
+                && crate::same_provider_path(&expected.provider_path, &observed.provider_path)
+                && expected.ordinal == observed.ordinal
+                && expected.index_sha256 == observed.index_sha256
+                && expected.payload_sha256 == observed.payload_sha256
+        })
+    {
+        return Err(
+            "Prepared appearance sources differ from the saved receipt; reselect explicitly to inspect current content."
+                .into(),
+        );
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod restore_source_receipt_tests {
+    use super::*;
+
+    fn pin(path: &str) -> SourcePin {
+        SourcePin {
+            key: "synthetic key".into(),
+            provider_path: PathBuf::from(path),
+            ordinal: 1,
+            index_sha256: "synthetic index".into(),
+            payload_sha256: "synthetic payload".into(),
+        }
+    }
+
+    #[test]
+    fn verified_restore_requires_the_exact_nonempty_ordered_receipt() {
+        let casp = pin("appearance.package");
+        let diffuse = pin("first-texture.package");
+        let expected = [casp.clone(), diffuse.clone()];
+        assert!(verify_prepared_source_pins(&expected, &expected).is_ok());
+        assert!(verify_prepared_source_pins(&[], &[]).is_err());
+        assert!(verify_prepared_source_pins(&expected, &[casp.clone()]).is_err());
+        assert!(verify_prepared_source_pins(&expected, &[diffuse.clone(), casp.clone()]).is_err());
+        // Even identical content from another package is not the saved provider.
+        let other = pin("other-texture.package");
+        assert!(verify_prepared_source_pins(&expected, &[casp.clone(), other]).is_err());
+        let changes: [fn(&mut SourcePin); 4] = [
+            |p| p.key.push('!'),
+            |p| p.ordinal += 1,
+            |p| p.index_sha256.push('!'),
+            |p| p.payload_sha256.push('!'),
+        ];
+        for change in changes {
+            let mut edited = diffuse.clone();
+            change(&mut edited);
+            assert!(verify_prepared_source_pins(&expected, &[casp.clone(), edited]).is_err());
+        }
+    }
+}
+
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
@@ -705,6 +767,7 @@ pub fn prepare(
     index: usize,
     generation: u64,
     cancel: Arc<AtomicBool>,
+    expected_pins: Option<Vec<SourcePin>>,
     tx: Sender<Event>,
 ) {
     let start = Instant::now();
@@ -810,6 +873,9 @@ pub fn prepare(
                 texture_size: [texture.width, texture.height],
             });
             geometries.push(geometry);
+        }
+        if let Some(expected) = expected_pins.as_deref() {
+            verify_prepared_source_pins(expected, &resources.pins)?;
         }
         Ok(PreparedPreview {
             fully_transparent: parts
