@@ -373,6 +373,13 @@ fn draft_source_pins(
     }
 }
 
+fn saved_whole_sim_view(state: &SessionState, explicit_selection: bool) -> Option<bool> {
+    if explicit_selection {
+        return None;
+    }
+    state.extra.get("whole_sim_view").and_then(|v| v.as_bool())
+}
+
 #[derive(Default)]
 struct SessionUi {
     worker: Option<persistence::Persistence>,
@@ -386,6 +393,7 @@ struct SessionUi {
     restored: bool,
     restore_pending: bool,
     restore_selection: Option<ResourceSelection>,
+    restore_whole_sim: Option<bool>,
     restore_clip: Option<ClipSelection>,
     restore_pins: Option<Vec<library::SourcePin>>,
     restore_camera: Option<CameraState>,
@@ -746,6 +754,12 @@ impl Studio {
                                 if self.startup.roots.is_empty() {
                                     self.startup.roots = state.roots.clone();
                                 }
+                                // Capture the saved view before reusing the diagnostic
+                                // selection flag for a recalled Wardrobe resource.
+                                self.session.restore_whole_sim = saved_whole_sim_view(
+                                    &state,
+                                    self.startup.selection_requested,
+                                );
                                 if same_scope && self.startup.selection.is_none() {
                                     self.session.restore_selection = state.selection.clone();
                                     self.startup.selection_requested = state.selection.is_some();
@@ -996,18 +1010,13 @@ impl Studio {
                 )),
             }
         }
-        if self.startup.sim_view {
-            self.whole_sim = true;
-        } else if !self.startup.selection_requested {
-            if let Some(whole) = self
-                .session
-                .state
-                .extra
-                .get("whole_sim_view")
-                .and_then(|v| v.as_bool())
-            {
-                self.whole_sim = whole;
-            }
+        if let Some(whole) = self
+            .startup
+            .sim_view
+            .then_some(true)
+            .or(self.session.restore_whole_sim.take())
+        {
+            self.whole_sim = whole;
         }
         self.session.restore_pending = false;
         self.initial_scan = false;
@@ -1178,6 +1187,8 @@ impl Studio {
         self.query_changed = None;
     }
     fn select(&mut self, index: usize) {
+        // A user choice while the project is reopening beats the saved view.
+        self.session.restore_whole_sim = None;
         self.select_with_pins(index, None);
     }
     fn select_with_pins(&mut self, index: usize, expected_pins: Option<Vec<library::SourcePin>>) {
@@ -1683,6 +1694,7 @@ impl Studio {
         self.pose_palette_sha256 = None;
     }
     fn show_sim(&mut self) {
+        self.session.restore_whole_sim = None;
         self.whole_sim = true;
         self.preview_cancel.store(true, Ordering::Relaxed);
         self.preview_gen += 1;
@@ -3015,6 +3027,41 @@ impl Drop for Studio {
         self.scan_cancel.store(true, Ordering::Relaxed);
         self.search_cancel.store(true, Ordering::Relaxed);
         self.preview_cancel.store(true, Ordering::Relaxed);
+    }
+}
+
+#[cfg(test)]
+mod restored_view_tests {
+    use super::{ResourceSelection, SessionState, saved_whole_sim_view};
+
+    #[test]
+    fn a_saved_mode_is_independent_of_wardrobe_selection() {
+        let mut state = SessionState {
+            selection: Some(ResourceSelection::new(
+                "034AEECB:00000000:0000000000000123",
+                "synthetic.package",
+            )),
+            ..Default::default()
+        };
+        state
+            .extra
+            .insert("whole_sim_view".into(), serde_json::json!(true));
+        assert_eq!(saved_whole_sim_view(&state, false), Some(true));
+        assert_eq!(saved_whole_sim_view(&state, true), None);
+        state
+            .extra
+            .insert("whole_sim_view".into(), serde_json::json!(false));
+        assert_eq!(saved_whole_sim_view(&state, false), Some(false));
+    }
+
+    #[test]
+    fn missing_or_untyped_modes_never_override_the_live_view() {
+        let mut state = SessionState::default();
+        assert_eq!(saved_whole_sim_view(&state, false), None);
+        state
+            .extra
+            .insert("whole_sim_view".into(), serde_json::json!("true"));
+        assert_eq!(saved_whole_sim_view(&state, false), None);
     }
 }
 
