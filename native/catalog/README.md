@@ -40,6 +40,13 @@ callback is not a commit receipt. Schema 3 upgrades schema 1/2 transactionally,
 preserving valid metadata. Unrelated databases and unknown schema versions are
 refused. No arbitrary existing database is repurposed.
 
+Use an ordinary app-owned directory for the cache. Opening refuses observed
+symbolic links and Windows reparse points in the database path, its parent
+chain or its SQLite journal/WAL/SHM files, before asking SQLite to write.
+The Wardrobe can scan source packages without the cache when it is unavailable.
+This preflight does not protect a directory an outside process can concurrently
+rearrange.
+
 ## Bounded complete-package batches
 
 `store_packages_with_progress` accepts borrowed `CachePackageUpdate` records
