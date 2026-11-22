@@ -8,6 +8,7 @@ mod persistence;
 mod profiling;
 mod room_view;
 mod source_ui;
+mod storage;
 mod texture;
 mod viewport;
 mod wardrobe_evidence;
@@ -47,7 +48,7 @@ struct Startup {
     pose: Option<ResourceKey>,
     tick: f32,
     project: Option<PathBuf>,
-    session_root: Option<PathBuf>,
+    data_paths: storage::DataPaths,
     selection_provider: Option<PathBuf>,
     pose_provider: Option<PathBuf>,
     tick_provided: bool,
@@ -66,8 +67,12 @@ struct Startup {
 }
 impl Startup {
     fn parse() -> Result<Self, String> {
+        Self::parse_args(std::env::args().skip(1))
+    }
+    fn parse_args(mut args: impl Iterator<Item = String>) -> Result<Self, String> {
         let mut out = Self::default();
-        let mut args = std::env::args().skip(1);
+        let mut portable_root = None;
+        let mut session_root = None;
         while let Some(arg) = args.next() {
             match arg.as_str() {
                 "--assets" => out.roots.push(PathBuf::from(
@@ -154,8 +159,13 @@ impl Startup {
                     out.project = Some(args.next().ok_or("--project requires a path")?.into())
                 }
                 "--session-root" => {
-                    out.session_root = Some(absolute_path(
+                    session_root = Some(absolute_path(
                         args.next().ok_or("--session-root requires a path")?.into(),
+                    )?)
+                }
+                "--portable-root" => {
+                    portable_root = Some(absolute_path(
+                        args.next().ok_or("--portable-root requires a path")?.into(),
                     )?)
                 }
                 "--select-provider" => {
@@ -261,7 +271,46 @@ impl Startup {
             .collect::<Result<_, _>>()?;
         out.rig = out.rig.map(absolute_path).transpose()?;
         out.project = out.project.map(absolute_path).transpose()?;
+        out.data_paths = storage::DataPaths::resolve(
+            portable_root,
+            session_root,
+            std::env::var_os("LOCALAPPDATA").map(PathBuf::from),
+            std::env::var_os("EXTERNAL_CAS_CATALOG_PATH").map(PathBuf::from),
+        )?;
         Ok(out)
+    }
+}
+
+#[cfg(test)]
+mod startup_storage_tests {
+    use super::*;
+
+    #[test]
+    fn portable_root_argument_resolves_from_launch_directory() {
+        let options = Startup::parse_args(
+            ["--portable-root", "separate portable data", "--exit-on-ready"]
+                .into_iter()
+                .map(str::to_owned),
+        )
+        .unwrap();
+        assert!(options.exit_on_ready);
+        let root = std::env::current_dir().unwrap().join("separate portable data");
+        assert_eq!(options.data_paths.session_root, Some(root.join("Session")));
+        assert_eq!(options.data_paths.recovery_root, Some(root.join("Recovery")));
+        assert_eq!(
+            options.data_paths.catalog_path,
+            Some(root.join("Catalog").join("metadata-v1.sqlite"))
+        );
+    }
+
+    #[test]
+    fn portable_root_argument_rejects_a_second_session_location() {
+        let options = Startup::parse_args(
+            ["--session-root", "legacy", "--portable-root", "portable"]
+                .into_iter()
+                .map(str::to_owned),
+        );
+        assert!(matches!(options, Err(message) if message.contains("cannot be combined")));
     }
 }
 
@@ -639,8 +688,8 @@ impl Studio {
                     .expect("locale package validated"),
             ));
         }
-        if !out.startup.exit_on_ready || out.startup.session_root.is_some() {
-            match persistence::Persistence::start(out.startup.session_root.clone()) {
+        if !out.startup.exit_on_ready || out.startup.data_paths.session_root.is_some() {
+            match persistence::Persistence::start(out.startup.data_paths.session_root.clone()) {
                 Ok(worker) => {
                     out.session.worker = Some(worker);
                     out.session.loading = true;
@@ -1162,7 +1211,8 @@ impl Studio {
         self.status = "Discovering authorized local packages…".into();
         self.ready = false;
         let (generation, cancel, tx) = (self.scan_gen, self.scan_cancel.clone(), self.tx.clone());
-        std::thread::spawn(move || library::scan(roots, generation, cancel, tx));
+        let cache = self.startup.data_paths.catalog_path.clone();
+        std::thread::spawn(move || library::scan(roots, generation, cancel, cache, tx));
     }
     fn start_search(&mut self) {
         let Some(library) = &self.library else {
@@ -1957,6 +2007,7 @@ impl Studio {
             self.preview_gen,
             self.tx.clone(),
         );
+        let recovery = self.startup.data_paths.recovery_root.clone();
         std::thread::spawn(move || {
             library::change_draft(
                 draft,
@@ -1966,6 +2017,7 @@ impl Studio {
                 generation,
                 scan_generation,
                 selection_generation,
+                recovery,
                 tx,
             )
         });
@@ -2467,8 +2519,7 @@ impl Studio {
             )
             .clicked()
         {
-            if let Some(base) = std::env::var_os("LOCALAPPDATA") {
-                let root = PathBuf::from(base).join("ExternalCAS").join("Recovery");
+            if let Some(root) = &self.startup.data_paths.recovery_root {
                 if let Some(path) = rfd::FileDialog::new().set_directory(root).pick_folder() {
                     self.open_project(path);
                 }
