@@ -10,6 +10,7 @@ mod room_view;
 mod source_ui;
 mod texture;
 mod viewport;
+mod wardrobe_evidence;
 
 use eframe::egui;
 use external_cas_assets::ResourceKey;
@@ -2251,10 +2252,16 @@ impl Studio {
         }
         if let Some(library) = self.library.clone() {
             self.activate_item_colors(false);
-            let metadata = self
-                .selected
-                .and_then(|i| library.items.get(i))
-                .and_then(|item| item.color_sliders);
+            let selected = self.selected.and_then(|i| library.items.get(i));
+            if !self.scanning && let Some(item) = selected {
+                ui.collapsing("Selected item: source evidence", |ui| {
+                    let evidence = item.indexed_appearance_evidence();
+                    ui.label(evidence.slot.review_label());
+                    ui.label(evidence.preview.review_label());
+                    ui.label(evidence.morph_review_label());
+                });
+            }
+            let metadata = selected.and_then(|item| item.color_sliders);
             if self.colors.show(
                 ui,
                 !self.scanning && !self.preparing,

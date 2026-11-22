@@ -1,4 +1,7 @@
-use crate::{texture, viewport};
+use crate::{
+    texture, viewport,
+    wardrobe_evidence::{IndexedAppearanceEvidence, SourceSlot},
+};
 use external_cas_assets::{
     CasPart, Catalog, Geometry, PackageReader, ReadLimits, ResourceKey, scan::Provider,
 };
@@ -846,13 +849,15 @@ pub fn load_pose(library: Arc<Library>, provider: Provider, generation: u64, tx:
     let _ = tx.send(Event::Clip { generation, result });
 }
 pub fn body_label(body: u32) -> String {
-    match body {
-        2 => "Hair".into(),
-        5 => "Full body".into(),
-        6 => "Tops".into(),
-        7 => "Bottoms".into(),
-        8 => "Shoes".into(),
-        _ => format!("Body slot {body}"),
+    SourceSlot::from_native_body_type(body).label()
+}
+impl Item {
+    pub(crate) fn indexed_appearance_evidence(&self) -> IndexedAppearanceEvidence {
+        IndexedAppearanceEvidence::from_casp_index(
+            self.body_type,
+            !self.meshes.is_empty(),
+            self.diffuse.is_some(),
+        )
     }
 }
 pub enum DraftChange {
