@@ -418,6 +418,15 @@ impl SessionStore {
             .duration_since(UNIX_EPOCH)
             .map_err(|_| invalid("System clock precedes Unix epoch"))?
             .as_nanos();
+        // Restore order is encoded in the filename, not the wall-clock value
+        // in the envelope. Keep a sequential successful save newer than the
+        // last verified app-written checkpoint even when UTC goes backward.
+        let order_time = match existing.snapshot.as_deref().and_then(snapshot_order_time) {
+            Some(previous) if previous >= created => previous
+                .checked_add(1)
+                .ok_or_else(|| invalid("Session filename ordering counter exhausted"))?,
+            _ => created,
+        };
         let raw = RawValue::from_string(
             String::from_utf8(payload.clone())
                 .map_err(|_| invalid("Invalid serialized session UTF-8"))?,
@@ -438,7 +447,7 @@ impl SessionStore {
         let (path, mut file) = loop {
             let counter = NEXT_ID.fetch_add(1, Ordering::Relaxed);
             let name = format!(
-                "session-{created:039}-{:010}-{counter:020}.json",
+                "session-{order_time:039}-{:010}-{counter:020}.json",
                 std::process::id()
             );
             let path = self.root.join(name);
@@ -531,6 +540,24 @@ impl SessionStore {
 enum ReadSnapshot {
     Known(SessionState, String),
     Unknown(u32),
+}
+
+// Only the name format emitted by this store can supply an ordering floor. Unknown
+// names keep their existing read/recovery behavior and are not rewritten.
+fn snapshot_order_time(path: &Path) -> Option<u128> {
+    let name = path.file_name()?.to_str()?.strip_prefix("session-")?;
+    let mut fields = name.strip_suffix(".json")?.split('-');
+    let time = fields.next()?;
+    let pid = fields.next()?;
+    let counter = fields.next()?;
+    let canonical = [(time, 39), (pid, 10), (counter, 20)]
+        .into_iter()
+        .all(|(field, width)| field.len() == width && field.bytes().all(|b| b.is_ascii_digit()));
+    if canonical && fields.next().is_none() {
+        time.parse().ok()
+    } else {
+        None
+    }
 }
 
 fn reject_links(path: &Path) -> Result<()> {

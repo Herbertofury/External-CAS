@@ -121,6 +121,65 @@ fn complete_context_roundtrips_and_preserves_unknown_same_schema_fields() {
     assert_eq!(store.load().unwrap().state, Some(state));
 }
 #[test]
+fn save_after_clock_rollback_reopens_latest_committed_context() {
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    let root = PrivateRoot::new();
+    // This disposable checkpoint simulates a previous launch whose UTC clock
+    // was one day ahead, without touching the real host clock.
+    let future = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos()
+        + 86_400_000_000_000;
+    let old = fixture(
+        &root,
+        &format!("session-{future:039}-0000000000-00000000000000000000.json"),
+        1,
+        json!({"ui_tab": "sims"}),
+    );
+    let bytes = fs::read_to_string(&old).unwrap().replace(
+        "\"created_unix_ns\":\"1\"",
+        &format!("\"created_unix_ns\":\"{future}\""),
+    );
+    fs::write(&old, bytes.as_bytes()).unwrap();
+    commit(&old, 1);
+    let before_marker = fs::read(old.with_extension("complete")).unwrap();
+
+    let mut latest = old.clone();
+    for tab in ["poses", "project"] {
+        let store = root.store();
+        let saved = store
+            .save(&SessionState {
+                ui_tab: tab.into(),
+                ..Default::default()
+            })
+            .unwrap();
+        // The envelope keeps real UTC for display and receipts. Only the
+        // append-only filename's sort key advances past the old checkpoint.
+        let new_envelope: Value = serde_json::from_slice(&fs::read(&saved.path).unwrap()).unwrap();
+        let actual_time = new_envelope["created_unix_ns"]
+            .as_str()
+            .unwrap()
+            .parse::<u128>()
+            .unwrap();
+        assert!(actual_time < future);
+        let loaded = root.store().load().unwrap();
+        assert_eq!(loaded.state.unwrap().ui_tab, tab);
+        assert!(saved.path > latest, "recovery order must move forward");
+        assert_eq!(loaded.snapshot.as_ref(), Some(&saved.path));
+        assert!(loaded.issues.is_empty());
+        latest = saved.path;
+    }
+
+    assert_eq!(fs::read(&old).unwrap(), bytes.as_bytes());
+    assert_eq!(
+        fs::read(old.with_extension("complete")).unwrap(),
+        before_marker
+    );
+}
+
+#[test]
 fn torn_newest_snapshot_or_marker_falls_back_without_modifying_previous() {
     let root = PrivateRoot::new();
     let store = root.store();
