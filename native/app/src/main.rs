@@ -1186,13 +1186,13 @@ impl Studio {
             self.tx.clone(),
         );
         std::thread::spawn(move || {
-            if let Some(pins) = expected_pins {
-                if let Err(error) = library::verify_source_pins(&pins, &cancel) {
+            if let Some(pins) = &expected_pins {
+                if let Err(error) = library::verify_source_pins(pins, &cancel) {
                     let _=tx.send(Event::Preview{generation,result:Err(format!("Saved appearance sources changed; reselect explicitly to inspect current content. {error}"))});
                     return;
                 }
             }
-            library::prepare(library, index, generation, cancel, tx)
+            library::prepare(library, index, generation, cancel, expected_pins, tx)
         });
     }
     fn item_context(library: &library::Library, index: usize) -> Result<ResourceSelection, String> {
