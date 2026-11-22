@@ -33,6 +33,30 @@ class Tests(unittest.TestCase):
   other=dict(identity,sim_id=8)
   with self.assertRaises(UnsupportedGameState):adapter.snapshot(other)
   with self.assertRaises(UnsupportedGameState):adapter.snapshot(dict(identity,form=1))
+ def test_identity_never_coerces_native_values(self):
+  services=Services();adapter=Sims4ReadAdapter(services,'fixture',bytes([2])*16)
+  sim=Sim()
+  expected=adapter.identity(sim)
+  fields=(
+   ('save GUID',services,'get_save_slot_proto_guid',lambda value:lambda:value),
+   ('save slot',services,'get_save_slot_proto_buff',lambda value:lambda:Values(slot_id=value)),
+   ('world ID',services,'current_zone',lambda value:lambda:Values(world_id=value)),
+   ('household ID',sim,'household_id',lambda value:value),
+   ('Sim ID',sim,'sim_id',lambda value:value),
+  )
+  for label,owner,name,wrap in fields:
+   original=getattr(owner,name)
+   for invalid in (True,'7',7.5,-1,1<<64):
+    with self.subTest(field=label,value=invalid):
+     try:
+      setattr(owner,name,wrap(invalid))
+      with self.assertRaisesRegex(UnsupportedGameState,label):
+       adapter.identity(sim)
+     finally:
+      setattr(owner,name,original)
+  self.assertEqual(adapter.identity(sim),expected)
+  sim.sim_id=(1<<64)-1
+  self.assertEqual(adapter.identity(sim)['sim_id'],(1<<64)-1)
  def test_game_thread_affinity(self):
   adapter=Sims4ReadAdapter(Services(),'fixture',bytes([2])*16);errors=[]
   def other_thread():
