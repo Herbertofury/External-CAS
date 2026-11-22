@@ -356,6 +356,23 @@ fn same_provider_path(a: &std::path::Path, b: &std::path::Path) -> bool {
         false
     }
 }
+/// A persisted Wardrobe receipt is not authority for Whole-Sim or an
+/// unprepared scene. Whole-Sim draft operations must recheck its live pins.
+fn draft_source_pins(
+    scene_is_current: bool,
+    whole_sim: bool,
+    wardrobe_pins: Option<&serde_json::Value>,
+    live_character_pins: Option<&[library::SourcePin]>,
+) -> Vec<library::SourcePin> {
+    match (scene_is_current, whole_sim) {
+        (false, _) => Vec::new(),
+        (true, true) => live_character_pins.unwrap_or_default().to_vec(),
+        (true, false) => wardrobe_pins
+            .and_then(|value| serde_json::from_value(value.clone()).ok())
+            .unwrap_or_default(),
+    }
+}
+
 #[derive(Default)]
 struct SessionUi {
     worker: Option<persistence::Persistence>,
@@ -1878,13 +1895,9 @@ impl Studio {
                                 prepared.receipt.meshes
                             );
                             self.character.status = self.status.clone();
+                            // Whole-Sim has its own character_source_context
+                            // snapshot. Keep the last verified Wardrobe receipt.
                             self.character.receipt = Some(prepared.receipt);
-                            if let Some(receipt) = &self.character.receipt {
-                                self.session.state.extra.insert(
-                                    "preview_source_pins".into(),
-                                    serde_json::json!(receipt.source_pins),
-                                );
-                            }
                             self.mark_session_dirty();
                         }
                         Err(error) => self.errors.push(error),
@@ -1912,13 +1925,19 @@ impl Studio {
         }
         self.working_project = true;
         self.project_gen += 1;
-        let source_pins = self
-            .session
-            .state
-            .extra
-            .get("preview_source_pins")
-            .and_then(|value| serde_json::from_value::<Vec<library::SourcePin>>(value.clone()).ok())
-            .unwrap_or_default();
+        let source_pins = draft_source_pins(
+            self.scene_name.is_some()
+                && self.scene_generation == self.preview_gen
+                && !self.preparing
+                && !self.scanning
+                && !self.character.loading,
+            self.whole_sim,
+            self.session.state.extra.get("preview_source_pins"),
+            self.character
+                .receipt
+                .as_ref()
+                .map(|receipt| receipt.source_pins.as_slice()),
+        );
         let (library, generation, scan_generation, selection_generation, tx) = (
             self.library.clone(),
             self.project_gen,
@@ -3022,5 +3041,58 @@ mod persistence_path_tests {
             &root.join("first/source.package"),
             &root.join("second/source.package")
         ));
+    }
+}
+
+#[cfg(test)]
+mod draft_source_pin_tests {
+    use super::draft_source_pins;
+    use crate::library::SourcePin;
+
+    fn pin(key: &str) -> SourcePin {
+        SourcePin {
+            key: key.into(),
+            provider_path: format!("{key}.package").into(),
+            ordinal: 0,
+            index_sha256: "fixture index".into(),
+            payload_sha256: "fixture payload".into(),
+        }
+    }
+
+    #[test]
+    fn current_scene_rechecks_only_its_own_mode_sources() {
+        let wardrobe = serde_json::json!([pin("wardrobe")]);
+        let live_character = [pin("whole-sim")];
+        assert_eq!(
+            draft_source_pins(true, false, Some(&wardrobe), Some(&live_character))[0].key,
+            "wardrobe"
+        );
+        assert_eq!(
+            draft_source_pins(true, true, Some(&wardrobe), Some(&live_character))[0].key,
+            "whole-sim"
+        );
+    }
+
+    #[test]
+    fn missing_or_stale_scene_never_uses_other_mode_pins() {
+        let wardrobe = serde_json::json!([pin("wardrobe")]);
+        let live_character = [pin("whole-sim")];
+        assert!(draft_source_pins(true, true, Some(&wardrobe), None).is_empty());
+        assert!(draft_source_pins(true, false, None, Some(&live_character)).is_empty());
+        assert!(
+            draft_source_pins(
+                true,
+                false,
+                Some(&serde_json::json!(false)),
+                Some(&live_character)
+            )
+            .is_empty()
+        );
+        for whole_sim in [false, true] {
+            assert!(
+                draft_source_pins(false, whole_sim, Some(&wardrobe), Some(&live_character))
+                    .is_empty()
+            );
+        }
     }
 }
