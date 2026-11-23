@@ -64,6 +64,13 @@ evidence; offline or failed checks do not establish availability. An explicit
 alternative must still match the current inventory, and a supplied file
 returns a rescan request, not permission to copy or install it.
 
+An explicit supplied-file check can read one local DBPF, require one non-deleted
+matching resource, compare its complete package SHA-256, and unpack that
+resource under the existing reader limits. A byte match is not provider
+attribution or installation; installed loader scope and dependencies must be
+checked independently, and the review must be rerun when advancing to a later
+confirmation. No files are copied or added to the inventory.
+
 Synthetic catalog tests cover these seams only. The caller still needs to
 collect authoritative IDs, evidence freshness, installed byte digests and
 loader precedence, scope reports to their exact file, flatten the dependency

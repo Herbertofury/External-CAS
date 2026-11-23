@@ -15,6 +15,7 @@ use std::{
 const APPLICATION_ID: i32 = 0x45434153;
 const SCHEMA_VERSION: i32 = 3;
 pub mod cc_evidence;
+pub mod cc_supplied;
 mod publication;
 mod scope;
 pub use publication::{

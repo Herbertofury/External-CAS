@@ -17,7 +17,7 @@ pub struct FileId<'a> {
 }
 
 impl FileId<'_> {
-    fn complete(self) -> bool {
+    pub(crate) fn complete(self) -> bool {
         [
             self.provider,
             self.creator,
