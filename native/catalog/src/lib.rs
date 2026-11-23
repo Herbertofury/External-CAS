@@ -491,13 +491,16 @@ impl CatalogCache {
         }
         let normalized = query.to_lowercase();
         let words = normalized.split_whitespace().collect::<Vec<_>>();
-        let anchor = words
-            .iter()
-            .filter_map(|word| {
-                let chars = word.chars().take(3).collect::<Vec<_>>();
-                (chars.len() == 3).then(|| chars.into_iter().collect::<String>())
-            })
-            .next();
+        let mut anchors = words.iter().filter_map(|word| {
+            word.char_indices()
+                .nth(2)
+                .map(|(start, ch)| &word[..start + ch.len_utf8()])
+        });
+        let anchor = anchors.next();
+        // A missing required secondary gram proves an empty result before
+        // sorting the first anchor's candidates. Use one independent guard
+        // regardless of query length; Rust still checks every query term.
+        let secondary = anchors.rfind(|term| Some(*term) != anchor);
         let mut statement = String::from(
             "SELECT p.path_key,p.source_label,e.entry_index,e.key_type,e.key_group,e.key_instance,e.name,e.body_type,e.payload_sha,e.search_norm FROM part e JOIN package p ON p.id=e.package_id",
         );
@@ -508,10 +511,18 @@ impl CatalogCache {
         }
         if let Some(anchor) = anchor {
             statement.push_str(" JOIN gram g ON g.part_id=e.id AND g.gram=?");
-            values.push(anchor.into());
+            values.push(anchor.to_owned().into());
+        }
+        if let Some(secondary) = secondary {
+            statement.push_str(" WHERE EXISTS (SELECT 1 FROM gram required WHERE required.gram=?)");
+            values.push(secondary.to_owned().into());
         }
         if let Some(body) = body {
-            statement.push_str(" WHERE e.body_type=?");
+            statement.push_str(if secondary.is_some() {
+                " AND e.body_type=?"
+            } else {
+                " WHERE e.body_type=?"
+            });
             values.push((body as i64).into());
         }
         statement.push_str(" ORDER BY e.name COLLATE BINARY,e.key_type,e.key_group,e.key_instance,p.path_key,e.entry_index");
