@@ -45,3 +45,10 @@ row and exact first-seen design/stable swatch order for live searches. In the
 started, instead of processing the entire stale result. This is a work-count
 check, not an interactive timing claim; a single already-running stable sort
 can still finish before its result is discarded.
+
+The combined search candidate keeps the SQLite negative-query shortcut and
+cooperative gallery grouping in the same native tree. Application worker
+fixtures exercise Unicode multi-term and body filtering, ordering, result
+generation, and an already superseded direct search without publication.
+Catalog and grouping fixtures separately cover the indexed shortcut and
+mid-work cancellation. This is not a populated Windows UI measurement.
