@@ -18,6 +18,7 @@ mod publication;
 mod scope;
 pub use publication::{
     CacheBatchLimits, CacheBatchProgress, CachePackageUpdate, StoreBatchTimings,
+    serialized_part_metadata_len,
 };
 #[derive(Debug)]
 pub enum Error {

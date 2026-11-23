@@ -2,6 +2,28 @@
 //! Bounded groups of complete packages, with one durable atomic publication.
 use super::*;
 
+/// Count the exact bytes of compact CASP JSON without allocating an output
+/// buffer. SQLite publication still writes the same complete JSON.
+pub fn serialized_part_metadata_len(casp: &CasPart) -> Result<usize> {
+    #[derive(Default)]
+    struct ByteCount(usize);
+    impl std::io::Write for ByteCount {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.0 = self
+                .0
+                .checked_add(bytes.len())
+                .ok_or_else(|| std::io::Error::other("cache metadata size overflow"))?;
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    let mut count = ByteCount::default();
+    serde_json::to_writer(&mut count, casp)?;
+    Ok(count.0)
+}
+
 pub struct CachePackageUpdate<'a> {
     pub package: &'a PackageIndex,
     pub rows: &'a [CachedPart],
@@ -92,7 +114,7 @@ impl CatalogCache {
             for row in update.rows {
                 cancelled(cancel)?;
                 metadata_bytes = metadata_bytes
-                    .checked_add(serde_json::to_vec(&row.casp)?.len())
+                    .checked_add(serialized_part_metadata_len(&row.casp)?)
                     .ok_or_else(|| Error::Invalid("cache batch metadata size overflow".into()))?;
                 if metadata_bytes > limits.max_serialized_metadata_bytes {
                     return Err(Error::Invalid(

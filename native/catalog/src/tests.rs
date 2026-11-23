@@ -1154,3 +1154,79 @@ fn benchmark_complete_indexed_unicode_and_broad_cache_reads() {
             identity.finalize(), time[6], time[13]);
     }
 }
+
+#[test]
+fn exact_budget_publication_keeps_the_last_complete_scoped_search() {
+    let root = tempfile::tempdir().unwrap();
+    let (package, mut rows) = source(&root.path().join("assets.package"), 2);
+    rows[0].casp.name = "衣装 🧵 Ï \"quoted\" \n\t \\ tail".into();
+    let skip = CachedUnsupported {
+        entry_index: rows.pop().unwrap().entry_index,
+        message: "利用不可 ⚠".into(),
+    };
+    let json = serde_json::to_string(&rows[0].casp).unwrap();
+    assert_eq!(
+        serialized_part_metadata_len(&rows[0].casp).unwrap(),
+        json.len()
+    );
+    let mut cache = CatalogCache::open(root.path().join("cache.sqlite")).unwrap();
+    let cancel = AtomicBool::new(false);
+    let unsupported = [skip];
+    let updates = [CachePackageUpdate {
+        package: &package,
+        rows: &rows,
+        unsupported: &unsupported,
+    }];
+    let mut limits = CacheBatchLimits {
+        max_serialized_metadata_bytes: json.len() + unsupported[0].message.len(),
+        ..Default::default()
+    };
+    cache
+        .store_packages_with_progress(&updates, limits, &cancel, |_| {})
+        .unwrap();
+    cache
+        .bind_scope("wardrobe", &[package.fingerprint()], &cancel)
+        .unwrap();
+    let stored: String = cache
+        .connection
+        .query_row("SELECT casp_json FROM part", [], |r| r.get(0))
+        .unwrap();
+    assert_eq!(stored, json);
+    let mut replacement = rows.clone();
+    replacement[0].casp.name = rows[0].casp.name.replace("quoted", "unseen");
+    assert_eq!(
+        serialized_part_metadata_len(&replacement[0].casp).unwrap(),
+        json.len()
+    );
+    let rejected = [CachePackageUpdate {
+        rows: &replacement,
+        ..updates[0]
+    }];
+    limits.max_serialized_metadata_bytes -= 1;
+    assert!(
+        cache
+            .store_packages_with_progress(&rejected, limits, &cancel, |_| {})
+            .is_err()
+    );
+    let expected = &rows[0];
+    let body = Some(expected.casp.body_type);
+    let result = cache
+        .search_scoped("wardrobe", "衣装 QuOtEd tail", body, 0, usize::MAX, &cancel)
+        .unwrap();
+    assert_eq!(result.len(), 1);
+    let hit = &result[0];
+    assert_eq!(hit.package_path, package.path);
+    assert_eq!(hit.entry_index, expected.entry_index);
+    assert_eq!(hit.key, package.entries[expected.entry_index].key);
+    assert_eq!(hit.payload_sha256, expected.payload_sha256);
+    assert_eq!(hit.name, expected.casp.name);
+    assert!(
+        cache
+            .search_scoped("wardrobe", "衣装 unseen tail", body, 0, usize::MAX, &cancel)
+            .unwrap()
+            .is_empty()
+    );
+    let loaded = cache.load_package(&package, &cancel).unwrap().unwrap();
+    assert_eq!(loaded.unsupported, unsupported);
+    assert_eq!(serde_json::to_string(&loaded.rows[0].casp).unwrap(), stored);
+}
