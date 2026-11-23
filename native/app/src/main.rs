@@ -452,7 +452,7 @@ struct SessionUi {
     restore_pins: Option<Vec<library::SourcePin>>,
     restore_camera: Option<CameraState>,
     restore_tab: Option<Tab>,
-    restore_project: Option<PathBuf>,
+    restore_project: Option<storage::ProjectOpen>,
     restore_rig: Option<PinnedFile>,
     restore_bind_pose: bool,
 }
@@ -745,6 +745,8 @@ impl Studio {
         }
         if let Some(path) = self.startup.project.clone() {
             self.open_project(path);
+        } else if let Some(request) = self.session.restore_project.take() {
+            self.open_project_request(request);
         }
     }
     fn drain_session(&mut self, ctx: &egui::Context) {
@@ -831,12 +833,12 @@ impl Studio {
                                     self.startup.tick = state.tick;
                                 }
                                 if self.startup.project.is_none() {
-                                    let path = state
-                                        .recovery_project_path
-                                        .clone()
-                                        .or(state.project_path.clone());
-                                    self.session.restore_project = path.clone();
-                                    self.startup.project = path;
+                                    match storage::ProjectOpen::saved(&state, &self.startup.data_paths) {
+                                        Ok(request) => self.session.restore_project = request,
+                                        Err(error) => self.errors.push(format!(
+                                            "{error}; use Open a recovery revision to inspect a draft explicitly."
+                                        )),
+                                    }
                                 }
                                 self.session.restore_camera = Some(state.camera.clone());
                                 self.session.restore_tab = Tab::parse(&state.ui_tab);
@@ -1567,32 +1569,22 @@ impl Studio {
                     }
                     Err(e) => self.errors.push(e),
                 },
-                Event::Project { generation, result } if generation == self.project_gen => {
+                Event::Project {
+                    generation,
+                    recovery,
+                    result,
+                } if generation == self.project_gen => {
                     self.working_project = false;
                     self.ready = true;
                     match result {
                         Ok(prepared) => {
                             let path = prepared.project.directory.clone();
-                            let restored = self
-                                .session
-                                .restore_project
-                                .as_ref()
-                                .is_some_and(|saved| same_provider_path(saved, &path));
-                            if restored
-                                && self
-                                    .session
-                                    .state
-                                    .recovery_project_path
-                                    .as_ref()
-                                    .is_some_and(|saved| same_provider_path(saved, &path))
-                            {
-                                self.recovery_location = Some(path.clone());
+                            if recovery {
+                                self.recovery_location = Some(path);
                             } else {
-                                self.session.state.project_path = Some(path);
-                                self.session.state.recovery_project_path = None;
+                                storage::remember_project(&mut self.session.state, path);
                                 self.recovery_location = None;
                             }
-                            self.session.restore_project = None;
                             self.status = "Project reopened and byte-verified".into();
                             self.draft = prepared.draft;
                             self.native_colors = prepared.colors;
@@ -1605,7 +1597,15 @@ impl Studio {
                             self.tab = Tab::Project;
                             self.mark_session_dirty();
                         }
-                        Err(e) => self.errors.push(e),
+                        Err(e) => {
+                            if recovery {
+                                self.errors.push(format!(
+                                    "{e}; use Open a recovery revision to inspect a draft explicitly."
+                                ));
+                            } else {
+                                self.errors.push(e);
+                            }
+                        }
                     }
                 }
                 Event::Rig { generation, result } if generation == self.rig_gen => {
@@ -1701,7 +1701,7 @@ impl Studio {
                         continue;
                     }
                     match result {
-                        Ok((draft, path, colors)) => {
+                        Ok((draft, recovery, colors)) => {
                             let active =
                                 self.draft.as_ref().and_then(|d| d.slots().ok()).and_then(
                                     |slots| self.slot.and_then(|i| slots.get(i).cloned()),
@@ -1719,8 +1719,10 @@ impl Studio {
                             });
                             self.native_colors = colors;
                             self.draft = Some(draft);
-                            self.session.state.recovery_project_path = Some(path.clone());
-                            self.recovery_location = Some(path);
+                            self.recovery_location = Some(recovery.remember(
+                                &mut self.session.state,
+                                self.startup.data_paths.portable,
+                            ));
                             self.status = "Draft updated and recovery revision verified".into();
                             self.mark_session_dirty();
                         }
@@ -2158,14 +2160,22 @@ impl Studio {
         });
     }
     fn open_project(&mut self, path: PathBuf) {
+        self.open_project_request(storage::ProjectOpen::Explicit(path));
+    }
+    fn open_project_request(&mut self, request: storage::ProjectOpen) {
         self.project_gen += 1;
         let generation = self.project_gen;
         let tx = self.tx.clone();
         self.working_project = true;
         self.ready = false;
         std::thread::spawn(move || {
-            let result = library::project_ready(external_cas_tray::reopen_project(&path));
-            let _ = tx.send(Event::Project { generation, result });
+            let recovery = request.is_recovery();
+            let result = library::prepare_project(request.reopen());
+            let _ = tx.send(Event::Project {
+                generation,
+                recovery,
+                result,
+            });
         });
     }
     fn import_group(&mut self, index: usize, destination: PathBuf) {
@@ -2184,7 +2194,11 @@ impl Studio {
         std::thread::spawn(move || {
             let result =
                 library::project_ready(external_cas_tray::create_project(&group, &destination));
-            let _ = tx.send(Event::Project { generation, result });
+            let _ = tx.send(Event::Project {
+                generation,
+                recovery: false,
+                result,
+            });
         });
     }
     fn activate_item_colors(&mut self, force: bool) {
@@ -2659,7 +2673,11 @@ impl Studio {
                     self.working_project = true;
                     std::thread::spawn(move || {
                         let result = library::project_ready(draft.save_as(&path));
-                        let _ = tx.send(Event::Project { generation, result });
+                        let _ = tx.send(Event::Project {
+                            generation,
+                            recovery: false,
+                            result,
+                        });
                     });
                 }
             }
@@ -2821,7 +2839,7 @@ impl Studio {
                 return;
             };
             let adapter = self.viewport.adapter_info();
-            let report = serde_json::json!({"application":"External CAS","native_ui":"eframe + wgpu","gpu_adapter":{"name":adapter.name,"backend":format!("{:?}",adapter.backend)},"renderer":"Rust GPU diffuse cutout bind-geometry preview","end_to_end_accepted":false,"ready_after_ms":self.started.elapsed().as_secs_f64()*1000.,"packages":self.library.as_ref().map(|l|l.catalog.packages.len()),"items":self.library.as_ref().map(|l|l.items.len()),"unsupported_items":self.library.as_ref().map(|l|l.unsupported.len()),"discovery_ms":self.library.as_ref().map(|l|l.elapsed.as_secs_f64()*1000.),"cache_hits":self.library.as_ref().map(|l|l.cache_hits),"cache_misses":self.library.as_ref().map(|l|l.cache_misses),"cache_issues":self.library.as_ref().map(|l|l.cache_issues.len()),"preview_ms":self.preview_elapsed.as_secs_f64()*1000.,"vertices":self.vertices,"triangles":self.triangles,"rendered_frames":self.viewport.rendered_frames,"status":self.status,"warnings":self.warnings,"errors":self.errors,"pose_status":self.pose_status,"pose_tick":self.tick,"pose_palette_sha256":self.pose_palette_sha256,"rig_bones":self.rig.as_ref().map(|r|r.bones.len()),"project_native_files":self.project.as_ref().map(|p|p.documents.len()),"draft_slots":self.draft.as_ref().and_then(|d|d.slots().ok()).map(|s|s.len()),"draft_revision":self.draft.as_ref().map(|d|d.revision()),"recovery_revision_loaded":self.project.as_ref().zip(self.session.state.recovery_project_path.as_ref()).is_some_and(|(p,path)|same_provider_path(&p.directory,path)),"session_enabled":self.session.worker.is_some(),"session_restored":self.session.restored,"session_saved":self.session.snapshot.is_some(),"session_error":self.session.error,"camera":{"yaw":self.viewport.camera.yaw,"pitch":self.viewport.camera.pitch,"distance":self.viewport.camera.distance,"target":self.viewport.camera.target},"ui_tab":self.tab.name()});
+            let report = serde_json::json!({"application":"External CAS","native_ui":"eframe + wgpu","gpu_adapter":{"name":adapter.name,"backend":format!("{:?}",adapter.backend)},"renderer":"Rust GPU diffuse cutout bind-geometry preview","end_to_end_accepted":false,"ready_after_ms":self.started.elapsed().as_secs_f64()*1000.,"packages":self.library.as_ref().map(|l|l.catalog.packages.len()),"items":self.library.as_ref().map(|l|l.items.len()),"unsupported_items":self.library.as_ref().map(|l|l.unsupported.len()),"discovery_ms":self.library.as_ref().map(|l|l.elapsed.as_secs_f64()*1000.),"cache_hits":self.library.as_ref().map(|l|l.cache_hits),"cache_misses":self.library.as_ref().map(|l|l.cache_misses),"cache_issues":self.library.as_ref().map(|l|l.cache_issues.len()),"preview_ms":self.preview_elapsed.as_secs_f64()*1000.,"vertices":self.vertices,"triangles":self.triangles,"rendered_frames":self.viewport.rendered_frames,"status":self.status,"warnings":self.warnings,"errors":self.errors,"pose_status":self.pose_status,"pose_tick":self.tick,"pose_palette_sha256":self.pose_palette_sha256,"rig_bones":self.rig.as_ref().map(|r|r.bones.len()),"project_native_files":self.project.as_ref().map(|p|p.documents.len()),"draft_slots":self.draft.as_ref().and_then(|d|d.slots().ok()).map(|s|s.len()),"draft_revision":self.draft.as_ref().map(|d|d.revision()),"recovery_revision_loaded":self.project.as_ref().zip(self.recovery_location.as_ref()).is_some_and(|(p,path)|same_provider_path(&p.directory,path)),"session_enabled":self.session.worker.is_some(),"session_restored":self.session.restored,"session_saved":self.session.snapshot.is_some(),"session_error":self.session.error,"camera":{"yaw":self.viewport.camera.yaw,"pitch":self.viewport.camera.pitch,"distance":self.viewport.camera.distance,"target":self.viewport.camera.target},"ui_tab":self.tab.name()});
             let mut report = report;
             report["capture"] = capture;
             report["profile"] = self.profile.report();

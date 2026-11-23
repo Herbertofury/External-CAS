@@ -102,6 +102,15 @@ the locations you select. Without this option, existing defaults and the
 session-only `--session-root` remain unchanged. Do not combine the two options;
 portable mode also takes precedence over the catalog-path environment override.
 
+New recovery revisions created in portable mode reopen from that same
+portable data folder even after you copy or move it. The editor verifies the
+specific saved revision instead of opening a copy from the old location. Keep
+`Session` and `Recovery` together. This does not retarget original package or
+Tray paths. Older sessions with absolute recovery paths are unchanged: after
+a move, use **Open a recovery revision** and select the revision in the new
+`Recovery` folder. Use a build that supports portable recovery to reopen
+new portable sessions automatically.
+
 For double-click use, create an empty file named `ExternalCAS.portable` beside
 `external-cas.exe` in its writable folder. A normal launch then uses the sibling
 `ExternalCAS-data` folder regardless of where it was launched from. For the debug

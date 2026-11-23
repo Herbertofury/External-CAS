@@ -1,5 +1,5 @@
 use crate::{
-    texture, viewport,
+    storage::SavedRecovery, texture, viewport,
     wardrobe_evidence::{IndexedAppearanceEvidence, SourceSlot},
 };
 use external_cas_assets::{
@@ -96,6 +96,7 @@ pub enum Event {
     },
     Project {
         generation: u64,
+        recovery: bool,
         result: Result<PreparedProject, String>,
     },
     Rig {
@@ -111,7 +112,7 @@ pub enum Event {
         scan_generation: u64,
         selection_generation: u64,
         base_revision: u64,
-        result: Result<(external_cas_tray::ProjectDraft, PathBuf, ColorCache), String>,
+        result: Result<(external_cas_tray::ProjectDraft, SavedRecovery, ColorCache), String>,
     },
 }
 pub struct PreparedProject {
@@ -170,7 +171,13 @@ pub fn draft_color_cache(draft: &external_cas_tray::ProjectDraft) -> ColorCache 
 pub fn project_ready(
     project: Result<external_cas_tray::TrayProject, external_cas_tray::TrayError>,
 ) -> Result<PreparedProject, String> {
-    let project = project.map_err(|e| e.to_string())?;
+    prepare_project(project.map_err(|e| e.to_string()))
+}
+
+pub(crate) fn prepare_project(
+    project: Result<external_cas_tray::TrayProject, String>,
+) -> Result<PreparedProject, String> {
+    let project = project?;
     let (draft, draft_error) = match external_cas_tray::ProjectDraft::from_project(&project) {
         Ok(draft) => (Some(draft), None),
         Err(error) => (None, Some(error.to_string())),
