@@ -102,6 +102,21 @@ the locations you select. Without this option, existing defaults and the
 session-only `--session-root` remain unchanged. Do not combine the two options;
 portable mode also takes precedence over the catalog-path environment override.
 
+For double-click use, create an empty file named `ExternalCAS.portable` beside
+`external-cas.exe` in its writable folder. A normal launch then uses the sibling
+`ExternalCAS-data` folder regardless of where it was launched from. For the debug
+build, for example:
+
+```powershell
+New-Item -ItemType File -Path .\target\debug\ExternalCAS.portable
+```
+
+The marker does not copy any existing state. Opening without that marker
+returns to the previous default location without removing either data folder.
+An explicit root option takes priority; unattended `--exit-on-ready` launches
+do not use the marker. If using the marker, it must be an empty regular file,
+not a folder or link.
+
 Optional `--ui-assets "<game>\Data\Client\UI.package"` loads the installed CAS
 fonts/atlases locally. No extracted resources are written or redistributed.
 See [native component details](native/README.md) and

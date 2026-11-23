@@ -39,6 +39,63 @@ fn catalog_path(root: &Path) -> PathBuf {
     root.join("Catalog").join("metadata-v1.sqlite")
 }
 
+const PORTABLE_MARKER: &str = "ExternalCAS.portable";
+const PORTABLE_DATA_DIRECTORY: &str = "ExternalCAS-data";
+
+/// Normal launches may opt in with a same-directory marker. Explicit options
+/// and diagnostic launches keep their precedence without inspecting the marker.
+pub(crate) fn launch_portable_root(
+    explicit: Option<PathBuf>,
+    use_marker: bool,
+    executable: impl FnOnce() -> std::io::Result<PathBuf>,
+) -> Result<Option<PathBuf>, String> {
+    if explicit.is_some() || !use_marker {
+        return Ok(explicit);
+    }
+    let executable =
+        executable().map_err(|error| format!("Cannot locate the editor executable: {error}"))?;
+    let directory = executable
+        .parent()
+        .filter(|path| path.is_absolute())
+        .ok_or("The editor executable has no absolute parent folder")?;
+    let marker = directory.join(PORTABLE_MARKER);
+    let metadata = match std::fs::symlink_metadata(&marker) {
+        Ok(metadata) => metadata,
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(error) => return Err(format!("Cannot inspect {PORTABLE_MARKER}: {error}")),
+    };
+    if !is_empty_ordinary_file(&metadata) {
+        return Err(format!(
+            "{PORTABLE_MARKER} must be an empty ordinary file next to the editor"
+        ));
+    }
+    // A present but unreadable marker is not permission to use a different
+    // storage root. Open read-only; no content or data directory is written.
+    let opened = std::fs::File::open(&marker)
+        .and_then(|file| file.metadata())
+        .map_err(|error| format!("Cannot read {PORTABLE_MARKER}: {error}"))?;
+    if !is_empty_ordinary_file(&opened) {
+        return Err(format!("{PORTABLE_MARKER} changed while being inspected"));
+    }
+    Ok(Some(directory.join(PORTABLE_DATA_DIRECTORY)))
+}
+
+fn is_empty_ordinary_file(metadata: &std::fs::Metadata) -> bool {
+    metadata.is_file() && !metadata_is_link(metadata) && metadata.len() == 0
+}
+
+fn metadata_is_link(metadata: &std::fs::Metadata) -> bool {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt;
+        metadata.file_attributes() & 0x400 != 0
+    }
+    #[cfg(not(windows))]
+    {
+        metadata.file_type().is_symlink()
+    }
+}
+
 /// Refuse existing links before creating the recovery path. The Tray writer
 /// independently checks its destination and verifies the saved project.
 fn reject_linked_recovery_path(path: &Path) -> Result<(), String> {
@@ -48,14 +105,7 @@ fn reject_linked_recovery_path(path: &Path) -> Result<(), String> {
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => continue,
             Err(error) => return Err(format!("Cannot inspect recovery directory: {error}")),
         };
-        #[cfg(windows)]
-        let linked = {
-            use std::os::windows::fs::MetadataExt;
-            metadata.file_attributes() & 0x400 != 0
-        };
-        #[cfg(not(windows))]
-        let linked = metadata.file_type().is_symlink();
-        if linked {
+        if metadata_is_link(&metadata) {
             return Err("Recovery directory cannot traverse a symlink or reparse point".into());
         }
     }
@@ -89,6 +139,82 @@ pub(crate) fn save_draft_recovery(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    struct OwnedMarkerFolder(PathBuf);
+    impl OwnedMarkerFolder {
+        fn new() -> Self {
+            use std::sync::atomic::{AtomicU64, Ordering};
+            static NEXT: AtomicU64 = AtomicU64::new(0);
+            let name = format!(
+                "external-cas-marker-test-{}-{}",
+                std::process::id(),
+                NEXT.fetch_add(1, Ordering::Relaxed)
+            );
+            let path = std::env::temp_dir().join(name);
+            std::fs::create_dir(&path).unwrap();
+            Self(path)
+        }
+        fn resolve_marker(&self) -> Result<Option<PathBuf>, String> {
+            launch_portable_root(None, true, || Ok(self.0.join("external-cas.exe")))
+        }
+    }
+    impl Drop for OwnedMarkerFolder {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+
+    #[test]
+    fn normal_launch_uses_marker_beside_the_executable_without_writing() {
+        let folder = OwnedMarkerFolder::new();
+        assert_eq!(folder.resolve_marker().unwrap(), None);
+        let marker = folder.0.join(PORTABLE_MARKER);
+        std::fs::write(&marker, []).unwrap();
+        let portable = folder.0.join(PORTABLE_DATA_DIRECTORY);
+        assert_eq!(folder.resolve_marker().unwrap(), Some(portable.clone()));
+        assert!(
+            !portable.exists(),
+            "parsing the marker must not create data"
+        );
+        assert_eq!(std::fs::read(marker).unwrap(), b"");
+    }
+
+    #[test]
+    fn marker_must_be_an_empty_ordinary_file() {
+        let folder = OwnedMarkerFolder::new();
+        let marker = folder.0.join(PORTABLE_MARKER);
+        std::fs::create_dir(&marker).unwrap();
+        assert!(folder.resolve_marker().is_err());
+        std::fs::remove_dir(&marker).unwrap();
+        std::fs::write(&marker, b"not an opt-in marker").unwrap();
+        assert!(folder.resolve_marker().is_err());
+        assert_eq!(std::fs::read(marker).unwrap(), b"not an opt-in marker");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn linked_marker_is_not_followed() {
+        let folder = OwnedMarkerFolder::new();
+        let target = folder.0.join("unrelated");
+        std::fs::write(&target, []).unwrap();
+        std::os::unix::fs::symlink(&target, folder.0.join(PORTABLE_MARKER)).unwrap();
+        assert!(folder.resolve_marker().is_err());
+        assert_eq!(std::fs::read(target).unwrap(), b"");
+    }
+
+    #[test]
+    fn explicit_and_noninteractive_launches_do_not_probe_the_marker() {
+        let explicit = PathBuf::from("chosen");
+        assert_eq!(
+            launch_portable_root(Some(explicit.clone()), true, || panic!("unexpected probe"))
+                .unwrap(),
+            Some(explicit)
+        );
+        assert_eq!(
+            launch_portable_root(None, false, || panic!("unexpected probe")).unwrap(),
+            None
+        );
+    }
 
     #[test]
     fn portable_storage_overrides_installed_and_catalog_paths() {
