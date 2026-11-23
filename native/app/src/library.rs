@@ -244,6 +244,23 @@ mod restore_source_receipt_tests {
     }
 
     #[test]
+    fn source_pin_grouping_keeps_provider_order_and_duplicate_receipts() {
+        let a = pin("second.package");
+        let b = pin("first.package");
+        let mut a2 = a.clone();
+        a2.ordinal = 7;
+        let pins = [a.clone(), b, a2, a];
+        let cancel = AtomicBool::new(false);
+        let grouped = group_source_pins(&pins, &cancel).unwrap();
+        assert_eq!(grouped.iter().map(|(path, _)| *path).collect::<Vec<_>>(),
+                   vec![pins[0].provider_path.as_path(), pins[1].provider_path.as_path()]);
+        assert_eq!(grouped[0].1.iter().map(|pin| pin.ordinal).collect::<Vec<_>>(), vec![1, 7, 1]);
+        assert_eq!(grouped[1].1.len(), 1);
+        cancel.store(true, Ordering::Relaxed);
+        assert!(group_source_pins(&pins, &cancel).is_err());
+    }
+
+    #[test]
     fn verified_restore_requires_the_exact_nonempty_ordered_receipt() {
         let casp = pin("appearance.package");
         let diffuse = pin("first-texture.package");
@@ -272,26 +289,46 @@ mod restore_source_receipt_tests {
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
-pub fn verify_source_pins(pins: &[SourcePin], cancel: &AtomicBool) -> Result<(), String> {
-    let mut packages = HashMap::new();
+fn group_source_pins<'a>(
+    pins: &'a [SourcePin],
+    cancel: &AtomicBool,
+) -> Result<Vec<(&'a std::path::Path, Vec<&'a SourcePin>)>, String> {
+    let mut lookup = HashMap::new();
+    let mut groups: Vec<(&std::path::Path, Vec<&SourcePin>)> = Vec::new();
     for pin in pins {
         if cancel.load(Ordering::Relaxed) {
             return Err("Source validation cancelled".into());
         }
-        if !packages.contains_key(&pin.provider_path) {
-            packages.insert(
-                pin.provider_path.clone(),
-                external_cas_assets::PackageIndex::open_cancellable(&pin.provider_path, cancel)
-                    .map_err(|e| e.to_string())?,
-            );
+        let path = pin.provider_path.as_path();
+        let next = groups.len();
+        let slot = *lookup.entry(path).or_insert(next);
+        if slot == next {
+            groups.push((path, Vec::new()));
         }
+        groups[slot].1.push(pin);
     }
-    for (path, package) in &packages {
+    if cancel.load(Ordering::Relaxed) {
+        return Err("Source validation cancelled".into());
+    }
+    Ok(groups)
+}
+
+pub fn verify_source_pins(pins: &[SourcePin], cancel: &AtomicBool) -> Result<(), String> {
+    let groups = group_source_pins(pins, cancel)?;
+    // Verify each path in first-seen order and close its handle before opening
+    // the next. No pin is deduplicated: individual slot receipts still count.
+    for (path, pins) in groups {
+        let package = external_cas_assets::PackageIndex::open_cancellable(path, cancel)
+            .map_err(|e| e.to_string())?;
         let mut reader = package
             .reader_cancellable(cancel)
             .map_err(|e| e.to_string())?;
-        for pin in pins.iter().filter(|p| &p.provider_path == path) {
-            if hex(&package.index_sha256) != pin.index_sha256 {
+        let index_sha256 = hex(&package.index_sha256);
+        for pin in pins {
+            if cancel.load(Ordering::Relaxed) {
+                return Err("Source validation cancelled".into());
+            }
+            if index_sha256 != pin.index_sha256 {
                 return Err(format!("Source index changed: {}", path.display()));
             }
             let entry = package
