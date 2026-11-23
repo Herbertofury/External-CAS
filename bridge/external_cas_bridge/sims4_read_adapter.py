@@ -43,10 +43,21 @@ class Sims4ReadAdapter:
   if self.client is not None:raise UnsupportedGameState('Already observing selected client')
   client=self.services.client_manager().get_first_client()
   if client is None:raise UnsupportedGameState('No active client')
-  client.register_active_sim_changed(self._selected_changed);self.client=client;self.on_selection=callback
+  if not callable(callback):raise TypeError('Selection observer must be callable')
+  # Ignore any immediate registration callback; publish one authoritative
+  # observation after registration so an already-selected Sim is not missed.
+  client.register_active_sim_changed(self._selected_changed)
+  self.client=client;self.on_selection=callback
+  try:self._selected_changed()
+  except Exception:
+   self.detach()
+   raise
  def _selected_changed(self,*args,**kwargs):
-  self._thread();self.sequence+=1
-  if self.on_selection is not None:self.on_selection({'kind':'ObserveSelection','body':{'sequence':self.sequence,'identity':self.selected()}})
+  self._thread()
+  if self.on_selection is None:return
+  identity=self.selected()
+  self.sequence+=1
+  self.on_selection({'kind':'ObserveSelection','body':{'sequence':self.sequence,'identity':identity}})
  def detach(self):
   self._thread()
   if self.client is not None:self.client.unregister_active_sim_changed(self._selected_changed)
