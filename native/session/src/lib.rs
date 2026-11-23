@@ -182,6 +182,26 @@ impl SessionState {
     /// Structural validation only. Caller must revalidate referenced assets and
     /// project receipts before restoring them; paths are not opened by this crate.
     pub fn validate(&self) -> Result<()> {
+        check_extensions(
+            "session",
+            &self.extra,
+            &[
+                "roots",
+                "project_path",
+                "recovery_project_path",
+                "selection",
+                "rig",
+                "clip",
+                "tick",
+                "camera",
+                "ui_tab",
+            ],
+        )?;
+        check_extensions(
+            "camera",
+            &self.camera.extra,
+            &["yaw", "pitch", "distance", "target"],
+        )?;
         for path in self
             .roots
             .iter()
@@ -191,16 +211,37 @@ impl SessionState {
             absolute(path)?;
         }
         if let Some(value) = &self.selection {
+            check_extensions(
+                "selection",
+                &value.extra,
+                &[
+                    "key",
+                    "provider_path",
+                    "source_index_sha256",
+                    "payload_sha256",
+                ],
+            )?;
             key(&value.key)?;
             absolute(&value.provider_path)?;
             optional_hash(value.source_index_sha256.as_deref())?;
             optional_hash(value.payload_sha256.as_deref())?;
         }
         if let Some(value) = &self.rig {
+            check_extensions("rig", &value.extra, &["path", "sha256"])?;
             absolute(&value.path)?;
             digest(&value.sha256)?;
         }
         if let Some(value) = &self.clip {
+            check_extensions(
+                "clip",
+                &value.extra,
+                &[
+                    "key",
+                    "provider_path",
+                    "source_index_sha256",
+                    "payload_sha256",
+                ],
+            )?;
             key(&value.key)?;
             absolute(&value.provider_path)?;
             optional_hash(value.source_index_sha256.as_deref())?;
@@ -222,6 +263,20 @@ impl SessionState {
         }
         Ok(())
     }
+}
+// Flattened extensions serialize into the same object as the core fields.
+// Reject collisions even when serde would omit an absent optional core value.
+fn check_extensions(
+    object: &str,
+    extra: &BTreeMap<String, Value>,
+    reserved: &[&str],
+) -> Result<()> {
+    if let Some(field) = reserved.iter().find(|&&field| extra.contains_key(field)) {
+        return Err(invalid(format!(
+            "Session {object} extension conflicts with reserved field {field}"
+        )));
+    }
+    Ok(())
 }
 fn absolute(path: &Path) -> Result<()> {
     if !path.is_absolute() {

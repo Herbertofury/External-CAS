@@ -348,7 +348,7 @@ mod tests {
     #[test]
     fn edited_portable_draft_reopens_from_copied_or_moved_session_storage() {
         use external_cas_session::SessionStore;
-        use external_cas_tray::{ProjectDraft, create_project, scan_library};
+        use external_cas_tray::{MissingColorShiftPolicy, ProjectDraft, create_project, scan_library};
         use std::fs;
 
         fn copy_owned_directory(from: &Path, to: &Path) {
@@ -385,6 +385,19 @@ mod tests {
         let mut draft = ProjectDraft::from_project(&project).unwrap();
         let slot = draft.slots().unwrap().remove(0);
         draft.apply_slot(0, &slot, 29, slot.body_type).unwrap();
+        let color = draft.color_shifts().unwrap().remove(0);
+        let edited_color = 0x4000_0000_1234_5678;
+        assert_eq!(color.value, None);
+        draft
+            .apply_color_shift(
+                1, &color.slot, None, edited_color,
+                MissingColorShiftPolicy::MaterializeNeutralOthers,
+            )
+            .unwrap();
+        draft.undo(2).unwrap();
+        assert_eq!(draft.color_shifts().unwrap()[0].value, None);
+        draft.redo(3).unwrap();
+        assert_eq!(draft.color_shifts().unwrap()[0].value, Some(edited_color));
 
         let old = owned.0.join("old portable");
         let paths = DataPaths::resolve(Some(old.clone()), None, None, None).unwrap();
@@ -397,6 +410,26 @@ mod tests {
         let store = SessionStore::at(paths.session_root.unwrap()).unwrap();
         let receipt = store.save(&state).unwrap();
 
+        // A completely written newer Tray snapshot must not supersede the
+        // active pointer when the durable editor session write is refused.
+        let color = draft.color_shifts().unwrap().remove(0);
+        draft
+            .apply_color_shift(
+                4, &color.slot, Some(edited_color), edited_color + 1,
+                MissingColorShiftPolicy::RequireExisting,
+            )
+            .unwrap();
+        let newer = save_draft_recovery(&draft, Some(&old.join("Recovery"))).unwrap();
+        let mut incompatible = state.clone();
+        let later_revision = newer.remember(&mut incompatible, true);
+        incompatible.extra.insert("tick".into(), serde_json::json!(3));
+        assert!(matches!(
+            store.save(&incompatible),
+            Err(external_cas_session::SessionError::Invalid(message)) if message.contains("tick")
+        ));
+        assert!(later_revision.exists());
+        assert_eq!(store.load().unwrap().state.as_ref(), Some(&state));
+
         let new = owned.0.join("new portable");
         copy_owned_directory(&old, &new);
         let paths = DataPaths::resolve(Some(new.clone()), None, None, None).unwrap();
@@ -404,8 +437,9 @@ mod tests {
         let restored = store.load().unwrap();
         assert_eq!(restored.snapshot_sha256, Some(receipt.sha256));
         assert_eq!(restored.state.as_ref(), Some(&state));
+        let restored_state = restored.state.as_ref().unwrap();
         let reopen = || {
-            ProjectOpen::saved(&state, &paths)
+            ProjectOpen::saved(restored_state, &paths)
                 .unwrap()
                 .unwrap()
                 .reopen()
@@ -417,13 +451,14 @@ mod tests {
             assert_eq!(old_revision.exists(), original_present);
             let recovered = reopen();
             assert_eq!(recovered.directory, expected);
+            let reopened = ProjectDraft::from_project(&recovered).unwrap();
+            assert_eq!(reopened.slots().unwrap()[0].part_id, 29);
+            assert_eq!(reopened.color_shifts().unwrap()[0].value, Some(edited_color));
+            let preserved_later = new.join("Recovery").join(later_revision.file_name().unwrap());
+            let preserved = external_cas_tray::reopen_project(&preserved_later).unwrap();
             assert_eq!(
-                ProjectDraft::from_project(&recovered)
-                    .unwrap()
-                    .slots()
-                    .unwrap()[0]
-                    .part_id,
-                29
+                ProjectDraft::from_project(&preserved).unwrap().color_shifts().unwrap()[0].value,
+                Some(edited_color + 1)
             );
             if original_present {
                 fs::rename(&old, owned.0.join("removed old name")).unwrap();

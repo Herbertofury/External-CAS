@@ -27,5 +27,7 @@ names/hashes, no EA bytecode or decompiled source. Source, observed APIs,
 contract details and test commands are documented in `native/link/README.md`.
 
 Tests under `bridge/tests` use deliberate local fixtures and never import Sims
-modules. The standalone app does not require Python; this language boundary is
+modules. Run them with `python -B -m unittest discover -s bridge/tests -v`.
+The Windows source-check workflow also runs the Rust/Python wire fixture with
+its resolved Python executable. Neither check contacts a game process. The standalone app does not require Python; this language boundary is
 only for the game scripting environment. All bridge source is GPL-3.0-or-later.

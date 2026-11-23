@@ -39,11 +39,16 @@ class GameThreadBridge:
    elif kind in('SnapshotRequest','ReadbackRequest'):
     try:
      ticket=body['ticket']if kind=='SnapshotRequest'else body
-     if bytes(ticket['session_nonce'])!=self.adapter.session_nonce:raise UnsupportedGameState('Snapshot ticket belongs to another game process/session')
+     nonce=ticket.get('session_nonce')
+     if not isinstance(nonce,list)or len(nonce)!=16 or any(type(n)is not int or not 0<=n<=255 for n in nonce):raise UnsupportedGameState('Exact 16-byte session nonce required')
+     if bytes(nonce)!=self.adapter.session_nonce:raise UnsupportedGameState('Snapshot ticket belongs to another game process/session')
      snapshot=self.adapter.snapshot(ticket['identity']);response={'kind':'Snapshot','body':{'ticket':ticket,'snapshot':snapshot,'origin_operation':None}}if kind=='SnapshotRequest'else{'kind':'Readback','body':{'operation_id':body['operation_id'],'session_nonce':body['session_nonce'],'snapshot':snapshot}}
      if len(canonical(response))>self.max_message_bytes:raise UnsupportedGameState('Snapshot exceeds negotiated wire budget; no partial snapshot emitted')
      self.outbox.put_nowait(response)
-    except Exception as error:self.outbox.put_nowait({'kind':'Refused','body':{'operation_id':None,'reason':str(error)[:1024]}})
+    except Exception as error:
+     # Readback refusals belong to a transaction; navigation snapshots do not.
+     operation=body['operation_id']if kind=='ReadbackRequest'else None
+     self.outbox.put_nowait({'kind':'Refused','body':{'operation_id':operation,'reason':str(error)[:1024]}})
    else:self.outbox.put_nowait({'kind':'Refused','body':{'operation_id':body.get('operation_id'),'reason':'No real-game-qualified write/rollback or operation ledger; no mutation performed'}})
    done+=1
   return done

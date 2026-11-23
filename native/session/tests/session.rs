@@ -473,3 +473,63 @@ fn invalid_context_is_not_persisted_and_empty_load_creates_nothing() {
     assert!(store.save(&state).is_err());
     assert!(!absent.exists());
 }
+
+#[test]
+fn colliding_extension_fields_never_commit_an_unreopenable_or_changed_session() {
+    let root = PrivateRoot::new();
+    let store = root.store();
+    let known = SessionState {
+        selection: Some(ResourceSelection::new(
+            "034AEECB:00000000:0123456789ABCDEF",
+            root.0.join("selected.package"),
+        )),
+        rig: Some(PinnedFile::new(root.0.join("rig.fixture"), "a".repeat(64))),
+        clip: Some(ClipSelection::new(
+            "6B20C4F3:00000000:1234567890ABCDEF",
+            root.0.join("clip.package"),
+            "b".repeat(64),
+        )),
+        ..Default::default()
+    };
+    let good = store.save(&known).unwrap();
+    let count = fs::read_dir(&root.0).unwrap().count();
+    for (field, value, get_extra) in [
+        ("tick", json!(3), top_extra as fn(&mut SessionState) -> &mut Extensions),
+        ("distance", json!(4), camera_extra),
+        // This optional field is omitted when absent; a collision can silently
+        // become the real value on reload instead of just producing an error.
+        ("payload_sha256", json!("c".repeat(64)), selection_extra),
+        ("sha256", json!("d".repeat(64)), rig_extra),
+        ("provider_path", json!("other.package"), clip_extra),
+    ] {
+        let mut bad = known.clone();
+        get_extra(&mut bad).insert(field.into(), value);
+        assert!(
+            matches!(store.save(&bad), Err(SessionError::Invalid(reason)) if reason.contains(field)),
+            "reserved field {field} was not rejected"
+        );
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), count);
+        let loaded = store.load().unwrap();
+        assert_eq!(loaded.snapshot, Some(good.path.clone()));
+        assert_eq!(loaded.state, Some(known.clone()));
+        assert!(loaded.issues.is_empty());
+    }
+}
+
+type Extensions = std::collections::BTreeMap<String, Value>;
+
+fn top_extra(session: &mut SessionState) -> &mut Extensions {
+    &mut session.extra
+}
+fn camera_extra(session: &mut SessionState) -> &mut Extensions {
+    &mut session.camera.extra
+}
+fn selection_extra(session: &mut SessionState) -> &mut Extensions {
+    &mut session.selection.as_mut().unwrap().extra
+}
+fn rig_extra(session: &mut SessionState) -> &mut Extensions {
+    &mut session.rig.as_mut().unwrap().extra
+}
+fn clip_extra(session: &mut SessionState) -> &mut Extensions {
+    &mut session.clip.as_mut().unwrap().extra
+}

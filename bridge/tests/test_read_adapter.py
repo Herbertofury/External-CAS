@@ -27,12 +27,66 @@ class Tests(unittest.TestCase):
   bridge.pump(budget_ms=100);self.assertEqual(bridge.outbox.get_nowait()['kind'],'Snapshot')
   bridge.enqueue({'kind':'Apply','body':{'operation_id':[3]*16}});bridge.pump(budget_ms=100);self.assertEqual(bridge.outbox.get_nowait()['kind'],'Refused')
   with self.assertRaises(ValueError):bridge.enqueue({'kind':'Pause','body':None})
+ def test_failed_readbacks_keep_their_operation_identity(self):
+  adapter=Sims4ReadAdapter(Services(),'fixture',bytes([2])*16);bridge=GameThreadBridge(adapter)
+  identity=adapter.selected()
+  for nonce,target,reason in (
+   ([3]*16,identity,'another game process/session'),
+   ([2]*16,dict(identity,sim_id=99),'Exact Sim no longer exists'),
+   (16,identity,'Exact 16-byte session nonce'),
+   ([2]*15+[True],identity,'Exact 16-byte session nonce'),
+  ):
+   with self.subTest(nonce=nonce,target=target):
+    operation=list(range(16))
+    bridge.enqueue({'kind':'ReadbackRequest','body':{'operation_id':operation,'session_nonce':nonce,'identity':target}})
+    self.assertEqual(bridge.pump(budget_ms=100),1)
+    reply=bridge.outbox.get_nowait()
+    self.assertEqual(reply['kind'],'Refused')
+    self.assertEqual(reply['body']['operation_id'],operation)
+    self.assertIn(reason,reply['body']['reason'])
+  bridge.enqueue({'kind':'ReadbackRequest','body':{'operation_id':operation,'session_nonce':[2]*16,'identity':identity}})
+  bridge.pump(budget_ms=100)
+  reply=bridge.outbox.get_nowait()
+  self.assertEqual(reply['kind'],'Readback')
+  self.assertEqual(reply['body']['operation_id'],operation)
+  self.assertEqual(reply['body']['snapshot']['identity'],identity)
+ def test_failed_navigation_snapshots_do_not_invent_operation_ids(self):
+  adapter=Sims4ReadAdapter(Services(),'fixture',bytes([2])*16);bridge=GameThreadBridge(adapter)
+  bridge.enqueue({'kind':'SnapshotRequest','body':{'ticket':{'session_nonce':[3]*16,'identity':adapter.selected(),'navigation_epoch':1,'request_id':1}}})
+  bridge.pump(budget_ms=100)
+  reply=bridge.outbox.get_nowait()
+  self.assertEqual(reply['kind'],'Refused')
+  self.assertIsNone(reply['body']['operation_id'])
  def test_read_boundary_preserves_raw_outfits_and_refuses_writes_forms_wrong_identity(self):
   adapter=Sims4ReadAdapter(Services(),'fixture',bytes([2])*16);identity=adapter.selected();snapshot=adapter.snapshot(identity);self.assertEqual(bytes(snapshot['fields']['outfits']),b'raw-unknown-outfits');self.assertIn('Partial',snapshot['coverage']);self.assertFalse(adapter.capabilities()['real_game_qualified']);self.assertTrue(all(not field['live_write']and not field['cas_write']for field in adapter.capabilities()['fields']))
   with self.assertRaises(UnsupportedGameState):adapter.apply({})
   other=dict(identity,sim_id=8)
   with self.assertRaises(UnsupportedGameState):adapter.snapshot(other)
   with self.assertRaises(UnsupportedGameState):adapter.snapshot(dict(identity,form=1))
+ def test_identity_never_coerces_native_values(self):
+  services=Services();adapter=Sims4ReadAdapter(services,'fixture',bytes([2])*16)
+  sim=Sim()
+  expected=adapter.identity(sim)
+  fields=(
+   ('save GUID',services,'get_save_slot_proto_guid',lambda value:lambda:value),
+   ('save slot',services,'get_save_slot_proto_buff',lambda value:lambda:Values(slot_id=value)),
+   ('world ID',services,'current_zone',lambda value:lambda:Values(world_id=value)),
+   ('household ID',sim,'household_id',lambda value:value),
+   ('Sim ID',sim,'sim_id',lambda value:value),
+  )
+  for label,owner,name,wrap in fields:
+   original=getattr(owner,name)
+   for invalid in (True,'7',7.5,-1,1<<64):
+    with self.subTest(field=label,value=invalid):
+     try:
+      setattr(owner,name,wrap(invalid))
+      with self.assertRaisesRegex(UnsupportedGameState,label):
+       adapter.identity(sim)
+     finally:
+      setattr(owner,name,original)
+  self.assertEqual(adapter.identity(sim),expected)
+  sim.sim_id=(1<<64)-1
+  self.assertEqual(adapter.identity(sim)['sim_id'],(1<<64)-1)
  def test_game_thread_affinity(self):
   adapter=Sims4ReadAdapter(Services(),'fixture',bytes([2])*16);errors=[]
   def other_thread():
