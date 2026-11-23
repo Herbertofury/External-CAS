@@ -338,6 +338,44 @@ pub struct PackageReader<'a> {
     file: File,
 }
 impl PackageReader<'_> {
+    /// Hash exactly the complete package on the same read-only handle as the
+    /// validated index. This is file evidence, not a provider attribution.
+    /// Reopen and revalidate before a subsequent review or write boundary.
+    pub fn package_sha256(&mut self, cancel: &AtomicBool) -> Result<[u8; 32]> {
+        if cancel.load(Ordering::Relaxed) {
+            return Err(Error::Cancelled);
+        }
+        if FileStamp::from(&self.file.metadata()?) != self.index.stamp {
+            return Err(Error::Changed);
+        }
+        self.file.rewind()?;
+        let mut digest = Sha256::new();
+        let mut buffer = [0u8; 64 * 1024];
+        let mut remaining = self.index.file_size;
+        while remaining > 0 {
+            if cancel.load(Ordering::Relaxed) {
+                return Err(Error::Cancelled);
+            }
+            let count = remaining.min(buffer.len() as u64) as usize;
+            if let Err(err) = self.file.read_exact(&mut buffer[..count]) {
+                return if err.kind() == std::io::ErrorKind::UnexpectedEof {
+                    Err(Error::Changed)
+                } else {
+                    Err(err.into())
+                };
+            }
+            digest.update(&buffer[..count]);
+            remaining -= count as u64;
+        }
+        if cancel.load(Ordering::Relaxed) {
+            return Err(Error::Cancelled);
+        }
+        if FileStamp::from(&self.file.metadata()?) != self.index.stamp {
+            return Err(Error::Changed);
+        }
+        Ok(digest.finalize().into())
+    }
+
     /// Reuse an independently retained payload SHA256 to detect even a source
     /// rewrite whose file timestamps and index metadata were deliberately kept.
     pub fn read_pinned_resource(
