@@ -271,6 +271,11 @@ impl Startup {
             .collect::<Result<_, _>>()?;
         out.rig = out.rig.map(absolute_path).transpose()?;
         out.project = out.project.map(absolute_path).transpose()?;
+        let portable_root = storage::launch_portable_root(
+            portable_root,
+            !out.exit_on_ready && session_root.is_none(),
+            std::env::current_exe,
+        )?;
         out.data_paths = storage::DataPaths::resolve(
             portable_root,
             session_root,
