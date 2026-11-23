@@ -260,6 +260,75 @@ mod restore_source_receipt_tests {
         assert!(group_source_pins(&pins, &cancel).is_err());
     }
 
+    fn synthetic_package(payload: &[u8; 4]) -> Vec<u8> {
+        let mut bytes = vec![0; 96];
+        bytes[..4].copy_from_slice(b"DBPF");
+        for (at, value) in [(4, 2u32), (8, 1), (36, 1), (44, 32), (64, 100)] {
+            bytes[at..at + 4].copy_from_slice(&value.to_le_bytes());
+        }
+        bytes.extend_from_slice(payload);
+        for value in [0u32, 0x034a_eecb, 0, 0, 7, 96, 4, 4] {
+            bytes.extend_from_slice(&value.to_le_bytes());
+        }
+        bytes
+    }
+
+    #[test]
+    fn source_pin_validation_checks_each_provider_and_repeated_receipt_against_disk() {
+        use std::fs;
+        let nonce = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!("eca-receipt-{}-{nonce}", std::process::id()));
+        fs::create_dir(&root).unwrap();
+        struct RemoveFixture(PathBuf);
+        impl Drop for RemoveFixture {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = RemoveFixture(root.clone());
+        let make_pin = |folder: &str, payload: &[u8; 4]| {
+            fs::create_dir(root.join(folder)).unwrap();
+            let path = root.join(folder).join("same-name.package");
+            fs::write(&path, synthetic_package(payload)).unwrap();
+            let index = external_cas_assets::PackageIndex::open(&path).unwrap();
+            SourcePin {
+                key: ResourceKey::new(0x034a_eecb, 0, 7).to_string(),
+                provider_path: path,
+                ordinal: 0,
+                index_sha256: hex(&index.index_sha256),
+                payload_sha256: hex(&Sha256::digest(payload)),
+            }
+        };
+        let a = make_pin("a", b"aaaa");
+        let b = make_pin("b", b"bbbb");
+        let cancel = AtomicBool::new(false);
+        let pins = [a.clone(), b.clone(), a.clone()];
+        assert!(verify_source_pins(&pins, &cancel).is_ok());
+
+        let mut stale = pins.clone();
+        stale[2].payload_sha256 = b.payload_sha256.clone();
+        let err = verify_source_pins(&stale, &cancel).unwrap_err();
+        assert!(err.contains("Source content changed"));
+
+        fs::write(&b.provider_path, synthetic_package(b"zzzz")).unwrap();
+        let changed = external_cas_assets::PackageIndex::open(&b.provider_path).unwrap();
+        assert_eq!(hex(&changed.index_sha256), b.index_sha256);
+        let err = verify_source_pins(&pins, &cancel).unwrap_err();
+        assert!(err.contains("Source content changed"));
+
+        fs::write(&b.provider_path, synthetic_package(b"bbbb")).unwrap();
+        assert!(verify_source_pins(&pins, &cancel).is_ok());
+        cancel.store(true, Ordering::Relaxed);
+        assert!(
+            verify_source_pins(&pins, &cancel)
+                .unwrap_err()
+                .contains("cancelled")
+        );
+    }
+
     #[test]
     fn verified_restore_requires_the_exact_nonempty_ordered_receipt() {
         let casp = pin("appearance.package");
