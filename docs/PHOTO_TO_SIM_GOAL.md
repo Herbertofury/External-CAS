@@ -54,6 +54,23 @@ After user-supplied acquisition, rescan and verify the actual file, resource ide
 
 Keep photo analysis local by default. Database discovery should use ordinary asset/category metadata, not upload the photograph, face embedding or derived identifying representation. Any optional remote photo processing requires separate informed approval; database access is not that approval. Keep reference photos, private inventories and likeness previews out of public catalog/issue data.
 
+### Local evidence checkpoint
+`external_cas_catalog_cache::cc_evidence` reconciles already collected
+metadata only. It compares full provider/creator/project/release/file IDs,
+the effective resource key and exact byte digest, shows every declared
+requirement independently, and treats equal-priority conflicting evidence as
+ambiguous. Public/restricted/unavailable status is independent of local
+evidence; offline or failed checks do not establish availability. An explicit
+alternative must still match the current inventory, and a supplied file
+returns a rescan request, not permission to copy or install it.
+
+Synthetic catalog tests cover these seams only. The caller still needs to
+collect authoritative IDs, evidence freshness, installed byte digests and
+loader precedence, scope reports to their exact file, flatten the dependency
+closure (or mark it unresolved), and run native UI/game qualification. This
+checkpoint does not add provider lookup, acquisition, alias inference, a review
+screen, or game-compatibility claims.
+
 ### Additional acceptance backlog
 - [ ] **CC1: identity and inventory join.** Fixtures with duplicate filenames, similar creator names, different provider IDs, overrides, changed hashes and missing meshes must not join or mark installed incorrectly.
 - [ ] **CC2: constrained likeness comparison.** Compare supported preset/slider + skin + hair/outfit combinations against a base-game/manual baseline; explain geometry-versus-texture effects and preserve user locks and unsupported fields.
