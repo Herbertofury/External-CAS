@@ -1367,3 +1367,89 @@ fn absent_current_outfit_is_not_replaced_by_a_default_preset() {
     assert_eq!(a[0].base.physique, None);
     assert!(a[0].occult_forms.is_empty());
 }
+
+#[test]
+fn edits_and_history_retain_unselected_document_buffers() {
+    let fixture = Fixture::new();
+    let original = household_with(
+        &family_with_sim(&color_sim(&color_outfit(Some(&blob(1, &[0, 0]))))),
+        &image_section(),
+    );
+    let (_, project, mut draft) = draft_household(&fixture, original, "retain-buffers");
+    let untouched = |draft: &ProjectDraft| {
+        let non_households = draft.documents().iter().filter(|d| d.filename != HOUSE);
+        non_households
+            .map(|d| {
+                (d.filename.clone(), d.bytes().as_ptr(), d.bytes().len(), d.sha256.clone())
+            })
+            .collect::<Vec<_>>()
+    };
+    let before = untouched(&draft);
+    assert!(before.len() >= 2);
+    let entry = draft.color_shifts().unwrap().remove(0);
+    draft
+        .apply_color_shift(
+            0,
+            &entry.slot,
+            Some(0),
+            u64::MAX,
+            MissingColorShiftPolicy::RequireExisting,
+        )
+        .unwrap();
+    assert_eq!(untouched(&draft), before, "color edit copied unrelated files");
+    let slot = draft.slots().unwrap().remove(0);
+    draft.apply_slot(1, &slot, 300, slot.body_type).unwrap();
+    assert_eq!(untouched(&draft), before, "outfit edit copied unrelated files");
+    draft.undo(2).unwrap();
+    assert_eq!(untouched(&draft), before, "undo copied unrelated files");
+    draft.redo(3).unwrap();
+    assert_eq!(untouched(&draft), before, "redo copied unrelated files");
+    let saved = draft.save_as(&fixture.root.join("preserved-buffer-save")).unwrap();
+    for original in project.documents.iter().filter(|d| d.filename != HOUSE) {
+        let roundtrip = saved
+            .documents
+            .iter()
+            .find(|d| d.filename == original.filename)
+            .unwrap();
+        assert_eq!(roundtrip.bytes(), original.bytes());
+        assert_eq!(roundtrip.sha256, original.sha256);
+    }
+}
+
+#[test]
+#[ignore = "manual equivalent-work timing, not a latency threshold"]
+fn benchmark_draft_edits_with_large_untouched_portrait() {
+    use std::time::Instant;
+
+    let fixture = Fixture::new();
+    let root = fixture.library();
+    // A large admitted opaque file exercises the actual untouched-buffer path.
+    let mut portrait = vec![0x57; 16 * 1024 * 1024];
+    portrait[..3].copy_from_slice(&[0xff, 0xd8, 0xff]);
+    fs::write(root.join(PORTRAIT), &portrait).unwrap();
+    let group = scan_library(&root).unwrap().groups.remove(0);
+    let project = create_project(&group, &fixture.root.join("benchmark")).unwrap();
+    assert!(project
+        .documents
+        .iter()
+        .any(|d| d.filename == PORTRAIT && d.bytes().len() == portrait.len()));
+    let mut draft = ProjectDraft::from_project(&project).unwrap();
+    let original = draft_bytes(&draft).to_vec();
+    let expected_slot = draft.slots().unwrap().remove(0);
+    let mut nanos = Vec::new();
+    for _ in 0..30 {
+        let revision = draft.revision();
+        let start = Instant::now();
+        draft
+            .apply_slot(revision, &expected_slot, 300, expected_slot.body_type)
+            .unwrap();
+        draft.undo(revision + 1).unwrap();
+        nanos.push(start.elapsed().as_nanos());
+        assert_eq!(draft_bytes(&draft), original);
+    }
+    nanos.sort_unstable();
+    println!(
+        "30 edit+undo pairs; 16 MiB unrelated portrait; p50={}ns, p95={}ns",
+        nanos[14], nanos[28]
+    );
+}

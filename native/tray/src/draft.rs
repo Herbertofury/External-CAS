@@ -218,11 +218,16 @@ impl ProjectDraft {
         let mut bytes = doc.bytes().to_vec();
         bytes.splice(change.offset..end, replacement.iter().copied());
         let updated = TrayDocument::from_bytes(&doc.filename, bytes)?;
-        // Check all known parallel arrays still align before accepting mutation.
-        let mut candidates = self.documents.clone();
-        candidates[change.document_index] = updated;
-        located_slots(&candidates)?;
-        self.documents = candidates;
+        // Validate the same full candidate inventory before committing. Borrow
+        // untouched files instead of allocating copies of every portrait/companion.
+        located_slots(self.documents.iter().enumerate().map(|(index, current)| {
+            if index == change.document_index {
+                &updated
+            } else {
+                current
+            }
+        }))?;
+        self.documents[change.document_index] = updated;
         Ok(())
     }
     fn verify_sources(&self) -> Result<()> {
@@ -402,13 +407,16 @@ fn repeated_uint(raw: &[u8], maximum: u64) -> Result<Vec<u64>> {
     }
     Ok(result)
 }
-fn located_slots(documents: &[TrayDocument]) -> Result<Vec<LocatedSlot>> {
+fn located_slots<'a>(
+    documents: impl IntoIterator<Item = &'a TrayDocument>,
+) -> Result<Vec<LocatedSlot>> {
     let mut result = Vec::new();
-    for (document_index, doc) in documents.iter().enumerate() {
+    for (document_index, doc) in documents.into_iter().enumerate() {
         let DocumentSummary::Household(_) = &doc.summary else {
             continue;
         };
         for (sim_index, sim_raw) in doc.native_sims()?.into_iter().enumerate() {
+            let mut sim_hash = None;
             let sim_fields = fields(sim_raw)?;
             let sim_id =
                 number(&sim_fields, 1, 1)?.ok_or_else(|| invalid("Native Sim ID missing"))?;
@@ -470,7 +478,9 @@ fn located_slots(documents: &[TrayDocument]) -> Result<Vec<LocatedSlot>> {
                                 part_index,
                                 body_type: body as u32,
                                 part_id,
-                                native_sim_sha256: sha256(sim_raw),
+                                native_sim_sha256: sim_hash
+                                    .get_or_insert_with(|| sha256(sim_raw))
+                                    .clone(),
                             },
                         });
                     }
