@@ -20,7 +20,8 @@ also refuses existing filenames. It stages the encoded image in the chosen
 folder and reports `capture.status` as saved, not_saved, or not_requested.
 Runtime captures and source paths
 are private and must stay excluded from Git. A diagnostic timeout terminates
-only its own child, retaining any partial evidence.
+only its own child. The launcher still writes stdout, stderr, a memory-sample
+array and run metadata with `timedOut: true` before reporting the timeout.
 
 Report package/CASP counts, cache hits/misses, unreadable/unsupported sources,
 query, columns, actual hardware, other active workloads and cache state. Repeat
