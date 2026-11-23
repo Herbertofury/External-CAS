@@ -2,6 +2,10 @@ use crate::{
     storage::SavedRecovery, texture, viewport,
     wardrobe_evidence::{IndexedAppearanceEvidence, SourceSlot},
 };
+#[path = "search_groups.rs"]
+mod search_groups;
+use search_groups::group_search_rows;
+pub(crate) use search_groups::GalleryGroup;
 use external_cas_assets::{
     CasPart, Catalog, Geometry, PackageReader, ReadLimits, ResourceKey, scan::Provider,
 };
@@ -37,10 +41,6 @@ pub struct Item {
     pub design: usize,
     pub swatch_order: u16,
     pub color_sliders: Option<external_cas_assets::casp::CaspColorSliders>,
-}
-#[derive(Clone, Debug)]
-pub struct GalleryGroup {
-    pub items: Vec<usize>,
 }
 #[derive(PartialEq, Eq, Hash)]
 struct DesignKey {
@@ -664,21 +664,28 @@ pub fn search(
                     }
                     rows.push(index);
                 }
+                if cancel.load(Ordering::Relaxed) {
+                    return Err("Search cancelled".into());
+                }
                 rows.sort_unstable();
                 Ok(rows)
             })();
             if let Ok(rows) = indexed {
-                let groups = group_rows(&library, &rows);
-                let _ = tx.send(Event::Search {
-                    generation,
-                    rows,
-                    elapsed: start.elapsed(),
-                    cache_used: true,
-                    groups,
-                });
+                if let Some(groups) = group_rows(&library, &rows, &cancel) {
+                    let _ = tx.send(Event::Search {
+                        generation,
+                        rows,
+                        elapsed: start.elapsed(),
+                        cache_used: true,
+                        groups,
+                    });
+                }
                 return;
             }
         }
+    }
+    if cancel.load(Ordering::Relaxed) {
+        return;
     }
     let mut rows = Vec::new();
     for (i, item) in library.items.iter().enumerate() {
@@ -690,33 +697,23 @@ pub fn search(
             rows.push(i);
         }
     }
-    let groups = group_rows(&library, &rows);
-    let _ = tx.send(Event::Search {
-        generation,
-        rows,
-        elapsed: start.elapsed(),
-        cache_used: false,
-        groups,
-    });
+    if let Some(groups) = group_rows(&library, &rows, &cancel) {
+        let _ = tx.send(Event::Search {
+            generation,
+            rows,
+            elapsed: start.elapsed(),
+            cache_used: false,
+            groups,
+        });
+    }
 }
-fn group_rows(library: &Library, rows: &[usize]) -> Vec<GalleryGroup> {
-    let mut positions = HashMap::new();
-    let mut groups = Vec::<GalleryGroup>::new();
-    for &index in rows {
-        let item = &library.items[index];
-        let next = groups.len();
-        let group = *positions.entry(item.design).or_insert(next);
-        if group == groups.len() {
-            groups.push(GalleryGroup { items: Vec::new() });
-        }
-        groups[group].items.push(index);
-    }
-    for group in &mut groups {
-        group
-            .items
-            .sort_by_key(|&i| (library.items[i].swatch_order, library.items[i].key));
-    }
-    groups
+fn group_rows(library: &Library, rows: &[usize], cancel: &AtomicBool) -> Option<Vec<GalleryGroup>> {
+    group_search_rows(
+        rows,
+        cancel,
+        |index| library.items[index].design,
+        |index| (library.items[index].swatch_order, library.items[index].key),
+    )
 }
 struct Resources<'a> {
     library: &'a Library,
