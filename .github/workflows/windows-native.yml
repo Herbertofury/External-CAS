@@ -30,6 +30,14 @@ jobs:
         run: git config --global core.longpaths true
       - name: Test native source workspace
         run: cargo test --workspace --locked --jobs 2
+      - name: Test Python bridge and Rust wire conformance
+        shell: pwsh
+        run: |
+          $python = (Get-Command python -CommandType Application -ErrorAction Stop).Source
+          $env:CAS_LINK_PYTHON = $python
+          & $python -B -m unittest discover -s bridge/tests -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test -p external-cas-link --test python_protocol --locked --jobs 2 -- --ignored
       - name: Build native application
         run: cargo build -p external-cas --locked --jobs 2
       - name: Validate publication boundary
