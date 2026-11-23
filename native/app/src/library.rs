@@ -628,11 +628,18 @@ pub fn search(
     cancel: Arc<AtomicBool>,
     tx: Sender<Event>,
 ) {
+    // Obsolete queued work must not open or create SQLite state.
+    if cancel.load(Ordering::Relaxed) {
+        return;
+    }
     let start = Instant::now();
     let query = query.to_lowercase();
     let words: Vec<_> = query.split_whitespace().collect();
     if !words.is_empty() {
         if let (Some(path), Some(scope)) = (&library.cache_path, &library.cache_scope) {
+            if cancel.load(Ordering::Relaxed) {
+                return;
+            }
             let indexed = (|| -> Result<Vec<usize>, String> {
                 let cache = CatalogCache::open(path).map_err(|e| e.to_string())?;
                 let hits = cache
@@ -1108,6 +1115,40 @@ mod wardrobe_search_worker_tests {
             vec![vec![1, 5, 0], vec![4]]
         );
         assert!(rx.try_recv().is_err());
+    }
+
+    #[test]
+    fn a_pre_cancelled_search_never_opens_or_creates_its_cache_path() {
+        use std::sync::atomic::AtomicU64;
+        static NEXT: AtomicU64 = AtomicU64::new(0);
+        let folder = std::env::temp_dir().join(format!(
+            "external-cas-cancel-search-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir(&folder).unwrap();
+        let probe = folder.join("metadata").join("cache.sqlite");
+        let mut library = fixture();
+        let candidate = Arc::get_mut(&mut library).unwrap();
+        candidate.cache_path = Some(probe.clone());
+        candidate.cache_scope = Some("expired".into());
+
+        let (tx, rx) = std::sync::mpsc::channel();
+        search(
+            library,
+            "café".into(),
+            None,
+            40,
+            Arc::new(AtomicBool::new(true)),
+            tx,
+        );
+        let touched = probe.parent().unwrap().exists();
+        std::fs::remove_dir_all(folder).unwrap();
+        assert!(!touched, "a cancelled search opened its cache");
+        assert!(matches!(
+            rx.try_recv(),
+            Err(std::sync::mpsc::TryRecvError::Disconnected)
+        ));
     }
 
     #[test]
