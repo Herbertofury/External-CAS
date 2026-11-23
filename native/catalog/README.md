@@ -168,3 +168,24 @@ provenance notes. `rusqlite` is MIT, bundled SQLite is public domain, `sha2`
 and `serde_json` are MIT/Apache-2.0; test-only `tempfile` is MIT/Apache-2.0.
 No source packages, creator assets, private manifests or game binaries are
 included.
+
+### Fast negative multi-term searches
+
+A second distinct required trigram is checked inside the same SQLite statement.
+If it is absent from the index, the query can skip scanning and sorting the first
+trigram's results. If present, the full Rust lowercase, all-word exact check
+still runs for every candidate. No ranking, filtering, ordering, offset, hit
+limits, duplicate-source, or scope behavior is changed; one optional guard
+keeps SQL parameter count bounded regardless of query length.
+
+The opt-in 24,000-row fixture checks all result fields and prints ordered hit
+digests for an unfiltered search, body-filtered Unicode search, deep page, and
+negative multi-term query. On the pinned Linux/Rust 1.99.0 comparison, two
+candidate and two baseline runs preserved counts and all ordered digests.
+The missing secondary gram case dropped from roughly 45–46 ms median to
+0.017 ms. Matched workloads remained in their observed run-to-run range.
+This is a catalog-component result, not Windows UI latency.
+
+```sh
+cargo test --release -p external-cas-catalog-cache --locked benchmark_complete_indexed_unicode_and_broad_cache_reads -- --ignored --nocapture
+```
