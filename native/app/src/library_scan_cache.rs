@@ -1,8 +1,8 @@
 //! Bounded cache publication for discovery. No game/source writes.
 use super::*;
 use external_cas_catalog_cache::{
-    CacheBatchLimits, CachePackageUpdate, LoadPackageTimings, StoreBatchTimings,
-    StorePackageTimings,
+    CacheBatchLimits, CachePackageUpdate, LoadPackageTimings, StoreBatchTimings, StorePackageTimings,
+    serialized_part_metadata_len,
 };
 
 #[derive(Clone, Debug, Default, serde::Serialize)]
@@ -84,15 +84,15 @@ impl Publisher {
             if cancel.load(Ordering::Relaxed) {
                 return Err("Discovery cancelled".into());
             }
-            let json = match serde_json::to_vec(&row.casp) {
-                Ok(json) => json,
+            let size = match serialized_part_metadata_len(&row.casp) {
+                Ok(size) => size,
                 Err(error) => {
                     self.stats.publication_failures += 1;
                     issues.push(format!("Cache metadata encoding failed: {error}"));
                     return Ok(());
                 }
             };
-            bytes = bytes.saturating_add(json.len());
+            bytes = bytes.saturating_add(size);
         }
         bytes = metadata.unsupported.iter().fold(bytes, |sum, status| {
             sum.saturating_add(status.message.len())
