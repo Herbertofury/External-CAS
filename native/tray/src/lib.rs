@@ -800,6 +800,7 @@ pub struct TrayProject {
     pub directory: PathBuf,
     pub manifest: ProjectManifest,
     pub documents: Vec<TrayDocument>,
+    manifest_sha256: String,
 }
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SourceConflict {
@@ -809,6 +810,10 @@ pub struct SourceConflict {
     pub reason: String,
 }
 impl TrayProject {
+    /// Exact bytes of the manifest read while verifying this project's native files.
+    pub fn manifest_sha256(&self) -> &str {
+        &self.manifest_sha256
+    }
     pub fn household(&self) -> Option<&HouseholdSummary> {
         self.documents.iter().find_map(|d| {
             if let DocumentSummary::Household(h) = &d.summary {
@@ -1149,5 +1154,6 @@ fn load_project(directory: &Path, allow_incomplete: bool) -> Result<TrayProject>
         directory,
         manifest,
         documents,
+        manifest_sha256: sha256(&manifest_bytes),
     })
 }

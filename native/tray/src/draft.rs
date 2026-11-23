@@ -52,7 +52,8 @@ pub struct ProjectDraft {
 impl ProjectDraft {
     pub fn from_project(project: &TrayProject) -> Result<Self> {
         let reopened = reopen_project(&project.directory)?;
-        if reopened.documents.len() != project.documents.len()
+        if reopened.manifest_sha256() != project.manifest_sha256()
+            || reopened.documents.len() != project.documents.len()
             || reopened.manifest.files.iter().any(|f| {
                 !project
                     .documents
@@ -73,8 +74,7 @@ impl ProjectDraft {
         {
             return Err(invalid("Select exactly one native household to edit"));
         }
-        let parent_manifest_sha256 =
-            sha256(&read_stable(&reopened.directory.join(PROJECT_MANIFEST))?);
+        let parent_manifest_sha256 = reopened.manifest_sha256().to_owned();
         let revision = reopened
             .manifest
             .draft
