@@ -1,0 +1,19 @@
+name: Windows profiler receipts
+on:
+  pull_request:
+    paths:
+      - scripts/profile-native.ps1
+      - scripts/tests/profile-native-receipt.ps1
+      - .github/workflows/windows-profiler-receipts.yml
+permissions:
+  contents: read
+jobs:
+  profiling-receipts:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - shell: pwsh
+        run: ./scripts/tests/profile-native-receipt.ps1
