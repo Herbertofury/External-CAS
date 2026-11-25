@@ -244,6 +244,92 @@ mod restore_source_receipt_tests {
     }
 
     #[test]
+    fn source_pin_grouping_keeps_provider_order_and_duplicate_receipts() {
+        let a = pin("second.package");
+        let b = pin("first.package");
+        let mut a2 = a.clone();
+        a2.ordinal = 7;
+        let pins = [a.clone(), b, a2, a];
+        let cancel = AtomicBool::new(false);
+        let grouped = group_source_pins(&pins, &cancel).unwrap();
+        assert_eq!(grouped.iter().map(|(path, _)| *path).collect::<Vec<_>>(),
+                   vec![pins[0].provider_path.as_path(), pins[1].provider_path.as_path()]);
+        assert_eq!(grouped[0].1.iter().map(|pin| pin.ordinal).collect::<Vec<_>>(), vec![1, 7, 1]);
+        assert_eq!(grouped[1].1.len(), 1);
+        cancel.store(true, Ordering::Relaxed);
+        assert!(group_source_pins(&pins, &cancel).is_err());
+    }
+
+    fn synthetic_package(payload: &[u8; 4]) -> Vec<u8> {
+        let mut bytes = vec![0; 96];
+        bytes[..4].copy_from_slice(b"DBPF");
+        for (at, value) in [(4, 2u32), (8, 1), (36, 1), (44, 32), (64, 100)] {
+            bytes[at..at + 4].copy_from_slice(&value.to_le_bytes());
+        }
+        bytes.extend_from_slice(payload);
+        for value in [0u32, 0x034a_eecb, 0, 0, 7, 96, 4, 4] {
+            bytes.extend_from_slice(&value.to_le_bytes());
+        }
+        bytes
+    }
+
+    #[test]
+    fn source_pin_validation_checks_each_provider_and_repeated_receipt_against_disk() {
+        use std::fs;
+        let nonce = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!("eca-receipt-{}-{nonce}", std::process::id()));
+        fs::create_dir(&root).unwrap();
+        struct RemoveFixture(PathBuf);
+        impl Drop for RemoveFixture {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = RemoveFixture(root.clone());
+        let make_pin = |folder: &str, payload: &[u8; 4]| {
+            fs::create_dir(root.join(folder)).unwrap();
+            let path = root.join(folder).join("same-name.package");
+            fs::write(&path, synthetic_package(payload)).unwrap();
+            let index = external_cas_assets::PackageIndex::open(&path).unwrap();
+            SourcePin {
+                key: ResourceKey::new(0x034a_eecb, 0, 7).to_string(),
+                provider_path: path,
+                ordinal: 0,
+                index_sha256: hex(&index.index_sha256),
+                payload_sha256: hex(&Sha256::digest(payload)),
+            }
+        };
+        let a = make_pin("a", b"aaaa");
+        let b = make_pin("b", b"bbbb");
+        let cancel = AtomicBool::new(false);
+        let pins = [a.clone(), b.clone(), a.clone()];
+        assert!(verify_source_pins(&pins, &cancel).is_ok());
+
+        let mut stale = pins.clone();
+        stale[2].payload_sha256 = b.payload_sha256.clone();
+        let err = verify_source_pins(&stale, &cancel).unwrap_err();
+        assert!(err.contains("Source content changed"));
+
+        fs::write(&b.provider_path, synthetic_package(b"zzzz")).unwrap();
+        let changed = external_cas_assets::PackageIndex::open(&b.provider_path).unwrap();
+        assert_eq!(hex(&changed.index_sha256), b.index_sha256);
+        let err = verify_source_pins(&pins, &cancel).unwrap_err();
+        assert!(err.contains("Source content changed"));
+
+        fs::write(&b.provider_path, synthetic_package(b"bbbb")).unwrap();
+        assert!(verify_source_pins(&pins, &cancel).is_ok());
+        cancel.store(true, Ordering::Relaxed);
+        assert!(
+            verify_source_pins(&pins, &cancel)
+                .unwrap_err()
+                .contains("cancelled")
+        );
+    }
+
+    #[test]
     fn verified_restore_requires_the_exact_nonempty_ordered_receipt() {
         let casp = pin("appearance.package");
         let diffuse = pin("first-texture.package");
@@ -272,26 +358,46 @@ mod restore_source_receipt_tests {
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
-pub fn verify_source_pins(pins: &[SourcePin], cancel: &AtomicBool) -> Result<(), String> {
-    let mut packages = HashMap::new();
+fn group_source_pins<'a>(
+    pins: &'a [SourcePin],
+    cancel: &AtomicBool,
+) -> Result<Vec<(&'a std::path::Path, Vec<&'a SourcePin>)>, String> {
+    let mut lookup = HashMap::new();
+    let mut groups: Vec<(&std::path::Path, Vec<&SourcePin>)> = Vec::new();
     for pin in pins {
         if cancel.load(Ordering::Relaxed) {
             return Err("Source validation cancelled".into());
         }
-        if !packages.contains_key(&pin.provider_path) {
-            packages.insert(
-                pin.provider_path.clone(),
-                external_cas_assets::PackageIndex::open_cancellable(&pin.provider_path, cancel)
-                    .map_err(|e| e.to_string())?,
-            );
+        let path = pin.provider_path.as_path();
+        let next = groups.len();
+        let slot = *lookup.entry(path).or_insert(next);
+        if slot == next {
+            groups.push((path, Vec::new()));
         }
+        groups[slot].1.push(pin);
     }
-    for (path, package) in &packages {
+    if cancel.load(Ordering::Relaxed) {
+        return Err("Source validation cancelled".into());
+    }
+    Ok(groups)
+}
+
+pub fn verify_source_pins(pins: &[SourcePin], cancel: &AtomicBool) -> Result<(), String> {
+    let groups = group_source_pins(pins, cancel)?;
+    // Verify each path in first-seen order and close its handle before opening
+    // the next. No pin is deduplicated: individual slot receipts still count.
+    for (path, pins) in groups {
+        let package = external_cas_assets::PackageIndex::open_cancellable(path, cancel)
+            .map_err(|e| e.to_string())?;
         let mut reader = package
             .reader_cancellable(cancel)
             .map_err(|e| e.to_string())?;
-        for pin in pins.iter().filter(|p| &p.provider_path == path) {
-            if hex(&package.index_sha256) != pin.index_sha256 {
+        let index_sha256 = hex(&package.index_sha256);
+        for pin in pins {
+            if cancel.load(Ordering::Relaxed) {
+                return Err("Source validation cancelled".into());
+            }
+            if index_sha256 != pin.index_sha256 {
                 return Err(format!("Source index changed: {}", path.display()));
             }
             let entry = package
