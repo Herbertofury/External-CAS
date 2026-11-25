@@ -1252,3 +1252,66 @@ fn check_shared_outfit_thumbnail_scope(local_has_thumbnail: bool) {
     assert_eq!(std::fs::read(&trusted_path).unwrap(), local_bytes);
     assert_eq!(std::fs::read(&unrelated_path).unwrap(), unrelated_bytes);
 }
+
+#[test]
+fn package_hash_is_complete_repeatable_and_independent_of_payload_cursor() {
+    use sha2::{Digest, Sha256};
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("source.package");
+    let payload = vec![u8::MAX; 192 * 1024 + 13];
+    let bytes = package(0, 0, &payload, payload.len() as u32);
+    std::fs::write(&path, &bytes).unwrap();
+    let index = PackageIndex::open(&path).unwrap();
+    let mut reader = index.reader().unwrap();
+    let cancel = AtomicBool::new(false);
+    let expected: [u8; 32] = Sha256::digest(&bytes).into();
+    assert_eq!(reader.package_sha256(&cancel).unwrap(), expected);
+    assert_eq!(
+        reader
+            .read_resource(&index.entries[0], ReadLimits::default())
+            .unwrap(),
+        payload
+    );
+    assert_eq!(reader.package_sha256(&cancel).unwrap(), expected);
+    assert_eq!(std::fs::read(&path).unwrap(), bytes);
+}
+
+#[test]
+fn package_hash_detects_a_new_payload_under_the_same_index() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("source.package");
+    let a = package(0, 0, b"aaaa", 4);
+    let b = package(0, 0, b"bbbb", 4);
+    let cancel = AtomicBool::new(false);
+    std::fs::write(&path, a).unwrap();
+    let before = PackageIndex::open(&path).unwrap();
+    let a = before.reader().unwrap().package_sha256(&cancel).unwrap();
+    std::fs::write(&path, b).unwrap();
+    let after = PackageIndex::open(&path).unwrap();
+    assert_eq!(before.index_sha256, after.index_sha256);
+    assert_eq!(before.file_size, after.file_size);
+    assert_ne!(a, after.reader().unwrap().package_sha256(&cancel).unwrap());
+}
+
+#[test]
+fn package_hash_returns_no_evidence_when_cancelled_or_handle_changes() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("source.package");
+    std::fs::write(&path, package(0, 0, b"aaaa", 4)).unwrap();
+    let index = PackageIndex::open(&path).unwrap();
+    let mut reader = index.reader().unwrap();
+    assert!(matches!(
+        reader.package_sha256(&AtomicBool::new(true)),
+        Err(Error::Cancelled)
+    ));
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .unwrap()
+        .set_len(96)
+        .unwrap();
+    assert!(matches!(
+        reader.package_sha256(&AtomicBool::new(false)),
+        Err(Error::Changed)
+    ));
+}
