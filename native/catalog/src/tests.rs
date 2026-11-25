@@ -1096,3 +1096,48 @@ fn cache_creates_and_reopens_plain_nested_path_with_its_metadata() {
     assert_eq!(cached.rows[0].payload_sha256, rows[0].payload_sha256);
     assert!(db.is_file());
 }
+
+#[test]
+fn compact_metadata_count_matches_exact_json_and_enforces_byte_boundary() {
+    let root = tempfile::tempdir().unwrap();
+    let (package, mut rows) = source(&root.path().join("assets.package"), 2);
+    rows[0].casp.name = "衣装 🧵 Ï \"quoted\" \n\t \\ tail".into();
+    let skip = CachedUnsupported {
+        entry_index: rows.pop().unwrap().entry_index,
+        message: "利用不可 ⚠".into(),
+    };
+    let json = serde_json::to_string(&rows[0].casp).unwrap();
+    assert_eq!(
+        serialized_part_metadata_len(&rows[0].casp).unwrap(),
+        json.len()
+    );
+    let mut cache = CatalogCache::open(root.path().join("cache.sqlite")).unwrap();
+    let cancel = AtomicBool::new(false);
+    let unsupported = [skip];
+    let updates = [CachePackageUpdate {
+        package: &package,
+        rows: &rows,
+        unsupported: &unsupported,
+    }];
+    let mut limits = CacheBatchLimits {
+        max_serialized_metadata_bytes: json.len() + unsupported[0].message.len(),
+        ..Default::default()
+    };
+    cache
+        .store_packages_with_progress(&updates, limits, &cancel, |_| {})
+        .unwrap();
+    let stored: String = cache
+        .connection
+        .query_row("SELECT casp_json FROM part", [], |r| r.get(0))
+        .unwrap();
+    assert_eq!(stored, json);
+    limits.max_serialized_metadata_bytes -= 1;
+    assert!(
+        cache
+            .store_packages_with_progress(&updates, limits, &cancel, |_| {})
+            .is_err()
+    );
+    let loaded = cache.load_package(&package, &cancel).unwrap().unwrap();
+    assert_eq!(loaded.unsupported, unsupported);
+    assert_eq!(serde_json::to_string(&loaded.rows[0].casp).unwrap(), stored);
+}
