@@ -2,6 +2,10 @@ use crate::{
     storage::SavedRecovery, texture, viewport,
     wardrobe_evidence::{IndexedAppearanceEvidence, SourceSlot},
 };
+#[path = "search_groups.rs"]
+mod search_groups;
+use search_groups::group_search_rows;
+pub(crate) use search_groups::GalleryGroup;
 use external_cas_assets::{
     CasPart, Catalog, Geometry, PackageReader, ReadLimits, ResourceKey, scan::Provider,
 };
@@ -37,10 +41,6 @@ pub struct Item {
     pub design: usize,
     pub swatch_order: u16,
     pub color_sliders: Option<external_cas_assets::casp::CaspColorSliders>,
-}
-#[derive(Clone, Debug)]
-pub struct GalleryGroup {
-    pub items: Vec<usize>,
 }
 #[derive(PartialEq, Eq, Hash)]
 struct DesignKey {
@@ -664,21 +664,28 @@ pub fn search(
                     }
                     rows.push(index);
                 }
+                if cancel.load(Ordering::Relaxed) {
+                    return Err("Search cancelled".into());
+                }
                 rows.sort_unstable();
                 Ok(rows)
             })();
             if let Ok(rows) = indexed {
-                let groups = group_rows(&library, &rows);
-                let _ = tx.send(Event::Search {
-                    generation,
-                    rows,
-                    elapsed: start.elapsed(),
-                    cache_used: true,
-                    groups,
-                });
+                if let Some(groups) = group_rows(&library, &rows, &cancel) {
+                    let _ = tx.send(Event::Search {
+                        generation,
+                        rows,
+                        elapsed: start.elapsed(),
+                        cache_used: true,
+                        groups,
+                    });
+                }
                 return;
             }
         }
+    }
+    if cancel.load(Ordering::Relaxed) {
+        return;
     }
     let mut rows = Vec::new();
     for (i, item) in library.items.iter().enumerate() {
@@ -690,33 +697,23 @@ pub fn search(
             rows.push(i);
         }
     }
-    let groups = group_rows(&library, &rows);
-    let _ = tx.send(Event::Search {
-        generation,
-        rows,
-        elapsed: start.elapsed(),
-        cache_used: false,
-        groups,
-    });
+    if let Some(groups) = group_rows(&library, &rows, &cancel) {
+        let _ = tx.send(Event::Search {
+            generation,
+            rows,
+            elapsed: start.elapsed(),
+            cache_used: false,
+            groups,
+        });
+    }
 }
-fn group_rows(library: &Library, rows: &[usize]) -> Vec<GalleryGroup> {
-    let mut positions = HashMap::new();
-    let mut groups = Vec::<GalleryGroup>::new();
-    for &index in rows {
-        let item = &library.items[index];
-        let next = groups.len();
-        let group = *positions.entry(item.design).or_insert(next);
-        if group == groups.len() {
-            groups.push(GalleryGroup { items: Vec::new() });
-        }
-        groups[group].items.push(index);
-    }
-    for group in &mut groups {
-        group
-            .items
-            .sort_by_key(|&i| (library.items[i].swatch_order, library.items[i].key));
-    }
-    groups
+fn group_rows(library: &Library, rows: &[usize], cancel: &AtomicBool) -> Option<Vec<GalleryGroup>> {
+    group_search_rows(
+        rows,
+        cancel,
+        |index| library.items[index].design,
+        |index| (library.items[index].swatch_order, library.items[index].key),
+    )
 }
 struct Resources<'a> {
     library: &'a Library,
@@ -1023,4 +1020,110 @@ pub fn change_draft(
         base_revision,
         result,
     });
+}
+
+#[cfg(test)]
+mod wardrobe_search_worker_tests {
+    use super::*;
+
+    fn fixture() -> Arc<Library> {
+        let items = [
+            ("café linen", 5, 2, 3),
+            ("café linen", 5, 2, 1),
+            ("café wool", 5, 0, 0),
+            ("café linen", 2, 1, 0),
+            ("café linen", 5, 4, 1),
+            ("café linen", 5, 2, 1),
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(index, (name, body_type, design, swatch_order))| Item {
+            name: name.into(),
+            key: ResourceKey::new(1, 0, index as u64 + 1),
+            source: Provider {
+                package_index: 0,
+                entry_index: index,
+            },
+            source_label: "synthetic".into(),
+            body_type,
+            age: 0,
+            gender: 0,
+            meshes: Vec::new(),
+            diffuse: None,
+            colors: Vec::new(),
+            search: name.into(),
+            payload_sha256: [0; 32],
+            design,
+            swatch_order,
+            color_sliders: None,
+        })
+        .collect();
+        Arc::new(Library {
+            catalog: Catalog::default(),
+            items: Arc::new(items),
+            unsupported: Vec::new(),
+            elapsed: std::time::Duration::ZERO,
+            poses: Vec::new(),
+            cache_hits: 0,
+            cache_misses: 0,
+            cache_issues: Vec::new(),
+            cache_path: None,
+            cache_scope: None,
+            cache_stats: CacheScanStats::default(),
+            thumbnails: Default::default(),
+            package_lookup: HashMap::new(),
+            item_lookup: HashMap::new(),
+        })
+    }
+
+    #[test]
+    fn current_worker_publishes_all_filtered_rows_and_exact_group_order() {
+        let (tx, rx) = std::sync::mpsc::channel();
+        search(
+            fixture(),
+            " CAFÉ  linen ".into(),
+            Some(5),
+            42,
+            Arc::new(AtomicBool::new(false)),
+            tx,
+        );
+        let Event::Search {
+            generation,
+            rows,
+            groups,
+            cache_used,
+            ..
+        } = rx.try_recv().unwrap()
+        else {
+            panic!("search worker returned the wrong event");
+        };
+        assert_eq!(generation, 42);
+        assert!(!cache_used);
+        assert_eq!(rows, vec![0, 1, 4, 5]);
+        assert_eq!(
+            groups
+                .into_iter()
+                .map(|group| group.items)
+                .collect::<Vec<_>>(),
+            vec![vec![1, 5, 0], vec![4]]
+        );
+        assert!(rx.try_recv().is_err());
+    }
+
+    #[test]
+    fn obsolete_worker_does_not_publish_an_empty_or_partial_success() {
+        let (tx, rx) = std::sync::mpsc::channel();
+        search(
+            fixture(),
+            "café".into(),
+            None,
+            41,
+            Arc::new(AtomicBool::new(true)),
+            tx,
+        );
+        assert!(matches!(
+            rx.try_recv(),
+            Err(std::sync::mpsc::TryRecvError::Disconnected)
+        ));
+    }
 }

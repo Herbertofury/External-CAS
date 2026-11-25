@@ -509,6 +509,10 @@ fn indexed_and_short_unicode_search_match_exact_rust_lowercase_substrings() {
         "café",
         "i\u{307}",
         "blue hair",
+        "blue dress", // both grams exist, but in different rows
+        "blue nonexistent",
+        "café café",
+        "i blue",
         "ΣΙΓΜΑ",
         "gold accessory",
         "e.package",
@@ -1095,4 +1099,58 @@ fn cache_creates_and_reopens_plain_nested_path_with_its_metadata() {
     assert_eq!(cached.rows.len(), 1);
     assert_eq!(cached.rows[0].payload_sha256, rows[0].payload_sha256);
     assert!(db.is_file());
+}
+
+#[test]
+#[ignore = "manual equivalent-work timing, not a latency threshold"]
+fn benchmark_complete_indexed_unicode_and_broad_cache_reads() {
+    use std::time::Instant;
+    let root = tempfile::tempdir().unwrap();
+    let (package, mut rows) = source(&root.path().join("Café_Source.package"), 24_000);
+    let tail = " variant tones accessories collection synthetic".repeat(8);
+    for row in &mut rows {
+        row.casp.name.push_str(&tail);
+    }
+    let mut cache = CatalogCache::open(root.path().join("metadata.sqlite")).unwrap();
+    let cancel = AtomicBool::new(false);
+    cache.store_package(&package, &rows, &[], &cancel).unwrap();
+    cache.bind_scope("fixture", &[package.fingerprint()], &cancel).unwrap();
+
+    // Each probe retains full results or the exact original requested page.
+    for (label, query, body, offset, limit, count) in [
+        ("all", "", None, 0, usize::MAX, 24_000),
+        ("filtered", "ΣΙΓΜΑ accessory", Some(2), 0, usize::MAX, 4_000),
+        ("deep-page", "café collection", None, 16_000, 4_000, 4_000),
+        ("no-match", "variant nonexistent", None, 0, usize::MAX, 0),
+    ] {
+        let run = || cache.search_scoped("fixture", query, body, offset, limit, &cancel).unwrap();
+        let expected = run();
+        assert_eq!(expected.len(), count);
+        let mut identity = Sha256::new();
+        for hit in &expected {
+            identity.update(hit.name.as_bytes());
+            identity.update(hit.entry_index.to_le_bytes());
+            identity.update(hit.key.instance_id.to_le_bytes());
+            identity.update(hit.payload_sha256);
+        }
+        let mut time = Vec::new();
+        for _ in 0..14 {
+            let start = Instant::now();
+            let actual = run();
+            time.push(start.elapsed().as_micros());
+            assert_eq!(actual.len(), expected.len());
+            for (current, prior) in actual.iter().zip(&expected) {
+                assert_eq!(current.package_path, prior.package_path);
+                assert_eq!(current.name, prior.name);
+                assert_eq!(current.entry_index, prior.entry_index);
+                assert_eq!(current.key, prior.key);
+                assert_eq!(current.body_type, prior.body_type);
+                assert_eq!(current.source_label, prior.source_label);
+                assert_eq!(current.payload_sha256, prior.payload_sha256);
+            }
+        }
+        time.sort_unstable();
+        println!("{label}: rows={count}; sha256={:x}; p50={}us p95={}us",
+            identity.finalize(), time[6], time[13]);
+    }
 }
