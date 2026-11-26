@@ -122,3 +122,24 @@ cargo run -p external-cas-tray --offline --example validate_local -- SOURCE_TRAY
 
 It writes only a new project directory and emits a private JSON receipt on
 stdout. Keep that receipt local; it contains source identities and Sim data.
+
+## Unchanged companion files during editing
+
+The draft validates the full candidate document inventory before committing an
+outfit/color edit or Undo/Redo, but borrows unchanged files instead of copying
+their buffers. Slot identities still use the same exact SimData digest, computed
+once per Sim per slot scan. The save/reopen tests continue to compare untouched
+metadata and portraits byte for byte.
+
+To measure just the draft edit and Undo path on an admitted 16 MiB synthetic
+portrait, with the source/project setup outside the timed section:
+
+```sh
+cargo test --release -p external-cas-tray --locked benchmark_draft_edits_with_large_untouched_portrait -- --ignored --nocapture
+```
+
+Three alternating Linux/Rust 1.99.0 fixture runs each recorded 30 equivalent
+edit/Undo pairs. Baseline median was 0.95–1.02 ms (p95 3.87–4.97 ms), versus
+0.0059–0.0060 ms (p95 0.0078–0.019 ms) on the candidate. The fixture retains
+all bytes, but this is not a Windows UI, save-as speed, or game-performance
+claim. The benchmark is opt-in and has no timing assertions.
