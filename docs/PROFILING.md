@@ -37,3 +37,11 @@ Component throughput and a tiny populated fixture do not establish large-library
 performance. No in-game baseline or improvement ratio is implied. Clean-machine,
 long-session, multiple-real-Sim, GPU/frame-pacing and interactive input-to-visible
 qualification remain acceptance gates.
+
+Superseded wardrobe searches also stop in the design/swatch grouping stage,
+without publishing partial groups. The focused grouping fixtures retain every
+row and exact first-seen design/stable swatch order for live searches. In the
+4,096-row cancelled fixture, 256 group assignments were visited and no sort
+started, instead of processing the entire stale result. This is a work-count
+check, not an interactive timing claim; a single already-running stable sort
+can still finish before its result is discarded.
