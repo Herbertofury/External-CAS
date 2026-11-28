@@ -1,6 +1,8 @@
 # Repository instructions
 
 Read `.agents/foundry/AGENTS-adapter.md` for the pinned shared engineering core.
+
+For user-facing interface work, apply the [Athena portfolio interface quality contract](https://github.com/Herbertofury/Athena/blob/main/guidance/DESIGN_QUALITY_STANDARD.md#portfolio-interface-quality-contract) and document real host acceptance using the [interface quality receipt](https://github.com/Herbertofury/Athena/blob/main/guidance/templates/INTERFACE_QUALITY_RECEIPT.md). This is additive and does not migrate the existing Agent Foundry lock, replace project-specific instructions, or claim features have shipped. Preserve local photo and character data, existing custom content choices, and keyboard access. A prototype or screenshot does not substitute for testing in the real CAS workflow.
 Keep this file and nested instructions project-owned: setup, commands, constraints and acceptance belong here.
 
 ## External CAS local contract
